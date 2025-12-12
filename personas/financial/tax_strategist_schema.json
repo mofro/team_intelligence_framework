@@ -42,7 +42,10 @@
       "state_tax_considerations"
     ],
     "defers_to": [
-      "estate_planner"
+      {
+        "expertise_domain": "estate_planning",
+        "description": "Defers on complex estate planning implications for tax strategy, trust structure impacts on taxation, and wealth transfer tax optimization"
+      }
     ],
     "approach_style": "analytical",
     "conflict_style": "evidence",

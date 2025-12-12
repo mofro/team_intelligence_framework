@@ -42,7 +42,10 @@
       "delayed_retirement_credits"
     ],
     "defers_to": [
-      "tax_strategist"
+      {
+        "expertise_domain": "tax_optimization",
+        "description": "Defers on Social Security tax implications, coordination with other income sources for tax bracket management, and overall tax strategy impact on claiming decisions"
+      }
     ],
     "approach_style": "mathematical",
     "conflict_style": "evidence",

@@ -56,6 +56,7 @@ This separation keeps the framework portable while allowing rich customization.
 ├── REFACTORING_REFERENCE.md        # How framework maps to schema
 ├── CONFIG_REFERENCE.md             # Configuration specifications
 ├── TEAM_DEFINITION_GUIDE.md        # How to create teams
+├── EXPERTISE_DOMAINS.md            # Canonical reference for domains & specializations
 │
 ├── /gaming/
 │   ├── context_configuration.json
@@ -127,6 +128,11 @@ PROJECT_MIGRATION_GUIDE.md  # Project-specific contexts and knowledge
 - Keeps persona schemas clean and portable
 - Referenced by personas via `reference_guide` field
 
+**Expertise Domains** (`EXPERTISE_DOMAINS.md`):
+- Canonical reference for all expertise domains and specializations
+- Documents distinction between universal domains and framework-specific expertise
+- Used for understanding deference structures and team mappings
+
 ## Activation and States
 
 ### Framework States
@@ -193,6 +199,10 @@ PROJECT_MIGRATION_GUIDE.md  # Project-specific contexts and knowledge
     ],
     "context": "financial"
   },
+  "expertise_mapping": {
+    "tax_optimization": "tax_strategist",
+    "estate_planning": "estate_planner"
+  },
   "collaboration": {
     "primary_voice": "investment_advisor",
     "decision_pattern": "consensus_with_hierarchy"
@@ -203,6 +213,7 @@ PROJECT_MIGRATION_GUIDE.md  # Project-specific contexts and knowledge
 **Guidelines**:
 - Use snake_case for team_name
 - Team members must be `persona_name` values (can verify in persona schemas)
+- Map expertise domains to persona_names in `expertise_mapping` section
 - primary_voice persona addresses disagreements
 - decision_pattern guides conflict resolution
 
@@ -229,7 +240,7 @@ PROJECT_MIGRATION_GUIDE.md  # Project-specific contexts and knowledge
    - `schema_version: "1.2"`
    - `persona.persona_name` (snake_case)
    - `collaboration.expertise_scope`
-   - `collaboration.defers_to`
+   - `collaboration.defers_to` (reference expertise domains, not persona names)
    - `behavioral_rules` (8-15 imperative statements)
    - `reference_context` (domain name)
 
@@ -286,7 +297,12 @@ PROJECT_MIGRATION_GUIDE.md  # Project-specific contexts and knowledge
   },
   "collaboration": {
     "expertise_scope": ["domain1", "domain2"],
-    "defers_to": ["persona_name_if_exists"],
+    "defers_to": [
+      {
+        "expertise_domain": "domain_name",
+        "description": "Why this persona defers to this domain"
+      }
+    ],
     "approach_style": "consultative|directive|supportive",
     "conflict_style": "defer|argue|compromise"
   },
@@ -341,6 +357,36 @@ Returns:
 
 ## Best Practices
 
+### Understanding Expertise Domains vs Specializations
+
+When designing personas and teams, distinguish between **domains** (universal areas of knowledge) and **specializations** (framework-specific expertise). This distinction ensures scalability and prevents technology lock-in.
+
+**DOMAINS** (Framework-Agnostic):
+- Apply across multiple technologies or frameworks
+- Examples: "software_architecture", "application_security", "design_strategy", "infrastructure_deployment"
+- Should be reusable if you swap frameworks (e.g., switching from Flutter to React Native)
+
+**SPECIALIZATIONS** (Framework-Specific):
+- Deep expertise in a specific technology
+- Examples: "flutter_architecture", "lightning_blits_framework", "react_frontend_patterns"
+- Represent *how* a domain is implemented using particular tools
+
+**When Creating Personas:**
+- Ask: "Is this expertise needed regardless of the technology stack?" → It's a **domain**
+- Ask: "Is this expertise specific to a particular framework or tool?" → It's a **specialization**
+
+**In `defers_to`:**
+- Reference **domains** for general authority (framework-agnostic)
+- Example: Fiona defers to "software_architecture" (Dylan), allowing Dylan to represent architecture authority across all frameworks
+- This prevents coupling personas to specific people
+
+**In Team `expertise_mapping`:**
+- Map **domains** and **specializations** to personas
+- Multiple personas can fill different specializations within the same domain
+- Example: Flutter expert and React Native expert both serve "mobile_development" domain
+
+See **EXPERTISE_DOMAINS.md** for the canonical reference of all domains and specializations currently in use.
+
 ### Schema Design
 
 **Expertise Scope**:
@@ -355,7 +401,7 @@ Returns:
 - Include challenge/skepticism patterns
 
 **Deference**:
-- Identify one authority per expertise area
+- Reference expertise domains, not persona names
 - Keep deference paths short (2-3 levels max)
 - Document why deference exists
 
@@ -394,6 +440,7 @@ Returns:
 ### Setting Up Framework
 
 - [ ] Review `/config/` files for universal patterns
+- [ ] Review EXPERTISE_DOMAINS.md for domain/specialization distinction
 - [ ] Identify domains needed for project
 - [ ] Load domain folders or create new ones
 - [ ] Test persona activation: `"show my teams"`
@@ -402,17 +449,21 @@ Returns:
 
 ### Adding New Personas
 
+- [ ] Clarify if expertise is a domain (universal) or specialization (framework-specific)
 - [ ] Create schema file (use template above)
+- [ ] Reference expertise domains in `defers_to` (not persona names)
 - [ ] Verify all required fields present
 - [ ] Test activation: `"add @persona_name"`
-- [ ] Add to relevant teams
+- [ ] Add to relevant teams with expertise_mapping
 - [ ] Update domain configuration
 - [ ] Test team activation
+- [ ] Update EXPERTISE_DOMAINS.md if new domains created
 
 ### Creating New Teams
 
 - [ ] Identify team purpose and members
 - [ ] Verify members exist (check persona_name values)
+- [ ] Create expertise_mapping for domain-to-persona relationships
 - [ ] Define primary voice and decision pattern
 - [ ] Create team JSON file
 - [ ] Test activation: `"activate [team_name]"`
@@ -440,6 +491,16 @@ Returns:
 3. Verify member persona_name values exist
 4. Confirm domain context loaded
 
+### Deference Not Working as Expected
+
+**Problem**: Personas not deferring correctly or expertise mapping failing
+
+**Solutions**:
+1. Verify `defers_to` references expertise domains (not persona names)
+2. Check team `expertise_mapping` matches referenced domains
+3. Consult EXPERTISE_DOMAINS.md for current domain definitions
+4. Ensure domain/specialization distinction is clear
+
 ### Performance Issues
 
 **Problem**: Slow responses or high overhead
@@ -452,12 +513,12 @@ Returns:
 
 ### Unexpected Behavior
 
-**Problem**: Personas not deferring or collaborating as expected
+**Problem**: Personas not collaborating as expected
 
 **Solutions**:
 1. Review behavioral_rules in schemas
-2. Check defers_to relationships
-3. Verify team definition primary_voice
+2. Check defers_to relationships (domain-based, not person-based)
+3. Verify team definition expertise_mapping
 4. Consult REFACTORING_REFERENCE.md for schema mapping
 
 ## Next Steps
@@ -466,17 +527,19 @@ Returns:
 - See ARCHITECTURAL_DECISIONS.md for decisions made
 - See REFACTORING_REFERENCE.md for schema mapping details
 - See PROJECT_MIGRATION_GUIDE.md for project-specific extensions
+- Review EXPERTISE_DOMAINS.md for domain/specialization structure
 
 **For Adding Personas**:
 - Use schema template above
 - Follow v1.2 structure
+- Reference expertise domains in defers_to
 - Consult existing personas for patterns
 
 **For Custom Implementations**:
 - Fork domain folder for your project
-- Create project-specific teams
+- Create project-specific teams with expertise_mapping
 - Document in PROJECT_MIGRATION_GUIDE.md
 
 ---
 
-**The framework is designed for extensibility with stable core principles and flexible implementations.**
+**The framework is designed for extensibility with stable core principles and flexible implementations. Clear distinction between expertise domains and framework-specific specializations ensures scalability as the framework grows.**

@@ -49,8 +49,14 @@
       "backup_and_recovery"
     ],
     "defers_to": [
-      "experienced_developer",
-      "security_specialist"
+      {
+        "expertise_domain": "software_architecture",
+        "description": "Defers on overall architecture decisions and technical decision-making authority"
+      },
+      {
+        "expertise_domain": "application_security",
+        "description": "Defers on security infrastructure requirements, compliance, and threat modeling implications"
+      }
     ],
     "approach_style": "pragmatic",
     "conflict_style": "demonstrate",

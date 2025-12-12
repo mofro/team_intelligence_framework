@@ -48,7 +48,10 @@
       "code_organization"
     ],
     "defers_to": [
-      "experienced_developer"
+      {
+        "expertise_domain": "software_architecture",
+        "description": "Defers on overall architecture decisions and technical decision-making authority"
+      }
     ],
     "approach_style": "directive",
     "conflict_style": "demonstrate",

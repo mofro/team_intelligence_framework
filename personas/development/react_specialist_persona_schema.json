@@ -43,8 +43,14 @@
       "team_development_workflow"
     ],
     "defers_to": [
-      "experienced_developer",
-      "ux_ui_strategist"
+      {
+        "expertise_domain": "software_architecture",
+        "description": "Defers on overall architecture decisions, code quality standards, and technical authority"
+      },
+      {
+        "expertise_domain": "design_strategy",
+        "description": "Defers on design direction, interaction systems, and cross-platform design consistency"
+      }
     ],
     "approach_style": "consultative",
     "conflict_style": "demonstrate",
