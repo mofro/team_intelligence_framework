@@ -87,13 +87,13 @@ When you invoke `"activate retirement planning team"`:
 4. **Universal rules from `/config/`** govern how they collaborate together
 5. **Team activates** with all expertise immediately available
 
-## Persona Schema Format (v1.1)
+## Persona Schema Format (v1.2)
 
 All personas use consistent structure:
 
 ```json
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "metadata": {
     "name": "Security Specialist - Application Security Expert",
     "description": "Expert in secure coding and authentication systems",
@@ -189,7 +189,7 @@ All personas use consistent structure:
 
 ### Extensible
 - **Add New Domains**: Create folder in `/personas/` with `context_configuration.json`
-- **Add New Personas**: Create schema file following v1.1 structure
+- **Add New Personas**: Create schema file following v1.2 structure
 - **Add New Teams**: Define team composition in domain's `/teams/` folder
 - **Custom Projects**: Use PROJECT_MIGRATION_GUIDE.md to document project-specific context
 

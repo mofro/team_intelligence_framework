@@ -32,7 +32,7 @@ Concrete implementations for specific contexts:
 
 - **Domain folders** (gaming, development, financial, writing) contain:
   - `context_configuration.json` - Domain-level activation triggers
-  - Individual persona schema files (v1.1 format)
+  - Individual persona schema files (v1.2 format)
   - `/teams/` subdirectory with team definitions
   
 - **Project-specific contexts** documented separately in `PROJECT_MIGRATION_GUIDE.md`
@@ -111,7 +111,7 @@ PROJECT_MIGRATION_GUIDE.md  # Project-specific contexts and knowledge
 
 **Persona Schemas** (`/personas/{domain}/*_persona_schema.json`):
 - Individual persona definitions
-- Schema version 1.1
+- Schema version 1.2
 - Self-contained; portable between projects
 - Never embed project-specific context (use PROJECT_MIGRATION_GUIDE instead)
 
@@ -225,8 +225,8 @@ PROJECT_MIGRATION_GUIDE.md  # Project-specific contexts and knowledge
    ```
    /personas/{domain}/{persona_name}_persona_schema.json
    ```
-   Use v1.1 format with these required fields:
-   - `schema_version: "1.1"`
+   Use v1.2 format with these required fields:
+   - `schema_version: "1.2"`
    - `persona.persona_name` (snake_case)
    - `collaboration.expertise_scope`
    - `collaboration.defers_to`
@@ -262,11 +262,11 @@ PROJECT_MIGRATION_GUIDE.md  # Project-specific contexts and knowledge
 
 5. **Document context**: Add project-specific info to `PROJECT_MIGRATION_GUIDE.md`
 
-### Schema Template (v1.1)
+### Schema Template (v1.2)
 
 ```json
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "metadata": {
     "name": "Full Name - Description",
     "description": "Detailed description of expertise",
@@ -386,7 +386,7 @@ Returns:
 
 **Framework Stability**:
 - Don't modify `/config/` files unless architecture changes
-- Version schema changes (1.1 → 1.2)
+- Version schema changes (1.2 → 1.3, etc.)
 - Track breaking changes in ARCHITECTURAL_DECISIONS.md
 
 ## Implementation Checklist
@@ -469,7 +469,7 @@ Returns:
 
 **For Adding Personas**:
 - Use schema template above
-- Follow v1.1 structure
+- Follow v1.2 structure
 - Consult existing personas for patterns
 
 **For Custom Implementations**:
