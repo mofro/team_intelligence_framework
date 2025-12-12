@@ -1,355 +1,314 @@
-# Persona Framework v2.0 User Guide
+# Team Intelligence Framework - User Guide
 
-Complete guide to using the collaborative AI team management system for expert guidance across multiple domains.
+Complete guide to using the collaborative AI team management system with pre-configured domain teams and individual personas.
 
 ## Getting Started
 
 ### Framework Activation
 
-**Initial Setup:**
-
-```prompt
+```
 "personas on"                    # Activate the framework
 "show my teams"                  # List available expert teams  
 "list available personas"        # See individual personas
 ```
 
-**Quick Team Start:**
+### Quick Team Start - By Domain
 
-```prompt
-"activate security team"         # Start with Security Architecture Review Team
-"activate frontend team"         # Start with UI/UX Development Team
-"activate design strategy team"  # Start with Cross-platform Design Team
+**Gaming Domain** (Hero Heaven TTRPG):
+```
+"activate hero heaven worldbuilding team"  # Lore Keeper, Mythweaver, TTRPG Game Architect
 ```
 
-### Understanding Framework States
+**Development Domain** (Full Stack):
+```
+"activate react fullstack team"   # React Specialist, Experienced Developer, Security Specialist, UX Specialist, UI Designer
+```
 
-**OFF Mode** - Base LLM responses only
-
-- No persona processing overhead
-- Framework completely dormant
-- One-time availability notification
-
-**MINIMAL Mode** - Essential expertise only  
-
-- Single coordinator persona active
-- Reduced context overhead
-- Core functionality maintained
-
-**ACTIVE Mode** - Full collaborative system (Default)
-
-- Complete team collaboration enabled
-- Context analysis and suggestions active
-- Performance monitoring available
-
-**MONITORING Mode** - Enhanced tracking
-
-- Detailed performance metrics collection
-- Usage pattern analysis
-- Optimization recommendations
+**Financial Domain** (Retirement Planning):
+```
+"activate retirement planning team"  # Investment Advisor, Tax Strategist, Social Security Specialist, Healthcare Expert, Insurance Analyst, Estate Planner
+```
 
 ## Working with Teams
 
-### Pre-Configured Teams
+### Pre-Configured Teams by Domain
 
-#### **Security Architecture Review Team**
+#### **Gaming Domain**
 
-- **Members**: Security Specialist, Senior Developer, Project Coordinator
-- **Focus**: Authentication, secure coding, vulnerability assessment
-- **Activation**: `"activate security team"`
-- **Best For**: Security reviews, threat modeling, compliance
+**Hero Heaven Worldbuilding Team** (`/personas/gaming/teams/hero_heaven_worldbuilding_team.json`)
+- **Members**: Lore Keeper, Mythweaver, TTRPG Game Architect
+- **Expertise**: World documentation, narrative resonance, mechanical design
+- **Activation**: `"activate hero heaven worldbuilding team"`
+- **Best For**: TTRPG world-building, narrative consistency, system design
 
-#### **Frontend Development Team**
+#### **Development Domain**
 
-- **Members**: UI Designer, UX Designer, Frontend Developer, Project Coordinator
-- **Focus**: User interface design, user experience, frontend implementation
-- **Activation**: `"activate frontend team"`
-- **Best For**: UI/UX design, component architecture, responsive design
-
-#### **React Full-Stack Development Team**
-
-- **Members**: React Specialist, Senior Developer, UX Strategist, UI Designer, Security Specialist
-- **Focus**: End-to-end React application development
-- **Activation**: `"activate react team"`
+**React Full-Stack Team** (`/personas/development/teams/react_fullstack_team.json`)
+- **Members**: React Specialist, Experienced Developer, Security Specialist, UX Strategist, UI Designer
+- **Expertise**: Web application development, component architecture, security integration
+- **Activation**: `"activate react fullstack team"`
 - **Best For**: React projects, web applications, full-stack development
+
+**Individual Development Personas**:
+- **@experienced_developer**: Senior architect and code quality lead
+- **@react_specialist**: Pragmatic React framework decisions
+- **@security_specialist**: Application security and authentication
+- **@blits_developer**: Lightning/Blits UI optimization
+- **@lightning_developer**: Lightning v2 core framework
+- **@ui_designer**: TV interface design and performance
+- **@ux_designer**: User experience and usability
+- **@ux_ui_strategist**: Cross-platform design strategy
+- **@cloud_architect**: Infrastructure and deployment
+
+#### **Financial Domain**
+
+**Retirement Planning Team** (`/personas/financial/teams/retirement_planning_team.json`)
+- **Members**: Investment Advisor, Tax Strategist, Social Security Specialist, Healthcare Expert, Insurance Analyst, Estate Planner
+- **Expertise**: Comprehensive retirement planning across all financial dimensions
+- **Activation**: `"activate retirement planning team"`
+- **Best For**: Early retirement strategy, tax optimization, household planning
+
+**Individual Financial Personas**:
+- **@investment_advisor**: Portfolio allocation and risk management
+- **@tax_strategist**: Tax optimization and withdrawal strategy
+- **@social_security_specialist**: Benefit claiming and household optimization
+- **@healthcare_expert**: Medicare planning and cost management
+- **@insurance_analyst**: Risk assessment and catastrophic coverage
+- **@estate_planner**: Asset protection and succession planning
+
+#### **Writing Domain**
+
+**Screenplay Team** (Team definitions TBD)
+- **Members**: Screenwriter, Dialog Coach, Science Advisor, Director of Photography
+- **Expertise**: Story structure, dialogue authenticity, scientific accuracy, visual storytelling
+- **Best For**: Screenplay development, narrative structure, technical authenticity
+
+**Individual Writing Personas**:
+- **@screenwriter**: Story structure and narrative vision
+- **@dialog_coach**: Character voice and dialogue authenticity
+- **@science_advisor**: Scientific accuracy and technical plausibility
+- **@director_of_photography**: Visual storytelling and cinematography
 
 ### Team Management Commands
 
 **Team Operations:**
-
-```prompt
+```
 "who's on my current team?"      # Display active roster
 "show my teams"                  # List all available teams
 "activate [team name]"           # Switch to pre-configured team
-"deactivate team"               # Return to coordinator only
+"deactivate team"               # Return to baseline
 "clear my team"                 # Remove all personas from roster
 ```
 
 **Individual Persona Management:**
-
-```prompt
-"add @persona_name"             # Add specific expertise to current roster
-"remove @persona_name"          # Remove persona from active team
-"persona info @security_specialist"  # Get detailed persona information
+```
+"add @persona_name"             # Add specific expertise
+"remove @persona_name"          # Remove from active team
+"persona info @experienced_developer"  # Get detailed persona information
 ```
 
 **Custom Team Building:**
-
-```prompt
-"create team mobile_dev with @react_specialist @ui_designer @security_specialist"
-"save current team as api_development_team"    # Save roster as template
+```
+"create team api_security with @experienced_developer @security_specialist @cloud_architect"
+"save current team as my_api_team"    # Save roster as template
 ```
 
-## Working with Individual Personas
+## Addressing Personas
 
-### Available Personas
+### Direct Engagement
 
-**Development Expertise:**
+Use `@persona_name` to address specific expertise:
 
-- **@dylan_developer (Dylan Developer)**: Senior developer/architect with system design expertise
-- **@johnny_blits (Johnny Blits)**: Lightning/Blits framework specialist for TV applications
-- **@lucy_lightning (Lucy Lightning)**: Lightning v2 core framework expert
-- **@riley_react (Riley React)**: Pragmatic React specialist who balances best practices with simplicity
-
-**Design Expertise:**
-
-- **@taylor_ten_foot (Taylor Ten-Foot)**: TV interface designer specializing in Lightning framework patterns  
-- **@uma_ux (Uma UX)**: UX designer focused on 10-foot UI experiences and TV usability
-- **@dave_design (Dave Design)**: Cross-platform UX/UI strategist with strong design opinions
-
-**Security Expertise:**
-
-- **@samantha_security (Samantha Security)**: Application security expert focused on authentication and secure coding
-
-### Addressing Personas
-
-**Direct Engagement:**
-
-```prompt
-@johnny_blits How should I structure this Blits component?
-@samantha_security Review this authentication flow for vulnerabilities.
-@dave_design What's wrong with this user interface approach?
+```
+@security_specialist Review this authentication flow.
+@investment_advisor Should we rebalance the portfolio?
+@screenwriter How does this plot change affect the narrative arc?
 ```
 
-**Natural Topic Routing:**
-Ask domain-specific questions and the framework will automatically suggest relevant personas:
+### Natural Topic Routing
 
-```prompt
-"How do I secure user tokens?" 
-"What's the best TV navigation pattern?" 
-"Should I use React for this project?"
+Ask domain-specific questions and framework suggests relevant personas:
+
+```
+"How do I optimize database queries?"  → suggests @experienced_developer
+"What's the best Bond strategy?"       → suggests @investment_advisor  
+"How should characters react here?"    → suggests @dialog_coach
 ```
 
-## Advanced Features
+## Understanding Personas
 
-### Discovery and Suggestions
+### Persona Structure
 
-**Context-Aware Recommendations:**
+Each persona has:
 
-```prompt
-"suggest personas for this question"    # Get recommendations for current context
-"enable discovery"                      # Turn on automatic suggestions
-"disable discovery"                     # Turn off auto-suggestions
-"scan for new personas"                # Refresh available persona pool
+- **persona_name**: How to address them (@experienced_developer)
+- **display_name**: Human-readable identifier
+- **custom_name**: Optional nickname
+- **expertise_scope**: What domains they advise on
+- **behavioral_rules**: How they operate (8-15 principles)
+- **defers_to**: Who has authority over them
+
+### Reading Deference Patterns
+
+**Deference indicates hierarchy within teams**:
+
+- `@security_specialist` defers to `@experienced_developer`
+  → Developer makes final architectural calls; Security reviews first
+  
+- `@investment_advisor` leads but consults `@tax_strategist`
+  → Portfolio decisions account for tax implications
+  
+- `@dialog_coach` defers to `@screenwriter`
+  → Dialogue serves story structure
+
+When personas disagree, deference patterns guide resolution.
+
+## Framework States
+
+### Active Mode (Default)
 ```
-
-**Example Discovery Flow:**
-
-```prompt
-You: "I need to implement OAuth authentication"
-Framework: Based on your authentication question, consider:
-- Adding @samantha_security (security expertise)
-- Activating security review team (comprehensive analysis)
-Add with: "add security specialist" or "activate security team"
+"personas on"
 ```
+- Full team collaboration available
+- Context analysis and suggestions active
+- All expertise immediately accessible
 
-### Primary Voice System
-
-#### **How Team Collaboration Works:**
-
-- **Single Unified Response**: One persona speaks for the team, incorporating all expertise
-- **Response Attribution**: Tags show which expertise contributed: `[SS]` = Security Specialist, `[BD]` = Blits Developer
-- **Natural Handoffs**: Primary voice shifts when topics move outside current expertise
-- **Optimistic Skepticism**: Framework challenges premises before providing solutions
-
-**Example Collaborative Response:**
-
-```prompt
-[RILEY_REACT] Before we jump into implementation, what specific problem does this solve?
-
-Looking at this React component pattern... [SAMANTHA_SECURITY] we need to consider how props validation affects security, and [UMA_UX] the user experience implications of this state management approach.
-
-[RILEY_REACT] Overall recommendation: simpler state management would serve your goals better.
+### Minimal Mode
 ```
+"minimal persona mode"
+```
+- Single coordinator persona only
+- Reduced context overhead
+- Essential functionality maintained
+
+### Off Mode
+```
+"personas off"
+```
+- Return to base LLM responses
+- Framework completely dormant
+- Can reactivate anytime
+
+### Monitoring Mode
+```
+"monitoring mode"
+```
+- Detailed performance tracking
+- Usage pattern analysis
+- Optimization recommendations
 
 ## Performance Management
 
 ### Monitoring Framework Impact
 
-**Current Session Metrics:**
-
-```prompt
+```
 "show performance metrics"
 
 Session Performance
-Active Team: React Development Team (6 personas)
-Questions: 15 (12 with personas, 3 without)
-Response Length: +85% vs base LLM
-Estimated Overhead: ~20-25% context usage
-User Engagement: High (active command usage)
-```
-
-**Historical Analysis:**
-
-```prompt
-"metrics summary"
-
-Usage Summary (Last 30 Days)
-Most Used: @dylan_developer (89%), @samantha_security (67%)
-Least Used: @database_expert (12%)
-Average Response Length: +75% vs base LLM
-
-Optimization Suggestions:
-- Consider removing unused personas
-- Current team size effective for complex projects
-```
-
-**Performance Controls:**
-
-```prompt
-"minimal persona mode"          # Reduce to essential expertise only
-"monitoring mode"               # Enable detailed performance tracking  
-"personas off"                  # Return to base LLM responses
+Active Team: Retirement Planning Team (6 personas)
+Questions: 12 (all with personas)
+Response Length: +65% vs base LLM
+Estimated Overhead: ~20% context usage
 ```
 
 ### Optimization Strategies
 
-#### **Team Size Guidelines:**
-
+**Team Size Guidelines**:
 - **2-3 personas**: Routine questions, focused expertise
 - **4-5 personas**: Complex projects, multiple domains  
-- **6+ personas**: Comprehensive analysis, major architectural decisions
+- **6+ personas**: Comprehensive analysis, major decisions
 
-#### **Performance Tips:**
-
+**Performance Tips**:
 - Use `"minimal mode"` for simple questions
-- Monitor metrics and remove unused personas
-- Leverage team templates for recurring workflows
-- Consider framework impact vs response quality trade-offs
+- Remove unused personas from active roster
+- Leverage pre-configured teams (more efficient than custom)
+- Monitor metrics vs response quality trade-offs
 
-## Platform-Specific Features
+## Platform-Specific Notes
 
 ### Claude Projects
-
-- **Team Persistence**: Active rosters maintained across conversations
-- **Artifact Storage**: Performance metrics and team configurations saved
-- **Document Analysis**: Upload files for persona team analysis
+- Team persistence across conversations
+- Artifact storage for configurations and metrics
+- File upload for team analysis
 
 ### VS Code/Copilot
+- Workspace-aware persona suggestions
+- Integration with development workflow
+- File context analysis for relevant expertise
 
-- **Workspace Integration**: Personas understand project context
-- **Development Workflow**: Integrated with coding tasks and file analysis
-- **Extension Recommendations**: Personas suggest relevant VS Code extensions
-
-### ChatGPT  
-
-- **Custom GPT Configurations**: Pre-configured persona teams
-- **Web Browsing**: Teams can research current information
-- **Code Execution**: Technical validation of recommendations
-
-### Google Gemini
-
-- **Multimodal Input**: Analyze screenshots and diagrams
-- **Workspace Integration**: Access Google Docs/Sheets context
-- **Real-time Information**: Up-to-date data for team analysis
+### ChatGPT / Google Gemini
+- Custom GPT configurations for team templates
+- Real-time information access for research
+- Multimodal input analysis (images, documents)
 
 ## Best Practices
 
 ### Effective Team Usage
 
-#### **Start Small, Scale Up:**
+**Start Small, Scale Up**:
+1. Activate basic team for your domain
+2. Add expertise as questions become complex
+3. Use discovery suggestions rather than pre-loading
+4. Monitor performance and optimize
 
-1. Begin with coordinator persona only
-2. Add expertise as questions become more complex
-3. Use discovery suggestions rather than pre-loading large teams
-4. Monitor performance impact and adjust accordingly
+**Leverage Templates**:
+- Use pre-configured teams for standard workflows
+- Save successful custom combinations
+- Build team templates for recurring tasks
 
-#### **Leverage Team Templates:**
-
-- Use pre-configured teams for common workflows
-- Save successful custom combinations as templates
-- Share effective team compositions across projects
-
-#### **Performance Awareness:**
-
-- Monitor response length vs value trade-offs
-- Use minimal mode for routine questions
-- Turn off framework for simple tasks
-- Regularly review usage metrics and optimize
+**Quality Focus**:
+- Challenge framework assumptions (it expects this!)
+- Request specific persona input when needed
+- Use performance metrics to validate collaboration
+- Provide feedback to improve suggestions
 
 ### Collaboration Optimization
 
-#### **Natural Interaction:**
+**Natural Interaction**:
+- Let framework suggest personas via context
+- Use direct addressing for expertise handoffs
+- Trust unified voice system for responses
+- Ask follow-up questions for clarity
 
-- Let the framework suggest personas rather than manually managing large rosters
-- Use direct addressing (`@persona_name`) for expertise handoffs
-- Trust the primary voice system for unified responses
-- Provide feedback to improve suggestion accuracy
+**When to Use Direct Addressing**:
+- Need specific expertise focus: `@security_specialist`
+- Want persona opinion: `"What does the screenwriter think?"`
+- Handling disagreement between personas
+- Requesting detailed explanation from specialist
 
-#### **Quality Focus:**
+## Project-Specific Context
 
-- Challenge the framework's assumptions (it expects this!)
-- Ask clarifying questions about expertise boundaries
-- Request specific persona input when needed: "What does the security specialist think?"
-- Use performance metrics to validate collaboration effectiveness
+Each domain has project-specific knowledge documented in `PROJECT_MIGRATION_GUIDE.md`:
+
+**Gaming**: Hero Heaven TTRPG dual-truth system, mythic integration, exile narrative
+**Development**: React/Lightning/Blits technology stack, TV/OTT performance requirements
+**Financial**: Retirement planning for Maurice and spouse, age gap considerations, household optimization
+**Writing**: Screenplay with astrophysics and neuroscience, ensemble cast, technical authenticity requirements
+
+When starting a project, consult that guide for context and activation recommendations.
 
 ## Troubleshooting
 
-### Common Issues
+### Framework Not Responding
+- Check activation: `"personas on"`
+- Verify available teams: `"show my teams"`
+- List personas: `"list available personas"`
 
-#### **Framework Not Responding to Commands:**
+### Personas Not Collaborating
+- Reduce team size for clearer responses
+- Use direct addressing: `@persona_name specific_question`
+- Request perspective: `"Get input from security perspective"`
 
-- Ensure framework is activated: `"personas on"`
-- Check available personas: `"list available personas"`
-- Verify team exists: `"show my teams"`
-
-#### **Personas Not Collaborating Effectively:**
-
-- Try smaller team size for clearer responses
-- Use direct addressing: `@persona_name`
-- Request specific collaboration: `"get input from security and UX perspectives"`
-
-#### **Performance Issues:**
-
+### Performance Issues
 - Switch to minimal mode: `"minimal persona mode"`
-- Check current overhead: `"show performance metrics"`
-- Deactivate unused personas: `"remove @persona_name"`
+- Check overhead: `"show performance metrics"`
+- Remove unused personas: `"remove @persona_name"`
 
-**Inconsistent Behavior:**
-
-- Reinitialize framework: `"personas off"` then `"personas on"`
-- Clear and rebuild team: `"clear team"` then rebuild
-- Check for outdated schema files
-
-### Getting Help
-
-**Framework Status:**
-
-```prompt
-"framework status"                # Current state and active components
-"show performance metrics"         # Resource usage and recommendations  
-"list available personas"          # All discoverable expertise
-"show my teams"                    # Pre-configured team options
-```
-
-**Support Commands:**
-
-```prompt
-"explain current team"             # Detailed roster analysis
-"why this suggestion?"             # Discovery logic explanation
-"optimize my setup"                # Performance improvement recommendations
-```
+### Inconsistent Behavior
+- Reinitialize: `"personas off"` then `"personas on"`
+- Clear team: `"clear my team"` then rebuild
+- Check for schema updates
 
 ---
 
-The Persona Framework v2.0 transforms AI assistance from individual consultations into true collaborative team intelligence. Start with simple team activation and gradually explore advanced features as you become comfortable with the system.
+**The Persona Framework transforms individual consultations into collaborative team intelligence. Begin with domain teams and expand as needed.**

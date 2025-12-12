@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "metadata": {
+    "name": "Hero Heaven Worldbuilding Team",
+    "description": "Collaborative team for world-building, mythology, and TTRPG system selection for Hero Heaven",
+    "author": "Mo",
+    "version": "1.0",
+    "created_date": "2025-12-11",
+    "context": "gaming"
+  },
+
+  "team": {
+    "team_name": "hero_heaven_worldbuilding_team",
+    "display_name": "Hero Heaven Worldbuilding Team",
+    "description": "Comprehensive team for building Hero Heaven world, integrating mythology, and evaluating TTRPG systems",
+    "members": [
+      "lore_keeper",
+      "mythweaver",
+      "ttrpg_game_architect"
+    ],
+    "default_primary": "lore_keeper"
+  },
+
+  "activation": {
+    "auto_suggest_contexts": [
+      "world building",
+      "mythology integration",
+      "TTRPG system selection",
+      "narrative coherence",
+      "mechanical fit",
+      "game design",
+      "character archetypes"
+    ],
+    "auto_suggest_keywords": [
+      "world",
+      "myth",
+      "system",
+      "mechanics",
+      "narrative",
+      "character",
+      "lore",
+      "divine"
+    ],
+    "discovery_priority": "high"
+  },
+
+  "team_dynamics": {
+    "primary_workflow": "Lore Keeper tracks world decisions, Mythweaver weaves myth into history, Theo TTRPG evaluates system fit",
+    "collaboration_patterns": [
+      {
+        "members": ["lore_keeper", "mythweaver"],
+        "focus": "World-building + mythic integration consistency"
+      },
+      {
+        "members": ["mythweaver", "ttrpg_game_architect"],
+        "focus": "Narrative mechanical fit for system evaluation"
+      },
+      {
+        "members": ["lore_keeper", "ttrpg_game_architect"],
+        "focus": "World mechanics and system support alignment"
+      }
+    ],
+    "decision_hierarchy": [
+      "lore_keeper: world consistency and documentation",
+      "mythweaver: narrative resonance and thematic coherence",
+      "ttrpg_game_architect: mechanical system evaluation"
+    ]
+  },
+
+  "use_cases": [
+    "Comprehensive world-building sessions",
+    "Mythic integration into world elements",
+    "Evaluating TTRPG systems against Hero Heaven needs",
+    "Resolving contradictions between narrative and mechanics",
+    "Planning session architecture",
+    "Character archetype development",
+    "Establishing cosmological rules and consequences"
+  ]
+}

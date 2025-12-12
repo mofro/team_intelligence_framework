@@ -72,7 +72,7 @@ persona-framework/
 **Required Fields:**
 ```json
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "metadata": {
     "name": "Persona display name",
     "description": "Brief role description", 

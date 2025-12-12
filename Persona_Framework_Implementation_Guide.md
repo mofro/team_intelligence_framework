@@ -1,350 +1,482 @@
-# Persona Framework: Implementation Guide v2.0
+# Team Intelligence Framework: Implementation Guide v2.1
 
-This guide provides instructions for implementing and using the advanced Persona Framework - a collaborative AI team management system that enables multiple specialized personas to work together seamlessly.
+Detailed instructions for implementing and using the advanced Persona Framework - a collaborative AI team management system.
 
 ## Table of Contents
 
-1. [Overview of the Advanced Framework](#overview-of-the-advanced-framework)
-2. [Framework States and Control](#framework-states-and-control)
-3. [Team Management System](#team-management-system)
-4. [Implementation Across Platforms](#implementation-across-platforms)
-5. [Advanced Features](#advanced-features)
+1. [Architecture Overview](#architecture-overview)
+2. [File Organization](#file-organization)
+3. [Activation and States](#activation-and-states)
+4. [Team Management](#team-management)
+5. [Adding Personas and Teams](#adding-personas-and-teams)
 6. [Performance Management](#performance-management)
 7. [Best Practices](#best-practices)
 
-## Overview of the Advanced Framework
+## Architecture Overview
 
-The Persona Framework v2.0 is a **collaborative AI team management system** that goes far beyond simple persona switching. Key capabilities:
+The framework uses a **two-layer architecture**:
 
-### Core System Features
-- **Team-Based Collaboration**: Pre-configured teams with complementary expertise
-- **Primary Voice System**: Unified responses with seamless expertise integration
-- **Optimistic Skepticism Protocol**: Challenges premises before providing solutions
-- **Dynamic State Management**: Framework can be turned on/off with active roster persistence
-- **Context-Aware Discovery**: Intelligent suggestions for persona activation
-- **Performance Monitoring**: Real-time impact measurement and optimization
+### Layer 1: Universal Framework (`/config/`)
+Principles governing all domains and projects:
 
-### Advanced Collaboration Patterns
-- **Unified Team Voice**: Single coherent response incorporating multiple expertise areas
-- **Expertise Handoffs**: Natural transitions when topics move outside current expertise
-- **Response Tagging**: Transparent attribution showing which expertise contributed where
-- **Team Memory**: Cross-conversation persistence of successful collaboration patterns
+- **Domain Agnostic Framework**: Base operating principles
+- **Persona Activation Framework**: Discovery and activation patterns
+- **Persona Collaboration Framework**: How personas work together
+- **Persona Interaction Architecture**: Addressing system and schema specs
+- **Measurement Framework**: Performance measurement principles
 
-## Framework States and Control
+These files define what personas *are* and how they *collaborate*, but not specific implementations.
 
-### Operating Modes
+### Layer 2: Domains & Projects (`/personas/`)
+Concrete implementations for specific contexts:
 
-**OFF Mode**
+- **Domain folders** (gaming, development, financial, writing) contain:
+  - `context_configuration.json` - Domain-level activation triggers
+  - Individual persona schema files (v1.1 format)
+  - `/teams/` subdirectory with team definitions
+  
+- **Project-specific contexts** documented separately in `PROJECT_MIGRATION_GUIDE.md`
+
+This separation keeps the framework portable while allowing rich customization.
+
+## File Organization
+
+### Framework Structure
+
 ```
-"personas off" / "disable persona system"
-```
-- Returns to base LLM responses
-- No persona processing overhead
-- One-time availability notification
-- Framework can be re-enabled anytime
+/config/
+├── domain_agnostic_framework.md
+├── persona_activation_framework.md
+├── persona_collaboration_framework_v1.md
+├── persona_interaction_architecture_v1.md
+└── measurement_framework.md
 
-**MINIMAL Mode**
+/personas/
+├── ARCHITECTURAL_DECISIONS.md      # Decisions made during refactoring
+├── REFACTORING_REFERENCE.md        # How framework maps to schema
+├── CONFIG_REFERENCE.md             # Configuration specifications
+├── TEAM_DEFINITION_GUIDE.md        # How to create teams
+│
+├── /gaming/
+│   ├── context_configuration.json
+│   ├── /hero_heaven/
+│   │   ├── lore_keeper_persona_schema.json
+│   │   ├── mythweaver_persona_schema.json
+│   │   └── /teams/
+│   │       └── hero_heaven_worldbuilding_team.json
+│   ├── ttrpg_game_architect_persona_schema.json
+│   └── /teams/
+│
+├── /development/
+│   ├── context_configuration.json
+│   ├── experienced_developer_persona_schema.json
+│   ├── react_specialist_persona_schema.json
+│   ├── security_specialist_persona_schema_v1.json
+│   ├── [8 other development personas]
+│   └── /teams/
+│       └── react_fullstack_team.json
+│
+├── /financial/
+│   ├── context_configuration.json
+│   ├── investment_advisor_schema.json
+│   ├── tax_strategist_schema.json
+│   ├── [4 other financial personas]
+│   └── /teams/
+│       └── retirement_planning_team.json
+│
+└── /writing/
+    ├── context_configuration.json
+    ├── /screenplays/
+    │   ├── screenwriter_persona_schema.json
+    │   ├── dialog_coach_persona_schema.json
+    │   ├── science_advisor_persona_schema.json
+    │   └── dp_persona_schema.json
+    └── /teams/
+        └── (ready for team definitions)
+
+PROJECT_MIGRATION_GUIDE.md  # Project-specific contexts and knowledge
+```
+
+### File Type Conventions
+
+**Framework Principles** (`/config/*.md`):
+- Define universal patterns
+- Reference-only; don't modify unless architecture changes
+- Dated when updated; track version history
+
+**Domain Configuration** (`/personas/{domain}/context_configuration.json`):
+- Domain-level activation triggers and persona groupings
+- Created once per domain
+- Updated when adding personas to domain
+
+**Persona Schemas** (`/personas/{domain}/*_persona_schema.json`):
+- Individual persona definitions
+- Schema version 1.1
+- Self-contained; portable between projects
+- Never embed project-specific context (use PROJECT_MIGRATION_GUIDE instead)
+
+**Team Definitions** (`/personas/{domain}/teams/{team_name}.json`):
+- Team composition and collaboration patterns
+- Pre-configured teams for common workflows
+- Can be domain-specific or cross-domain
+- Updated when teams change
+
+**Project Contexts** (`PROJECT_MIGRATION_GUIDE.md`):
+- Project-specific goals, constraints, knowledge
+- Extracted from personas during refactoring
+- Keeps persona schemas clean and portable
+- Referenced by personas via `reference_guide` field
+
+## Activation and States
+
+### Framework States
+
+**OFF**
+```
+"personas off"
+```
+- Base LLM only; no persona overhead
+- Framework completely dormant
+- Re-activates with `"personas on"`
+
+**MINIMAL**
 ```
 "minimal persona mode"
 ```
-- Single coordinator persona only
+- Single coordinator persona
 - Reduced context overhead
-- Essential functionality maintained
+- Essential collaboration available
 
-**ACTIVE Mode** (Default)
+**ACTIVE** (Default)
 ```
-"personas on" / "activate personas"
+"personas on"
 ```
-- Full persona system with selected roster
-- Team collaboration enabled
-- Context analysis and suggestions active
+- Full team collaboration
+- Context analysis and suggestions
+- Performance monitoring available
 
-**MONITORING Mode**
+**MONITORING**
 ```
-"performance mode active"
+"monitoring mode"
 ```
-- Full system with detailed performance tracking
-- Usage metrics and optimization recommendations
-- Impact measurement dashboard
+- Detailed performance tracking
+- Usage pattern analysis
+- Optimization recommendations
 
-### Framework Activation Flow
+### Activation Flow
 
-**Initial Activation:**
-1. System scans for available personas and teams
-2. Loads default coordinator persona
-3. Enables discovery and suggestion system
-4. Presents available teams and commands
+1. **User invokes**: `"activate retirement planning team"`
+2. **Framework loads**: Team definition from `/personas/financial/teams/retirement_planning_team.json`
+3. **Framework loads**: Each persona schema (investment_advisor, tax_strategist, etc.)
+4. **Applies**: Universal collaboration rules from `/config/` files
+5. **Activates**: Team with all expertise immediately available
 
-**State Transitions:**
-- Framework remembers previous state when reactivated
-- Teams persist across conversations (platform-dependent)
-- Graceful degradation when persistence unavailable
+## Team Management
 
-## Team Management System
+### Creating Teams
 
-### Core Commands
+**Team Definition Structure** (`/personas/{domain}/teams/{team_name}.json`):
 
-**Team Operations**
-```
-"show my teams"              # List all available pre-configured teams
-"who's on my current team?"  # Display active roster
-"activate [team name]"       # Switch to pre-configured team
-"deactivate team"           # Return to default coordinator
-```
-
-**Individual Persona Management**
-```
-"add @persona_name"         # Add persona to current roster
-"remove @persona_name"      # Remove persona from roster
-"list available personas"   # Show all individual personas
-"persona info @name"        # Detailed persona information
-```
-
-**Discovery and Suggestions**
-```
-"suggest personas for this question"  # Get context-based recommendations
-"enable discovery"                    # Turn on auto-suggestions
-"disable discovery"                   # Turn off auto-suggestions
-"scan for new personas"              # Refresh persona pool
+```json
+{
+  "team": {
+    "team_name": "retirement_planning_team",
+    "display_name": "Retirement Planning Team",
+    "description": "Comprehensive retirement and financial planning",
+    "members": [
+      "investment_advisor",
+      "tax_strategist",
+      "social_security_specialist",
+      "healthcare_expert",
+      "insurance_analyst",
+      "estate_planner"
+    ],
+    "context": "financial"
+  },
+  "collaboration": {
+    "primary_voice": "investment_advisor",
+    "decision_pattern": "consensus_with_hierarchy"
+  }
+}
 ```
 
-### Team Activation Examples
+**Guidelines**:
+- Use snake_case for team_name
+- Team members must be `persona_name` values (can verify in persona schemas)
+- primary_voice persona addresses disagreements
+- decision_pattern guides conflict resolution
 
-**Pre-configured Teams:**
-- `"activate security team"` → Security Architecture Review Team
-- `"activate frontend team"` → UI/UX Development Team  
-- `"activate design strategy team"` → Cross-platform Design Team
+### Team Activation Commands
 
-**Custom Team Building:**
-- `"add @security_specialist"` → Add to current roster
-- `"create team mobile_dev with @react_specialist @ui_designer"` → Build custom team
-
-### Addressing System
-
-**Direct Engagement:**
-- `@persona_name` → Makes that persona primary for their domain
-- `@team_name` → Activates entire pre-configured team
-
-**Natural Routing:**
-- Framework automatically suggests relevant personas based on question content
-- Primary voice shifts naturally when expertise boundaries crossed
-
-## Implementation Across Platforms
-
-### Universal Implementation Pattern
-
-**1. Framework Initialization**
-```text
-I'd like to activate the Persona Framework v2.0 collaborative AI system. 
-This includes team management, primary voice coordination, and performance 
-monitoring capabilities. Please initialize with default coordinator.
+```
+"show my teams"                 # List all available teams
+"activate [team_name]"          # Switch to team
+"add @persona_name"             # Add individual to active team
+"remove @persona_name"          # Remove from active team
+"deactivate team"              # Return to baseline
+"create team [name] with [personas]"  # Build custom team
 ```
 
-**2. Schema Loading**
-- Upload persona schema files and team definitions
-- Framework scans and builds available persona pool
-- Establishes team configurations and collaboration patterns
+## Adding Personas and Teams
 
-**3. State Management Setup**
-- Platform determines persistence capabilities
-- Framework adapts to available storage mechanisms
-- Graceful fallback for session-only operation
+### Adding a New Persona to Existing Domain
 
-### Platform-Specific Features
+1. **Create schema file**:
+   ```
+   /personas/{domain}/{persona_name}_persona_schema.json
+   ```
+   Use v1.1 format with these required fields:
+   - `schema_version: "1.1"`
+   - `persona.persona_name` (snake_case)
+   - `collaboration.expertise_scope`
+   - `collaboration.defers_to`
+   - `behavioral_rules` (8-15 imperative statements)
+   - `reference_context` (domain name)
 
-**Claude Projects**
-- Store team configurations in project artifacts
-- Cross-conversation team persistence
-- Performance metrics stored as artifacts
-- Document analysis with persona teams
+2. **Update domain configuration**:
+   Edit `/personas/{domain}/context_configuration.json` to include persona in activation_triggers
 
-**VS Code/GitHub Copilot**
-- Workspace-aware persona suggestions
-- Integration with development workflow
-- File context analysis for relevant expertise
-- Extension and tool recommendations
+3. **Add to teams** (optional):
+   Update relevant team definitions in `/personas/{domain}/teams/`
 
-**ChatGPT**
-- Custom GPT configurations for team templates
-- Web browsing for up-to-date information
-- DALL-E integration for visualizations
-- Code execution for technical validation
+### Adding a New Domain
 
-**Google Gemini**
-- Multimodal input analysis
-- Google Workspace integration
-- Real-time information access
-- Document and spreadsheet context
+1. **Create domain folder**:
+   ```
+   /personas/{domain_name}/
+   ```
 
-## Advanced Features
+2. **Create domain configuration**:
+   ```json
+   {
+     "domain": "new_domain",
+     "display_name": "New Domain",
+     "personas": [],
+     "activation_triggers": {}
+   }
+   ```
 
-### Optimistic Skepticism Protocol
+3. **Add personas**: Create persona schema files in domain folder
 
-**Challenge Sequence (Always First):**
-1. "How does this serve the larger project objectives?"
-2. "What specific issue are we trying to solve?"
-3. "Why is this change necessary?"
-4. "Are there other ways to achieve this goal?"
+4. **Define teams**: Create `/teams/` subdirectory and team definitions
 
-**Then Collaborative Solution Mode:**
-- Unified team assessment with practical considerations
-- Clear recommendations with reasoning
-- Follow-up questions for clarification
+5. **Document context**: Add project-specific info to `PROJECT_MIGRATION_GUIDE.md`
 
-### Primary Voice System
+### Schema Template (v1.1)
 
-**Unified Response Architecture:**
-- Single voice per response incorporating team expertise
-- Seamless expertise integration without "chiming in" patterns
-- Response tagging shows expertise contributions: `[BD]` `[SS]` `[UX]`
-
-**Voice Management:**
-- Default: Project Coordinator leads unless specific persona addressed
-- Explicit engagement: `@persona_name` assigns primary voice
-- Natural handoffs: Primary voice shifts with topic transitions
-
-### Context-Aware Discovery
-
-**Automatic Suggestions:**
-- Domain keyword analysis triggers relevant persona suggestions
-- Question complexity assessment suggests team activation
-- Historical patterns inform recommendation quality
-
-**Suggestion Presentation:**
-```
-💡 Based on your authentication question, consider activating @security_specialist
-   Add with: "add security specialist" or "activate security team"
-   
-Current team: @project_coordinator
-Available: @security_specialist, @backend_developer, @ui_designer
+```json
+{
+  "schema_version": "1.1",
+  "metadata": {
+    "name": "Full Name - Description",
+    "description": "Detailed description of expertise",
+    "author": "Author name",
+    "version": "1.0",
+    "created_date": "YYYY-MM-DD"
+  },
+  "persona": {
+    "persona_name": "snake_case_name",
+    "display_name": "CamelCaseName",
+    "custom_name": "Optional nickname",
+    "role": "What this persona does",
+    "experience": "Background and expertise",
+    "expertise": ["area1", "area2"],
+    "approach": "How they approach problems",
+    "specializations": ["special1", "special2"]
+  },
+  "collaboration": {
+    "expertise_scope": ["domain1", "domain2"],
+    "defers_to": ["persona_name_if_exists"],
+    "approach_style": "consultative|directive|supportive",
+    "conflict_style": "defer|argue|compromise"
+  },
+  "behavioral_rules": [
+    "Imperative rule 1",
+    "Imperative rule 2",
+    "..."
+  ],
+  "reference_libraries": [
+    {
+      "type": "knowledge_type",
+      "description": "What this library contains",
+      "url": "https://or/internal://",
+      "depth": "novice|intermediate|expert"
+    }
+  ],
+  "reference_context": "domain_name",
+  "reference_guide": "See documentation for protocols"
+}
 ```
 
 ## Performance Management
 
-### Metrics Dashboard
+### Monitoring Impact
 
-**Current Session View**
 ```
 "show performance metrics"
-
-📊 Session Performance
-Active Team: React Development Team (6 personas)
-Questions: 12 (10 with personas, 2 without)
-Response Length: +110% vs base LLM
-Estimated Overhead: ~25-30% context usage
 ```
 
-**Impact Assessment**
-```
-"persona impact summary"
+Returns:
+- Active team composition
+- Response length impact
+- Context overhead estimate
+- Optimization recommendations
 
-⚡ Performance Impact
-Team Size: 6 personas - consider smaller teams for routine questions
-Response Quality: Enhanced collaboration (high user engagement)
-Optimization: Current size effective for complex projects
-```
+### Optimization Strategies
 
-**Historical Analysis**
-```
-"metrics summary"
+**Team Size**:
+- 2-3 personas: Routine questions
+- 4-5 personas: Complex projects
+- 6+ personas: Comprehensive analysis
 
-📈 Usage Summary (Last 30 Days)
-Most Used: @project_coordinator (89%), @security_specialist (67%)
-Least Used: @database_expert (12%)
-Recommendations: Consider removing unused personas
-```
+**Mode Selection**:
+- Use MINIMAL for simple questions
+- Use ACTIVE for complex decisions
+- Use MONITORING to identify optimization opportunities
 
-### Performance Controls
-
-**Impact Management:**
-- `"show performance metrics"` → Current session impact
-- `"minimal mode"` → Reduce overhead for simple questions
-- `"personas off"` → Complete system shutdown
-- `"monitoring mode"` → Detailed tracking enabled
-
-**Optimization Features:**
-- Automatic roster size recommendations
-- Usage pattern analysis
-- Performance trend identification
-- Resource impact transparency
+**Regular Tuning**:
+- Remove unused personas from rosters
+- Consolidate overlapping expertise
+- Build templates for recurring workflows
 
 ## Best Practices
 
+### Schema Design
+
+**Expertise Scope**:
+- Keep to 5-8 core areas (focused domain)
+- Avoid generic catch-alls
+- Align with deference patterns
+
+**Behavioral Rules**:
+- Write as imperative statements ("Do X", "Ask Y")
+- Keep to 8-15 rules per persona
+- Make them persona-specific, not universal
+- Include challenge/skepticism patterns
+
+**Deference**:
+- Identify one authority per expertise area
+- Keep deference paths short (2-3 levels max)
+- Document why deference exists
+
 ### Team Composition
 
-**Effective Team Sizes:**
-- **Small teams (2-3 personas)**: Routine questions, focused expertise
-- **Medium teams (4-5 personas)**: Complex projects, multiple domains
-- **Large teams (6+ personas)**: Comprehensive analysis, major decisions
+**Complementary Expertise**:
+- Ensure coverage of needed domains
+- Include decision-maker or primary voice
+- Balance specialists with generalists
+- Consider deference hierarchy
 
-**Complementary Expertise:**
-- Always include project coordinator for unified voice
-- Balance technical and design expertise
-- Include security specialist for user-facing applications
-- Add domain specialists based on project needs
+**Collaboration Patterns**:
+- Define primary voice (who speaks for team)
+- Specify decision pattern (consensus, hierarchy, etc.)
+- Document how disagreements resolve
 
-### Framework Usage Patterns
+### Extensibility
 
-**Session Management:**
-- Start with minimal team, add expertise as needed
-- Use performance metrics to optimize team size
-- Deactivate unused personas to reduce overhead
-- Leverage team templates for recurring workflows
+**Portable Schemas**:
+- No project-specific context in persona schemas
+- Reference context via `reference_context` field
+- Document project details in PROJECT_MIGRATION_GUIDE.md
 
-**Collaboration Optimization:**
-- Let framework suggest personas rather than pre-loading large teams
-- Use direct addressing (`@persona_name`) for expertise handoffs
-- Monitor performance impact and adjust team size accordingly
-- Save successful team compositions as templates
+**Domain Independence**:
+- Each domain folder self-contained
+- Can move domain to new project unchanged
+- Teams within domain portable with personas
 
-### Cross-Platform Consistency
+**Framework Stability**:
+- Don't modify `/config/` files unless architecture changes
+- Version schema changes (1.1 → 1.2)
+- Track breaking changes in ARCHITECTURAL_DECISIONS.md
 
-**Schema Management:**
-- Maintain persona schemas in centralized repository (GitHub)
-- Use version control for schema updates
-- Document team definitions and collaboration patterns
-- Regular sync between platforms and central repository
+## Implementation Checklist
 
-**Command Standardization:**
-- Use consistent natural language commands across platforms
-- Leverage framework's adaptive command recognition
-- Document platform-specific capabilities and limitations
-- Maintain fallback strategies for reduced functionality
+### Setting Up Framework
 
-### Quality Assurance
+- [ ] Review `/config/` files for universal patterns
+- [ ] Identify domains needed for project
+- [ ] Load domain folders or create new ones
+- [ ] Test persona activation: `"show my teams"`
+- [ ] Activate initial team
+- [ ] Monitor performance: `"show performance metrics"`
 
-**Framework Effectiveness:**
-- Monitor response quality vs team size trade-offs
-- Track user satisfaction with collaborative responses
-- Identify most valuable persona combinations
-- Optimize based on actual usage patterns rather than assumptions
+### Adding New Personas
 
-**Collaboration Quality:**
-- Ensure unified voice maintained across team responses
-- Verify expertise attribution accuracy
-- Monitor for persona consistency within collaborative responses
-- Balance collaboration complexity with response clarity
+- [ ] Create schema file (use template above)
+- [ ] Verify all required fields present
+- [ ] Test activation: `"add @persona_name"`
+- [ ] Add to relevant teams
+- [ ] Update domain configuration
+- [ ] Test team activation
+
+### Creating New Teams
+
+- [ ] Identify team purpose and members
+- [ ] Verify members exist (check persona_name values)
+- [ ] Define primary voice and decision pattern
+- [ ] Create team JSON file
+- [ ] Test activation: `"activate [team_name]"`
+- [ ] Save as template if recurring
+
+## Troubleshooting
+
+### Persona Not Activating
+
+**Problem**: `"add @persona_name"` fails or doesn't activate
+
+**Solutions**:
+1. Verify persona exists: `"list available personas"`
+2. Check schema syntax: JSON must be valid
+3. Verify `persona_name` matches schema (snake_case)
+4. Check domain context loaded
+
+### Team Not Found
+
+**Problem**: `"activate team_name"` fails
+
+**Solutions**:
+1. Verify team file exists in correct location
+2. Check team JSON syntax
+3. Verify member persona_name values exist
+4. Confirm domain context loaded
+
+### Performance Issues
+
+**Problem**: Slow responses or high overhead
+
+**Solutions**:
+1. Check active team size: `"show performance metrics"`
+2. Reduce team: `"remove @less_critical_persona"`
+3. Switch to minimal mode: `"minimal persona mode"`
+4. Review behavioral rules (overly complex?)
+
+### Unexpected Behavior
+
+**Problem**: Personas not deferring or collaborating as expected
+
+**Solutions**:
+1. Review behavioral_rules in schemas
+2. Check defers_to relationships
+3. Verify team definition primary_voice
+4. Consult REFACTORING_REFERENCE.md for schema mapping
+
+## Next Steps
+
+**For Framework Development**:
+- See ARCHITECTURAL_DECISIONS.md for decisions made
+- See REFACTORING_REFERENCE.md for schema mapping details
+- See PROJECT_MIGRATION_GUIDE.md for project-specific extensions
+
+**For Adding Personas**:
+- Use schema template above
+- Follow v1.1 structure
+- Consult existing personas for patterns
+
+**For Custom Implementations**:
+- Fork domain folder for your project
+- Create project-specific teams
+- Document in PROJECT_MIGRATION_GUIDE.md
 
 ---
 
-## Quick Start Commands
-
-**Essential Commands for New Users:**
-```
-"personas on"                    # Activate framework
-"show my teams"                  # See available teams
-"activate [team name]"           # Start with pre-configured team
-"add @persona_name"              # Add individual expertise
-"show performance metrics"       # Monitor impact
-"personas off"                   # Return to base LLM
-```
-
-**Advanced Usage:**
-```
-"suggest personas for this question"    # Get contextual recommendations
-"create team [name] with @persona1 @persona2"  # Build custom team
-"save current team as [template_name]"  # Save successful combinations
-"minimal persona mode"                   # Reduce overhead
-```
-
-The Persona Framework v2.0 transforms AI assistance from individual expert consultation into true collaborative team intelligence, with sophisticated state management and performance optimization built in.
+**The framework is designed for extensibility with stable core principles and flexible implementations.**

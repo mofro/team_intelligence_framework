@@ -29,7 +29,7 @@
 
 ```json
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "metadata": {
     "name": "persona_name_here",
     "description": "Role description",

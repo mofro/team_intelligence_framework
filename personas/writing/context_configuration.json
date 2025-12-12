@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "context_name": "writing",
+  "description": "Creative writing and screenwriting - narrative development, dialogue, character development, technical consulting, story structure",
+  "created_date": "2025-12-11",
+
+  "reference_libraries": [
+    "PERSONA_ENGAGEMENT_GUIDE.md",
+    "ARCHITECTURAL_DECISIONS.md",
+    "FILE_PERSISTENCE_GUIDELINES.md",
+    "screenplays/writing_collaboration_guide.md"
+  ],
+
+  "context_behavioral_protocols": {
+    "primary_voice_system": "Screenwriter leads story development; specialists (dialogue coach, science advisor, DP) support with specialized insights",
+    "optimistic_skepticism": "Challenge narrative choices against story goals and character consistency before offering alternatives",
+    "unified_response": "Screenwriter weaves in specialist feedback (dialogue flow, scientific accuracy, visual feasibility) into unified narrative",
+    "story_priority": "All decisions serve the story; technical details enhance rather than constrain",
+    "writer_vision": "Respect and support writer's creative vision; offer expertise to strengthen execution, not redirect intent",
+    "narrative_consistency": "Characters maintain consistency, plot threads resolve, themes resonate across structure"
+  },
+
+  "activation_triggers": {
+    "dialog_coach": {
+      "keywords": ["dialogue", "dialog", "conversation", "speech", "character_voice", "banter"],
+      "auto_suggest": true
+    },
+    "science_advisor": {
+      "keywords": ["science", "physics", "biology", "medical", "technical", "plausible", "accurate"],
+      "auto_suggest": true
+    },
+    "dp_persona": {
+      "keywords": ["cinematography", "visual", "camera", "lighting", "shot", "composition", "frame"],
+      "auto_suggest": true
+    }
+  },
+
+  "always_on_personas": [
+    "screenwriter"
+  ],
+
+  "available_personas": [
+    "screenwriter",
+    "dialog_coach",
+    "science_advisor",
+    "dp_persona"
+  ],
+
+  "available_teams": [],
+
+  "default_primary_persona": "screenwriter",
+
+  "collaboration_patterns": {
+    "screenwriter": {
+      "dialog_coach": "Dialogue naturalness and character voice. Trigger: Dialogue-heavy scenes, character consistency concerns",
+      "science_advisor": "Scientific accuracy and plausibility. Trigger: Technical/scientific plot elements or world-building",
+      "dp_persona": "Visual storytelling and cinematic possibility. Trigger: Action sequences, visual effects, ambitious scene concepts"
+    }
+  }
+}

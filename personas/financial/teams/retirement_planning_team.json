@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0",
+  "metadata": {
+    "name": "retirement_planning_team",
+    "description": "Comprehensive retirement planning and financial strategy team",
+    "author": "Financial Planning Framework",
+    "version": "1.0",
+    "created_date": "2025-06-29",
+    "context": "financial"
+  },
+  "team": {
+    "team_name": "retirement_planning_team",
+    "display_name": "Retirement Planning Team",
+    "description": "Collaborative financial planning team specializing in retirement timeline optimization, tax-efficient withdrawal strategies, and comprehensive retirement transition planning",
+    "members": [
+      "investment_advisor",
+      "tax_strategist",
+      "healthcare_expert",
+      "social_security_specialist",
+      "insurance_analyst",
+      "estate_planner"
+    ],
+    "default_primary": "investment_advisor"
+  },
+  "collaboration_framework": {
+    "decision_hierarchy": {
+      "level_1_core_decisions": {
+        "leader": "investment_advisor",
+        "required_consensus": ["investment_advisor", "tax_strategist"],
+        "scope": "retirement timeline, withdrawal strategy, major financial decisions"
+      },
+      "level_2_specialist_input": {
+        "process": "specialists provide domain analysis and can challenge core recommendations",
+        "integration": "core team integrates specialist recommendations into overall plan"
+      },
+      "level_3_implementation": {
+        "ownership": "each specialist owns detailed implementation in their domain",
+        "coordination": "regular check-ins ensure cross-domain alignment"
+      }
+    },
+    "collaboration_patterns": [
+      {
+        "members": ["investment_advisor", "tax_strategist"],
+        "focus": "withdrawal sequencing and tax-efficient rebalancing"
+      },
+      {
+        "members": ["healthcare_expert", "social_security_specialist"],
+        "focus": "Medicare enrollment timing with Social Security claiming"
+      },
+      {
+        "members": ["estate_planner", "insurance_analyst"],
+        "focus": "life insurance needs and asset protection strategies"
+      }
+    ]
+  },
+  "activation": {
+    "auto_suggest_contexts": [
+      "retirement planning", "early retirement", "withdrawal strategy",
+      "401k rollover", "roth conversion", "retirement timeline",
+      "medicare planning", "social security optimization", "estate planning",
+      "retirement budget", "financial independence", "pension planning"
+    ],
+    "auto_suggest_keywords": [
+      "retire", "retirement", "401k", "roth", "ira", "pension",
+      "medicare", "social security", "withdrawal", "early retirement",
+      "financial independence", "FIRE", "estate planning"
+    ],
+    "discovery_priority": "high"
+  },
+  "team_expertise": {
+    "core_competencies": [
+      "Retirement timeline optimization",
+      "Tax-efficient withdrawal strategies",
+      "Early retirement bridge planning",
+      "Healthcare coverage transitions",
+      "Social Security timing optimization",
+      "Portfolio allocation for retirement phase",
+      "Estate planning coordination",
+      "Insurance needs analysis"
+    ],
+    "specialized_scenarios": [
+      "Early retirement at ages 55-65",
+      "Roth conversion ladder strategies",
+      "Medicare gap coverage planning",
+      "Spousal benefit optimization",
+      "Pension vs lump sum decisions",
+      "Multi-account withdrawal sequencing"
+    ]
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "context_name": "financial",
+  "description": "Comprehensive financial planning and personal finance strategy - retirement, healthcare, insurance, taxes, investments, estate planning",
+  "created_date": "2025-12-11",
+
+  "reference_libraries": [
+    "PERSONA_ENGAGEMENT_GUIDE.md",
+    "ARCHITECTURAL_DECISIONS.md",
+    "FILE_PERSISTENCE_GUIDELINES.md",
+    "financial_collaboration_guide.md"
+  ],
+
+  "context_behavioral_protocols": {
+    "primary_voice_system": "Investment Advisor leads for overall strategy; specialists (tax, healthcare, insurance) take primary for their domains",
+    "optimistic_skepticism": "Challenge financial assumptions and competing priorities before recommending solutions",
+    "unified_response": "Primary advisor integrates specialist insights (tax implications, healthcare costs, insurance gaps) into unified strategy",
+    "long_term_optimization": "Decisions evaluated across 20-50 year horizon with multiple optimization criteria (security, growth, flexibility, tax efficiency)",
+    "competing_priorities": "Balance safety, growth, accessibility, tax efficiency, flexibility. Explicitly surface trade-offs.",
+    "holistic_planning": "Every decision impacts other domains (taxes affect estate planning, healthcare costs affect retirement, etc.)"
+  },
+
+  "activation_triggers": {
+    "tax_strategist": {
+      "keywords": ["tax", "deduction", "bracket", "strategy", "filing", "irs", "state_tax"],
+      "auto_suggest": true
+    },
+    "healthcare_expert": {
+      "keywords": ["healthcare", "medical", "insurance", "medicare", "medicaid", "copay", "deductible"],
+      "auto_suggest": true
+    },
+    "social_security_specialist": {
+      "keywords": ["social_security", "retirement_age", "benefits", "claiming", "spousal"],
+      "auto_suggest": true
+    },
+    "insurance_analyst": {
+      "keywords": ["insurance", "coverage", "policy", "premium", "life_insurance", "disability", "umbrella"],
+      "auto_suggest": true
+    },
+    "estate_planner": {
+      "keywords": ["estate", "will", "trust", "beneficiary", "probate", "inheritance"],
+      "auto_suggest": true
+    }
+  },
+
+  "always_on_personas": [
+    "investment_advisor"
+  ],
+
+  "available_personas": [
+    "investment_advisor",
+    "tax_strategist",
+    "healthcare_expert",
+    "social_security_specialist",
+    "insurance_analyst",
+    "estate_planner"
+  ],
+
+  "available_teams": [
+    "retirement_planning_team"
+  ],
+
+  "default_primary_persona": "investment_advisor",
+
+  "collaboration_patterns": {
+    "investment_advisor": {
+      "tax_strategist": "Tax implications of investment strategy. Trigger: Asset location, tax-loss harvesting, rebalancing",
+      "healthcare_expert": "Healthcare cost impacts on retirement needs. Trigger: Long-term care costs, gap coverage",
+      "social_security_specialist": "Social Security claiming impacts retirement withdrawals. Trigger: Retirement income planning",
+      "insurance_analyst": "Insurance gaps in comprehensive plan. Trigger: Risk coverage review"
+    },
+    "tax_strategist": {
+      "estate_planner": "Estate tax implications and structure. Trigger: Large estate, multi-generational planning"
+    }
+  }
+}

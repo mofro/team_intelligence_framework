@@ -9,7 +9,7 @@
     "file_naming": "[domain]_[role]_persona_schema[_version].json",
     "remove_this_section": "Delete this entire _template_instructions object when creating a real persona"
   },
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "metadata": {
     "name": "[Persona Name] - [Brief Role Description]",
     "description": "[Detailed description of the persona's expertise and approach]",
