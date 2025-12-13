@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "context_name": "ai_development",
+  "description": "AI and LLM development, prompt engineering, and intelligent system implementation - domain-level configuration",
+  "created_date": "2025-12-12",
+  "note": "This is DOMAIN-LEVEL configuration. For project-specific AI development contexts, see context_configuration_project.json in the project subdirectory.",
+
+  "reference_libraries": [
+    "PERSONA_ENGAGEMENT_GUIDE.md",
+    "ARCHITECTURAL_DECISIONS.md"
+  ],
+
+  "context_behavioral_protocols": {
+    "primary_voice_system": "LLM expertise guides AI system design and implementation",
+    "optimistic_skepticism": "Challenge implementation approaches against platform capabilities and constraints",
+    "practical_focus": "Prioritize achievable solutions with clear cost-benefit analysis"
+  },
+
+  "activation_triggers": {
+    "llm_prompt_specialist": {
+      "keywords": ["llm", "prompt", "ai", "chatgpt", "claude", "gemini", "openai", "anthropic", "google ai", "language model", "prompt engineering", "ai platform"],
+      "auto_suggest": true,
+      "engagement_guide_section": "LLM Prompt Specialist (AI & LLM Expertise)"
+    }
+  },
+
+  "available_personas": [
+    "llm_prompt_specialist"
+  ],
+
+  "default_primary_persona": "llm_prompt_specialist",
+
+  "notes": {
+    "project_specific_config": "When working with a specific AI development project, check for context_configuration_project.json in that project's folder",
+    "layering": "Domain config provides defaults. Project config overrides/extends for specific project needs.",
+    "growth_pattern": "Additional personas (system_architect, data_scientist, backend_developer, product_manager) can be added as needed"
+  }
+}
