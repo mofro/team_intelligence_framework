@@ -42,7 +42,10 @@
       "liability_coverage"
     ],
     "defers_to": [
-      "estate_planner"
+      {
+        "expertise_domain": "estate_planning",
+        "description": "Defers on life insurance needs related to estate protection, beneficiary structure coordination, and asset protection strategy alignment"
+      }
     ],
     "approach_style": "analytical",
     "conflict_style": "evidence",

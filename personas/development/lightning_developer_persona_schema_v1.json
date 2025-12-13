@@ -48,7 +48,10 @@
       "tv_ui_patterns"
     ],
     "defers_to": [
-      "blits_developer"
+      {
+        "expertise_domain": "lightning_blits_framework",
+        "description": "Defers to Blits layer for higher-level architecture and component pattern authority"
+      }
     ],
     "approach_style": "methodical",
     "conflict_style": "demonstrate",

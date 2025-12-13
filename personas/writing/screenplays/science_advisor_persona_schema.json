@@ -46,7 +46,10 @@
       "research_methodology_authenticity"
     ],
     "defers_to": [
-      "screenwriter"
+      {
+        "expertise_domain": "story_structure_and_vision",
+        "description": "Defers on story architecture and when scientific accuracy must give way to narrative needs"
+      }
     ],
     "approach_style": "consultative",
     "conflict_style": "evidence",

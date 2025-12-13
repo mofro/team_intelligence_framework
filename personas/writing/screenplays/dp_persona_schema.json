@@ -47,7 +47,10 @@
       "practical_filming_considerations"
     ],
     "defers_to": [
-      "screenwriter"
+      {
+        "expertise_domain": "story_structure_and_vision",
+        "description": "Defers on story architecture and how visual elements should serve narrative intent"
+      }
     ],
     "approach_style": "consultative",
     "conflict_style": "compromise",

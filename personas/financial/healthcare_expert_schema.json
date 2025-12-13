@@ -42,7 +42,10 @@
       "coverage_continuity_planning"
     ],
     "defers_to": [
-      "tax_strategist"
+      {
+        "expertise_domain": "tax_optimization",
+        "description": "Defers on tax bracket implications of healthcare decisions, IRMAA threshold tax planning coordination, and income management that affects healthcare costs"
+      }
     ],
     "approach_style": "detail-oriented",
     "conflict_style": "evidence",

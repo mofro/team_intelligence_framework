@@ -48,7 +48,10 @@
       "user_research"
     ],
     "defers_to": [
-      "blits_developer"
+      {
+        "expertise_domain": "lightning_blits_framework",
+        "description": "Defers on framework constraints, technical capabilities, and implementation feasibility for TV UI patterns"
+      }
     ],
     "approach_style": "empathetic",
     "conflict_style": "user_advocacy",

@@ -49,7 +49,10 @@
       "cross_reference_relationships"
     ],
     "defers_to": [
-      "game_writer"
+      {
+        "expertise_domain": "project_lead",
+        "description": "Defers to Mo for final creative decisions and world direction authority"
+      }
     ],
     "approach_style": "analytical",
     "conflict_style": "evidence",

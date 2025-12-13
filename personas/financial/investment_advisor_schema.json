@@ -42,7 +42,10 @@
       "tax_efficient_strategies"
     ],
     "defers_to": [
-      "tax_strategist"
+      {
+        "expertise_domain": "tax_optimization",
+        "description": "Defers on tax-efficient withdrawal sequencing, asset location tax implications, and broader tax strategy impact on portfolio decisions"
+      }
     ],
     "approach_style": "evidence-based",
     "conflict_style": "demonstrate",

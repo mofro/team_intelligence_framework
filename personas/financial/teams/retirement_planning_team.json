@@ -22,33 +22,55 @@
     ],
     "default_primary": "investment_advisor"
   },
+  "expertise_mapping": {
+    "tax_optimization": "tax_strategist",
+    "estate_planning": "estate_planner",
+    "portfolio_management": "investment_advisor",
+    "healthcare_planning": "healthcare_expert",
+    "retirement_benefits": "social_security_specialist",
+    "risk_management": "insurance_analyst"
+  },
   "collaboration_framework": {
     "decision_hierarchy": {
-      "level_1_core_decisions": {
-        "leader": "investment_advisor",
-        "required_consensus": ["investment_advisor", "tax_strategist"],
-        "scope": "retirement timeline, withdrawal strategy, major financial decisions"
+      "withdrawal_sequencing": {
+        "primary_authority_domain": "tax_optimization",
+        "required_consultation": ["portfolio_management"],
+        "can_veto": ["estate_planning"],
+        "rationale": "Tax efficiency drives sequencing, but investment sustainability and estate protection must align"
       },
-      "level_2_specialist_input": {
-        "process": "specialists provide domain analysis and can challenge core recommendations",
-        "integration": "core team integrates specialist recommendations into overall plan"
+      "estate_structure": {
+        "primary_authority_domain": "estate_planning",
+        "required_consultation": ["tax_optimization"],
+        "can_veto": ["portfolio_management"],
+        "rationale": "Legal structure is primary, but tax efficiency and portfolio impact must be considered"
       },
-      "level_3_implementation": {
-        "ownership": "each specialist owns detailed implementation in their domain",
-        "coordination": "regular check-ins ensure cross-domain alignment"
+      "healthcare_coverage": {
+        "primary_authority_domain": "healthcare_planning",
+        "required_consultation": ["tax_optimization", "retirement_benefits"],
+        "rationale": "Coverage timing and cost are primary; IRMAA thresholds create tax coordination points"
+      },
+      "benefits_claiming": {
+        "primary_authority_domain": "retirement_benefits",
+        "required_consultation": ["portfolio_management", "tax_optimization"],
+        "rationale": "Claiming strategy impacts household cash flow and tax brackets"
+      },
+      "insurance_needs": {
+        "primary_authority_domain": "risk_management",
+        "required_consultation": ["estate_planning"],
+        "rationale": "Risk assessment is primary; estate protection considerations may adjust coverage needs"
       }
     },
     "collaboration_patterns": [
       {
-        "members": ["investment_advisor", "tax_strategist"],
+        "members": ["tax_optimization", "portfolio_management"],
         "focus": "withdrawal sequencing and tax-efficient rebalancing"
       },
       {
-        "members": ["healthcare_expert", "social_security_specialist"],
+        "members": ["healthcare_planning", "retirement_benefits"],
         "focus": "Medicare enrollment timing with Social Security claiming"
       },
       {
-        "members": ["estate_planner", "insurance_analyst"],
+        "members": ["estate_planning", "risk_management"],
         "focus": "life insurance needs and asset protection strategies"
       }
     ]

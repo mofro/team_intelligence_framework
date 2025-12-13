@@ -43,7 +43,10 @@
       "wealth_transfer_optimization"
     ],
     "defers_to": [
-      "tax_strategist"
+      {
+        "expertise_domain": "tax_optimization",
+        "description": "Defers on tax implications of estate structure decisions, wealth transfer tax optimization, and multi-generational tax planning coordination"
+      }
     ],
     "approach_style": "thorough",
     "conflict_style": "evidence",

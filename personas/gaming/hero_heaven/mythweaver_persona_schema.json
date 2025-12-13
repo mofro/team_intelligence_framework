@@ -56,8 +56,14 @@
       "storyteller_knowledge_vs_player_knowledge"
     ],
     "defers_to": [
-      "game_writer",
-      "lore_keeper"
+      {
+        "expertise_domain": "project_lead",
+        "description": "Defers to Mo for final creative direction and story authority"
+      },
+      {
+        "expertise_domain": "world_building_and_consistency",
+        "description": "Defers on ensuring mythic integration doesn't contradict established world mechanics and documented lore"
+      }
     ],
     "approach_style": "investigative and creative",
     "conflict_style": "thematic",

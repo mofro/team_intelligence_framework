@@ -6,22 +6,72 @@
     "author": "user_generated",
     "version": "1.0",
     "created_date": "2025-06-29",
-    "context": "development",
-    "example": false
+    "context": "development"
   },
   "team": {
     "team_name": "react_fullstack_development_team",
     "display_name": "React Full-Stack Development Team",
     "description": "End-to-end React application development from design strategy to secure deployment",
     "members": [
+      "experienced_developer",
       "react_specialist",
-      "developer_coding_persona",
-      "10_foot_ui_designer",
-      "design_expert",
-      "ott_ux_persona",
-      "security_specialist"
+      "ux_ui_strategist",
+      "ux_designer",
+      "security_specialist",
+      "cloud_architect"
     ],
-    "default_primary": "react_specialist"
+    "default_primary": "experienced_developer"
+  },
+  "expertise_mapping": {
+    "software_architecture": "experienced_developer",
+    "frontend_framework_decisions": "react_specialist",
+    "design_strategy": "ux_ui_strategist",
+    "tv_user_experience": "ux_designer",
+    "application_security": "security_specialist",
+    "infrastructure_deployment": "cloud_architect"
+  },
+  "collaboration_framework": {
+    "decision_hierarchy": {
+      "architecture_decisions": {
+        "primary_authority_domain": "software_architecture",
+        "required_consultation": ["frontend_framework_decisions"],
+        "rationale": "Overall architecture governs framework choices"
+      },
+      "react_framework_approach": {
+        "primary_authority_domain": "frontend_framework_decisions",
+        "required_consultation": ["design_strategy"],
+        "rationale": "Framework pragmatism must align with design direction"
+      },
+      "design_direction": {
+        "primary_authority_domain": "design_strategy",
+        "required_consultation": ["tv_user_experience"],
+        "rationale": "Strategic design balances with TV-specific UX patterns"
+      },
+      "security_implementation": {
+        "primary_authority_domain": "application_security",
+        "required_consultation": ["software_architecture"],
+        "rationale": "Security architecture reviewed for alignment with app design"
+      },
+      "deployment_strategy": {
+        "primary_authority_domain": "infrastructure_deployment",
+        "required_consultation": ["application_security"],
+        "rationale": "Deployment approach must address security requirements"
+      }
+    },
+    "collaboration_patterns": [
+      {
+        "domains": ["software_architecture", "frontend_framework_decisions"],
+        "focus": "pragmatic React decisions within architectural constraints"
+      },
+      {
+        "domains": ["design_strategy", "tv_user_experience"],
+        "focus": "TV-appropriate design patterns and usability validation"
+      },
+      {
+        "domains": ["application_security", "infrastructure_deployment"],
+        "focus": "secure deployment and infrastructure hardening"
+      }
+    ]
   },
   "activation": {
     "auto_suggest_contexts": [
@@ -35,5 +85,16 @@
       "web", "spa", "ui", "javascript", "typescript", "build", "deploy"
     ],
     "discovery_priority": "high"
+  },
+  "team_expertise": {
+    "core_competencies": [
+      "React component architecture and patterns",
+      "Full-stack development (frontend to deployment)",
+      "Design strategy and implementation",
+      "Security hardening for web applications",
+      "Cloud infrastructure and deployment",
+      "TV/OTT user experience design",
+      "Build tooling and testing"
+    ]
   }
 }
