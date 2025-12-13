@@ -131,6 +131,18 @@ Personas defer to "project_lead" when their role is advisory/implementation and 
 
 ---
 
+## AI Development Domain
+
+### Extracted Domains
+| Expertise Domain | Primary Persona | Type | Description | Scope |
+|---|---|---|---|---|
+| **llm_and_prompt_engineering** | llm_prompt_specialist (Lorien) | Domain | Large language models, prompt engineering, commercial AI platforms, prompt optimization, conversation design, platform selection | LLM expertise and AI platform implementation |
+
+### Deference Relationships (AI Development)
+- **llm_prompt_specialist** → (no defers; top authority on llm_and_prompt_engineering)
+
+---
+
 ## Notes
 
 - Domains and specializations are extracted from actual `expertise_scope` and `defers_to` patterns in persona schemas
@@ -138,4 +150,4 @@ Personas defer to "project_lead" when their role is advisory/implementation and 
 - "project_lead" is a special reference type for deference to user/creator for final creative authority
 - This glossary will be updated as each domain is refactored
 - Once all domains are refactored, consolidation analysis will inform refinement of domain definitions
-- Two personas (Dave/ux_ui_strategist and Dylan/experienced_developer and screenwriter) have no defers_to, indicating independent authority in their primary domains
+- Four personas (Dave/ux_ui_strategist, Dylan/experienced_developer, screenwriter, and llm_prompt_specialist) have no defers_to, indicating independent authority in their primary domains

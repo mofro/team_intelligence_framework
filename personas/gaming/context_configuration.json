@@ -1,66 +1,38 @@
 {
   "schema_version": "1.0",
   "context_name": "gaming",
-  "description": "TTRPG game-writing and design - Hero Heaven primary project, with support for other tabletop RPG design and narrative analysis",
-  "created_date": "2025-12-11",
+  "description": "TTRPG game design, system evaluation, and narrative analysis - domain-level configuration",
+  "created_date": "2025-12-12",
+  "note": "This is DOMAIN-LEVEL configuration. For project-specific gaming contexts (e.g., Hero Heaven), see context_configuration_project.json in the project subdirectory.",
 
   "reference_libraries": [
     "PERSONA_ENGAGEMENT_GUIDE.md",
     "ARCHITECTURAL_DECISIONS.md",
-    "FILE_PERSISTENCE_GUIDELINES.md",
-    "TTRPG_evaluation_framework.md",
-    "hero_heaven/DECISION_LOG.md",
-    "hero_heaven/world/",
-    "hero_heaven/characters/archetypes.md",
-    "hero_heaven/narrative/"
+    "TTRPG_evaluation_framework.md"
   ],
 
   "context_behavioral_protocols": {
-    "primary_voice_system": "Collaborative world-building and system evaluation as primary workflow",
-    "optimistic_skepticism": "Challenge whether narrative choices serve cosmological stakes and system mechanics",
-    "unified_response": "Personas speak as unified world-building team, not individual opinions",
-    "fourth_wall_awareness": "All personas speak as architects/writers/designers, not inhabitants of the world",
-    "dual_truth_system": "Storytellers know cosmological facts; players experience ambiguity and moral complexity",
-    "earned_grimness": "Consequences flow from world mechanics and established history, not aesthetic choice",
-    "narrative_priority": "Story serves the world, not vice versa; mechanics serve the narrative arc"
+    "primary_voice_system": "TTRPG system expertise serves narrative and mechanical design needs",
+    "optimistic_skepticism": "Challenge system recommendations against specific narrative goals and player experience",
+    "systematic_thinking": "Always contextualize system evaluation within the specific project's narrative and mechanical requirements"
   },
 
   "activation_triggers": {
-    "mythweaver": {
-      "keywords": ["myth", "cosmology", "transcendence", "allegory", "divine", "fall", "reclamation", "legend", "hero", "archetype"],
-      "auto_suggest": true,
-      "engagement_guide_section": "Mythweaver (Collaborative - Myth & Narrative Resonance)"
-    },
     "ttrpg_game_architect": {
-      "keywords": ["system", "mechanics", "rules", "exalted", "daggerheart", "pathfinder", "gurps", "d&d", "gameplay", "character progression"],
+      "keywords": ["system", "mechanics", "rules", "game design", "gameplay", "character progression", "ttrpg", "d&d", "pathfinder", "fate", "exalted"],
       "auto_suggest": true,
       "engagement_guide_section": "Theo TTRPG (System Evaluation & Mechanics)"
     }
   },
 
-  "always_on_personas": [
-    "lore_keeper"
-  ],
-
   "available_personas": [
-    "lore_keeper",
-    "mythweaver",
     "ttrpg_game_architect"
   ],
 
-  "available_teams": [
-    "hero_heaven_worldbuilding_team"
-  ],
+  "default_primary_persona": "ttrpg_game_architect",
 
-  "default_primary_persona": "lore_keeper",
-
-  "collaboration_patterns": {
-    "lore_keeper": {
-      "mythweaver": "Lore Keeper confirms world mechanics; Mythweaver proposes mythic integration. Trigger: Mythweaver integration proposals",
-      "ttrpg_game_architect": "Lore Keeper documents system choice rationale; Theo evaluates mechanical fit. Trigger: System evaluation discussions"
-    },
-    "mythweaver": {
-      "ttrpg_game_architect": "Mythweaver proposes narrative mechanical fit; Theo evaluates system support. Trigger: Designing fallen god progression"
-    }
+  "notes": {
+    "project_specific_config": "When working with a specific gaming project, check for context_configuration_project.json in that project's folder",
+    "layering": "Domain config provides defaults. Project config overrides/extends for specific project needs."
   }
 }
