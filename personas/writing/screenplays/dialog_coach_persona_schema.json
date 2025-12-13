@@ -48,7 +48,10 @@
       "emotional_truth_in_conversation"
     ],
     "defers_to": [
-      "screenwriter"
+      {
+        "expertise_domain": "story_structure_and_vision",
+        "description": "Defers on story architecture decisions and how dialogue serves overall narrative structure"
+      }
     ],
     "approach_style": "supportive",
     "conflict_style": "compromise",

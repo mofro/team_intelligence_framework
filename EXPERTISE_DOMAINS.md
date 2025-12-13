@@ -33,6 +33,20 @@ Examples:
 
 ---
 
+## Special Domain: project_lead
+
+**DEFINITION**
+"project_lead" is a special reference type, not a traditional expertise domain. It represents deference to the user/project creator for final creative authority and decision-making. Use this when a persona needs to escalate to human judgment for strategic creative choices.
+
+**Usage Pattern**
+Personas defer to "project_lead" when their role is advisory/implementation and the project creator retains final authority.
+
+**Examples**
+- Gaming domain: lore_keeper and mythweaver defer to project_lead for story direction
+- Writing domain: (none currently—screenwriter is independent authority)
+
+---
+
 ## Financial Domain
 
 ### Extracted Domains
@@ -85,13 +99,35 @@ Examples:
 
 ## Gaming Domain
 
-*Pending refactoring*
+### Extracted Domains
+| Expertise Domain | Primary Persona | Type | Description | Scope |
+|---|---|---|---|---|
+| **ttrpg_system_expertise** | ttrpg_game_architect (Theo) | Domain | System literacy, player experience prediction, mechanical fit assessment, rule adaptation, accessibility analysis | TTRPG system selection and mechanical design |
+| **world_building_and_consistency** | lore_keeper | Domain | World documentation, lore consistency, consistency tracking, narrative mechanics, decision history, contradiction detection | World state documentation and consistency |
+| **narrative_resonance_and_myth** | mythweaver | Domain | Myth pattern recognition, cosmological structure, allegory integration, dual-truth system, moral ambiguity, transcendence narrative | Narrative depth and mythic integration |
+
+### Deference Relationships (Gaming)
+- **ttrpg_game_architect** → (no defers; top authority on ttrpg_system_expertise)
+- **lore_keeper** → project_lead
+- **mythweaver** → project_lead, world_building_and_consistency
 
 ---
 
 ## Writing Domain
 
-*Pending refactoring*
+### Extracted Domains
+| Expertise Domain | Primary Persona | Type | Description | Scope |
+|---|---|---|---|---|
+| **story_structure_and_vision** | screenwriter | Domain | Story architecture, three-act structure, character arcs, pacing, screenplay format, narrative coherence, story integrity | Overall screenplay architecture and vision |
+| **dialogue_and_character_voice** | dialog_coach | Domain | Character voice development, dialogue authenticity, conversational dynamics, subtext, speech patterns, character differentiation | Character voice and dialogue authenticity |
+| **scientific_accuracy** | science_advisor | Domain | Scientific plausibility, technical accuracy, research methodology authenticity, hard science foundations, technology feasibility | Scientific and technical accuracy |
+| **visual_storytelling** | director_of_photography | Domain | Visual composition, lighting design, camera movement, mood creation, visual pacing, practical filming considerations, emerging technology | Visual narrative and cinematography |
+
+### Deference Relationships (Writing)
+- **screenwriter** → (no defers; independent authority on story_structure_and_vision)
+- **dialog_coach** → story_structure_and_vision
+- **science_advisor** → story_structure_and_vision
+- **director_of_photography** → story_structure_and_vision
 
 ---
 
@@ -99,6 +135,7 @@ Examples:
 
 - Domains and specializations are extracted from actual `expertise_scope` and `defers_to` patterns in persona schemas
 - Clear distinction between universal domains and framework-specific specializations prevents coupling to particular technologies
+- "project_lead" is a special reference type for deference to user/creator for final creative authority
 - This glossary will be updated as each domain is refactored
 - Once all domains are refactored, consolidation analysis will inform refinement of domain definitions
-- Two personas (Dave/ux_ui_strategist and Dylan/experienced_developer) have no defers_to, indicating independent authority in their primary domains
+- Two personas (Dave/ux_ui_strategist and Dylan/experienced_developer and screenwriter) have no defers_to, indicating independent authority in their primary domains
