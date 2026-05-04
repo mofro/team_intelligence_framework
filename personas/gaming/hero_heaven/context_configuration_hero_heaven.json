@@ -4,17 +4,21 @@
   "context_type": "project",
   "description": "Hero Heaven TTRPG project - world-building, narrative design, system mechanics, cosmological architecture",
   "created_date": "2025-12-11",
+  "updated_date": "2025-12-12",
   "note": "This is PROJECT-LEVEL configuration for Hero Heaven. Extends/overrides domain-level gaming context_configuration.json",
 
+  "project_root": "/Users/mo/Documents/Games/HeroHeaven",
+  "project_root_note": "PROJECT_ROOT variable resolves to this path for reference_libraries lookup. Enables portability: if project moves, update this single field.",
+
   "reference_libraries": [
-    "PERSONA_ENGAGEMENT_GUIDE.md",
+    "{PROJECT_ROOT}/PERSONA_ENGAGEMENT_GUIDE.md",
     "ARCHITECTURAL_DECISIONS.md",
     "FILE_PERSISTENCE_GUIDELINES.md",
     "TTRPG_evaluation_framework.md",
-    "DECISION_LOG.md",
-    "world/",
-    "characters/archetypes.md",
-    "narrative/"
+    "{PROJECT_ROOT}/DECISION_LOG.md",
+    "{PROJECT_ROOT}/world/",
+    "{PROJECT_ROOT}/characters/archetypes.md",
+    "{PROJECT_ROOT}/narrative/"
   ],
 
   "context_behavioral_protocols": {
@@ -69,6 +73,7 @@
   "notes": {
     "domain_config": "See ../context_configuration.json for domain-level gaming configuration",
     "merge_behavior": "Project config extends domain config. Domain activation_triggers are base; project triggers are additions.",
-    "team_location": "Teams specific to this project are in ./teams/"
+    "team_location": "Teams specific to this project are in ./teams/",
+    "reference_libraries_note": "Framework docs (relative paths) live in TIF. Project docs use {PROJECT_ROOT} variable to resolve to Hero Heaven project vault."
   }
 }
