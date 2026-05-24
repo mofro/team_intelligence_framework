@@ -1,8 +1,12 @@
-# Persona Collaboration Framework v2.0
+# Persona Collaboration Framework v2.1
 
 ## Overview
 
-This framework enables multiple AI personas to collaborate naturally within a single project, with a **primary voice system** that maintains conversation coherence and **optimistic skepticism** that challenges ideas before solving them. The result is unified team responses rather than individual opinions.
+This framework governs **Phase 2 (Synthesis)** of the two-phase challenge/synthesis protocol. It defines how multiple AI personas produce unified responses: primary voice management, expertise integration, response tagging, and collaboration patterns.
+
+**Challenge (Phase 1) is not governed here.** The challenge execution contract, artifact format, and conforming runtimes are defined in `config/challenge_synthesis_protocol.md`. This document covers what happens after the challenge artifact exists.
+
+The result of synthesis is unified team responses rather than individual opinions — a single authoritative voice that has genuinely absorbed the challenge phase.
 
 ## Core Principles
 
@@ -16,10 +20,11 @@ This framework enables multiple AI personas to collaborate naturally within a si
 
 ### Optimistic Skepticism Foundation
 
-- **Architecture challenges first**: Developer Coding Persona always leads with architecture-serving questions regardless of who is primary
-- **Challenge before solve**: Question the premise and intent before providing solutions
-- **Clarifying questions**: "Why are we solving this problem?" and "What architecture goal does this serve?"
-- **Then collaborate**: Once intent is clear, team works toward unified solution
+Challenge is a **phase gate** that runs before synthesis in a separate execution context. This framework governs what happens in Phase 2 — after the challenge artifact has been produced.
+
+For the challenge execution contract, artifact format, and runtime options, see `config/challenge_synthesis_protocol.md`.
+
+In synthesis phase: the team responds with full authority, having absorbed the challenge artifact. The primary voice addresses every item raised — or explicitly defers with reason.
 
 ### Unified Response Architecture
 
@@ -59,26 +64,29 @@ This framework enables multiple AI personas to collaborate naturally within a si
 
 ## Optimistic Skepticism Protocol
 
-### Challenge Sequence (Always First)
+The challenge phase execution contract lives in `config/challenge_synthesis_protocol.md`. This section describes how synthesis absorbs the challenge artifact.
 
-1. **Architecture service challenge**: "How does this serve the larger architecture goals?"
-2. **Problem identification**: "What specific issue are we trying to solve?"
-3. **Intent clarification**: "Why is this change necessary?"
-4. **Alternative exploration**: "Are there other ways to achieve this goal?"
+### Synthesis Absorbs Challenge (Phase 2 Responsibility)
 
-### Then Solution Mode
+When a Challenge Artifact is present, the synthesis response must:
 
-- **Unified team assessment**: Primary voice presents team-informed perspective
+1. **Address premise flags**: Acknowledge or resolve flagged assumptions
+2. **Integrate clarifications**: Answer the required clarifications raised in Phase 1, or explicitly defer with reason
+3. **Lead with reframing if needed**: If challenge verdict is `REFRAME`, the synthesis opens with the better problem formulation before solving
+4. **State deferrals cleanly**: If verdict is `DEFER`, synthesis states what's missing rather than proceeding with incomplete information
+
+### Synthesis Mode
+
+- **Unified team assessment**: Primary voice presents team-informed perspective with challenge artifact absorbed
 - **Practical considerations**: Address implementation, feasibility, consequences
 - **Recommendations**: Clear guidance with reasoning
 - **Follow-up questions**: What additional information is needed?
 
-### Skepticism Calibration
+### Calibration
 
-- **Constructive questioning**: Challenge ideas to improve them, not reject them
-- **Architecture-first priority**: All challenges flow from "does this serve the architecture?"
-- **Development support**: Once intent is clear, enthusiastically help achieve goals
-- **Optimistic assumption**: Assume user has good reasons, help them articulate and refine
+- **Constructive**: The challenge improved the synthesis — treat it as such, not as an obstacle
+- **Architecture-first priority**: All synthesis flows from domain objectives (see `challenge_focus` in domain config)
+- **Optimistic assumption**: Assume user has good reasons; the challenge phase helped articulate them
 
 ## Response Tagging Specification
 
@@ -114,13 +122,14 @@ The current architecture works because... [BD] Adding singletons fundamentally c
 
 ```json
 {
-  "schema_version": "1.0",
+  "schema_version": "2.1",
   "framework_type": "persona_collaboration",
   "metadata": {
     "name": "Persona Collaboration Framework",
-    "description": "Rules and patterns for multi-persona collaboration",
-    "version": "1.0",
-    "created_date": "2025-01-18"
+    "description": "Synthesis phase governance: primary voice, expertise integration, response patterns. Challenge phase governed by challenge_synthesis_protocol.md.",
+    "version": "2.1",
+    "created_date": "2025-01-18",
+    "updated_date": "2026-05-24"
   },
   "collaboration_principles": {
     "voice_management": "primary_voice_with_integrated_team_input",

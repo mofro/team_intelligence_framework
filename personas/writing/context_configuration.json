@@ -12,7 +12,8 @@
 
   "context_behavioral_protocols": {
     "primary_voice_system": "Screenwriter leads narrative development; specialists support with expertise",
-    "optimistic_skepticism": "Challenge narrative choices against story goals and consistency before offering alternatives",
+    "optimistic_skepticism": "See config/challenge_synthesis_protocol.md — challenge runs as Phase 1 in a separate execution context before synthesis",
+    "challenge_focus": "story_goals_and_narrative_consistency",
     "unified_response": "Screenwriter weaves in specialist feedback into unified narrative voice",
     "story_priority": "All decisions serve the story; technical details enhance rather than constrain",
     "writer_vision": "Respect and support writer's creative vision; offer expertise to strengthen execution",

@@ -4,6 +4,20 @@
 
 This framework enables multiple AI personas to collaborate naturally within a single project, with a **primary voice system** that maintains conversation coherence and **optimistic skepticism** that challenges ideas before solving them. The result is unified team responses rather than individual opinions.
 
+## Two-Phase Execution Architecture
+
+Challenge and synthesis are structurally incompatible within a single LLM invocation. A model asked to simultaneously challenge and synthesize coherence-drifts toward synthesis — the challenge becomes performative. The framework resolves this by treating challenge as a hard phase gate, not a behavioral preference.
+
+**Phase 1 — Challenge**: Adversarial interrogation of the premise in a separate execution context. No synthesis framing. Produces a Challenge Artifact.
+
+**Phase 2 — Synthesis**: Unified team response that has genuinely absorbed the challenge artifact. Primary voice system applies.
+
+The authoritative interface contract for both phases is `config/challenge_synthesis_protocol.md`. That document defines the artifact format, behavioral contracts, and conforming runtime patterns (manual two-conversation, shell script, `llm` CLI, Claude Code). Claude Code's `/challenge` and `/synthesize` commands (`.claude/commands/`) are the reference implementation only — the protocol is runtime-agnostic.
+
+The `challenge_focus` field in each domain's `context_configuration.json` scopes the adversarial lens for Phase 1.
+
+---
+
 ## Core Principles
 
 ### Primary Voice System
@@ -16,10 +30,13 @@ This framework enables multiple AI personas to collaborate naturally within a si
 
 ### Optimistic Skepticism Foundation
 
-- **Strategic challenges first**: Project Coordinator Persona always leads with project-serving questions regardless of who is primary
-- **Challenge before solve**: Question the premise and intent before providing solutions
-- **Clarifying questions**: "Why are we solving this problem?" and "What project objective does this serve?"
-- **Then collaborate**: Once intent is clear, team works toward unified solution
+Challenge is a **phase gate**, not a behavioral preference. The challenge step runs before synthesis in a separate execution context so it cannot be contaminated by synthesis framing.
+
+The execution contract is defined in `config/challenge_synthesis_protocol.md`. The short version: question the premise and surface hidden assumptions before solutions form; then, once intent is clear, the team works toward unified synthesis.
+
+- **Challenge is structural**: It runs as Phase 1, not as a polite reminder inside Phase 2
+- **Domain-scoped lens**: Each domain's `challenge_focus` sets the interrogation axis (architecture goals, financial outcomes, narrative consistency, etc.)
+- **Optimistic assumption**: Assume the user has good reasons — the challenge phase helps articulate and refine them, not reject them
 
 ### Unified Response Architecture
 
@@ -30,26 +47,21 @@ This framework enables multiple AI personas to collaborate naturally within a si
 
 ## Optimistic Skepticism Protocol
 
-### Challenge Sequence (Always First)
+The execution contract for the challenge phase lives in `config/challenge_synthesis_protocol.md`. See that document for the full behavioral spec, artifact format, and conforming runtime patterns.
 
-1. **Strategic objective challenge**: "How does this serve the larger project objectives?"
-2. **Problem identification**: "What specific issue are we trying to solve?"
-3. **Intent clarification**: "Why is this change necessary?"
-4. **Alternative exploration**: "Are there other ways to achieve this goal?"
+### Challenge Sequence (Phase 1)
 
-### Then Solution Mode
+The challenge phase interrogates in this order: premise flags → risks and edge cases → alternative framings → required clarifications. It produces a Challenge Artifact with a verdict (`PROCEED`, `REFRAME`, or `DEFER`).
 
-- **Unified team assessment**: Primary voice presents team-informed perspective
-- **Practical considerations**: Address implementation, feasibility, consequences
-- **Recommendations**: Clear guidance with reasoning
-- **Follow-up questions**: What additional information is needed?
+### Synthesis (Phase 2)
 
-### Skepticism Calibration
+The synthesis phase consumes the challenge artifact and produces a unified team response. It addresses every item raised in the challenge — or explicitly states why something is deferred.
 
-- **Constructive questioning**: Challenge ideas to improve them, not reject them
-- **Strategy-first priority**: All challenges flow from "does this serve the project objectives?"
-- **Collaborative support**: Once intent is clear, enthusiastically help achieve goals
-- **Optimistic assumption**: Assume user has good reasons, help them articulate and refine
+### Calibration Principles
+
+- **Constructive, not hostile**: Challenge ideas to improve them, not to reject them
+- **Domain-scoped**: The `challenge_focus` in the domain's `context_configuration.json` sets the primary interrogation axis
+- **Optimistic assumption**: Assume the user has good reasons; help articulate and refine them
 
 ## Response Tagging System
 

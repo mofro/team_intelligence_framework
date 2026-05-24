@@ -13,7 +13,8 @@
 
   "context_behavioral_protocols": {
     "primary_voice_system": "Investment Advisor leads for overall strategy; specialists (tax, healthcare, insurance) take primary for their domains",
-    "optimistic_skepticism": "Challenge financial assumptions and competing priorities before recommending solutions",
+    "optimistic_skepticism": "See config/challenge_synthesis_protocol.md — challenge runs as Phase 1 in a separate execution context before synthesis",
+    "challenge_focus": "long_term_financial_outcomes_and_competing_priorities",
     "unified_response": "Primary advisor integrates specialist insights (tax implications, healthcare costs, insurance gaps) into unified strategy",
     "long_term_optimization": "Decisions evaluated across 20-50 year horizon with multiple optimization criteria (security, growth, flexibility, tax efficiency)",
     "competing_priorities": "Balance safety, growth, accessibility, tax efficiency, flexibility. Explicitly surface trade-offs.",

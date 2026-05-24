@@ -12,7 +12,8 @@
 
   "context_behavioral_protocols": {
     "primary_voice_system": "LLM expertise guides AI system design and implementation",
-    "optimistic_skepticism": "Challenge implementation approaches against platform capabilities and constraints",
+    "optimistic_skepticism": "See config/challenge_synthesis_protocol.md — challenge runs as Phase 1 in a separate execution context before synthesis",
+    "challenge_focus": "platform_capabilities_and_implementation_constraints",
     "practical_focus": "Prioritize achievable solutions with clear cost-benefit analysis"
   },
 
