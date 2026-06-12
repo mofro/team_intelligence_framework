@@ -30,7 +30,7 @@ These files define what personas *are* and how they *collaborate*, but not speci
 ### Layer 2: Domains & Projects (`/personas/`)
 Concrete implementations for specific contexts:
 
-- **Domain folders** (gaming, development, financial, writing) contain:
+- **Domain folders** (gaming, development, financial, writing, ai_development) contain:
   - `context_configuration.json` - Domain-level activation triggers
   - Individual persona schema files (v1.2 format)
   - `/teams/` subdirectory with team definitions
@@ -47,35 +47,44 @@ This separation keeps the framework portable while allowing rich customization.
 /config/
 ├── domain_agnostic_framework.md
 ├── persona_activation_framework.md
-├── persona_collaboration_framework_v1.md
+├── persona_collaboration_framework_v2.md
 ├── persona_interaction_architecture_v1.md
-└── measurement_framework.md
+├── measurement_framework.md
+├── challenge_synthesis_protocol.md        # Two-phase execution contract
+└── challenge_phase_prompt.md              # Standalone Phase 1 system prompt
+
+/.claude/commands/
+├── challenge.md                           # /challenge (Phase 1 reference impl)
+└── synthesize.md                          # /synthesize (Phase 2 reference impl)
 
 /personas/
-├── ARCHITECTURAL_DECISIONS.md      # Decisions made during refactoring
-├── REFACTORING_REFERENCE.md        # How framework maps to schema
-├── CONFIG_REFERENCE.md             # Configuration specifications
-├── TEAM_DEFINITION_GUIDE.md        # How to create teams
-├── EXPERTISE_DOMAINS.md            # Canonical reference for domains & specializations
+├── /ai_development/
+│   ├── context_configuration.json
+│   ├── llm_prompt_specialist_persona_schema.json
+│   └── /teams/
+│       └── intelligence_framework_team.json
 │
 ├── /gaming/
 │   ├── context_configuration.json
+│   ├── ttrpg_game_architect_persona_schema.json
 │   ├── /hero_heaven/
+│   │   ├── context_configuration_hero_heaven.json
 │   │   ├── lore_keeper_persona_schema.json
 │   │   ├── mythweaver_persona_schema.json
 │   │   └── /teams/
 │   │       └── hero_heaven_worldbuilding_team.json
-│   ├── ttrpg_game_architect_persona_schema.json
 │   └── /teams/
 │
 ├── /development/
 │   ├── context_configuration.json
-│   ├── experienced_developer_persona_schema.json
+│   ├── developer_coding_persona_schema.json
 │   ├── react_specialist_persona_schema.json
 │   ├── security_specialist_persona_schema_v1.json
 │   ├── [8 other development personas]
 │   └── /teams/
-│       └── react_fullstack_team.json
+│       ├── react_fullstack_team.json
+│       ├── flutter_mobile_development_team.json
+│       └── news_aggregation_team.json
 │
 ├── /financial/
 │   ├── context_configuration.json
@@ -87,15 +96,12 @@ This separation keeps the framework portable while allowing rich customization.
 │
 └── /writing/
     ├── context_configuration.json
-    ├── /screenplays/
-    │   ├── screenwriter_persona_schema.json
-    │   ├── dialog_coach_persona_schema.json
-    │   ├── science_advisor_persona_schema.json
-    │   └── dp_persona_schema.json
-    └── /teams/
-        └── (ready for team definitions)
-
-PROJECT_MIGRATION_GUIDE.md  # Project-specific contexts and knowledge
+    └── /screenplays/
+        ├── context_configuration_screenplays.json
+        ├── screenwriter_persona_schema.json
+        ├── dialog_coach_persona_schema.json
+        ├── science_advisor_persona_schema.json
+        └── dp_persona_schema.json
 ```
 
 ### File Type Conventions

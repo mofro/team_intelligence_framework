@@ -34,7 +34,7 @@ Establish a **two-layer configuration model**:
 
 **Layer 1: Universal Framework Rules** (Single source, never changes)
 - Documented in `/config/` Markdown files
-- Examples: persona_activation_framework.md, persona_collaboration_framework_v1.md, persona_interaction_architecture_v1.md
+- Examples: persona_activation_framework.md, persona_collaboration_framework_v2.md, persona_interaction_architecture_v1.md
 
 **Layer 2: Context Configuration** (Domain-specific, lives with each context)
 - `personas/[domain]/context_configuration.json` — Reference libraries, behavioral protocols, activation triggers, available personas for THIS context
@@ -95,7 +95,7 @@ Separate by layer:
 These are data structures that LLMs parse, personas reference, and contexts load. They must be unambiguous.
 
 **Markdown (Guidance Layer)** — Documentation and principles
-- `/config/*.md` — Universal framework principles (persona_activation_framework.md, persona_collaboration_framework_v1.md, etc.)
+- `/config/*.md` — Universal framework principles (persona_activation_framework.md, persona_collaboration_framework_v2.md, etc.)
 - `README.md` — Framework overview
 - `ARCHITECTURAL_DECISIONS.md` — Why decisions were made
 - `CONFIG_REFERENCE.md` — Schema reference guide (what data structures exist and why)
@@ -202,6 +202,76 @@ Markdown is for humans to understand principles and for LLMs to learn how the fr
 
 ---
 
+## Decision 3: Challenge/Synthesis Phase Separation
+
+**Status**: Decided (2026-06-12)
+**Affects**: Persona collaboration protocol, `context_configuration.json` schema, `/config/` files, `.claude/commands/`
+
+### Problem
+
+The Optimistic Skepticism Protocol — "challenge before solve" — was implemented as a behavioral rule inside a single LLM invocation. A model asked to simultaneously challenge and synthesize coherence-drifts toward synthesis. The challenge became performative: the LLM's pull toward helpfulness and integration swamped genuine adversarial interrogation. The behavioral rule was a workaround, not a design.
+
+The root cause: genuine challenge and integrated synthesis require opposite properties. They are structurally incompatible within one context.
+
+### Decision
+
+Separate challenge and synthesis into **genuinely distinct execution contexts** — two separate LLM invocations with different system prompts. Challenge runs first and produces an artifact; synthesis consumes that artifact.
+
+**Phase 1 (Challenge)**: Adversarial interrogation with no synthesis framing. Produces a structured Challenge Artifact (premise flags, risks, alternative framings, required clarifications, verdict).
+
+**Phase 2 (Synthesis)**: Unified team response that has genuinely absorbed the challenge artifact. Primary voice system applies normally.
+
+**Protocol-first design**: The interface contract is defined in `config/challenge_synthesis_protocol.md` as a runtime-agnostic spec. Claude Code slash commands (`.claude/commands/challenge.md`, `.claude/commands/synthesize.md`) are the reference implementation only — not the protocol itself. Any runtime satisfying the contract is valid (manual two-conversation, shell script, `llm` CLI, Jupyter notebook).
+
+### Schema Change
+
+Each domain's `context_configuration.json` gains one new field:
+
+```json
+"challenge_focus": "architecture_goals_and_software_correctness"
+```
+
+This scopes the Phase 1 adversarial lens to domain-appropriate objectives. The universal protocol structure lives in `challenge_synthesis_protocol.md`; domain files only override what differs.
+
+### Files Added
+
+- `config/challenge_synthesis_protocol.md` — Runtime-agnostic interface contract (the portable artifact)
+- `config/challenge_phase_prompt.md` — Standalone Phase 1 system prompt
+- `.claude/commands/challenge.md` — `/challenge` reference implementation
+- `.claude/commands/synthesize.md` — `/synthesize` reference implementation
+
+### Files Modified
+
+- `config/persona_collaboration_framework_v1.md` → **renamed `v2.md`**: Optimistic Skepticism section now points to the protocol spec rather than describing challenge execution (which moved out). Synthesis governance unchanged.
+- `config/domain_agnostic_framework.md`: Two-Phase Execution Architecture section added; Optimistic Skepticism demoted from behavioral rule to phase gate reference.
+- All 5 `context_configuration.json` files: `challenge_focus` added; `optimistic_skepticism` field updated to a pointer to the protocol spec.
+
+### Rationale
+
+1. **Structural fix, not behavioral patch**: Moving challenge to a separate invocation removes the coherence-drift problem at the source rather than fighting it with behavioral rules.
+2. **Runtime-agnostic**: Defining the protocol as a portable spec (not as Claude Code commands) means the architecture survives tooling changes. The protocol is the stable artifact.
+3. **Minimal domain config**: One `challenge_focus` field per domain rather than a full repeated block keeps the config DRY — the 80% that's universal lives in the spec, domains only express the 20% that differs.
+
+### Consequences
+
+#### Positive
+✅ Challenge phase cannot be contaminated by synthesis framing  
+✅ Protocol spec is portable — works with any LLM runtime  
+✅ Domain configs stay lean (one field override, not a full block)  
+✅ Two-conversation manual orchestration proves the protocol is genuinely runtime-agnostic  
+
+#### Negative/Trade-offs
+⚠️ Requires two invocations for full challenge/synthesis cycle (user orchestration step added)  
+⚠️ Claude Code slash commands are reference implementations only — the protocol must be re-implemented per runtime  
+⚠️ Challenge artifact quality depends on the Phase 1 prompt quality; behavioral rules were implicit, protocol spec is explicit  
+
+### Related Decisions
+
+- Decision 1: Two-Layer Configuration Structure (the `challenge_focus` field fits cleanly into this model)
+- Decision 2: JSON vs. Markdown (protocol spec is Markdown/guidance; `challenge_focus` is JSON/behavior)
+
+---
+
 ## Decision Log Template (for future decisions)
 
 For each new architectural decision, use this structure:
@@ -247,7 +317,7 @@ This summary ties Decision 1 & 2 to actual implementation. See REFACTORING_REFER
 | Context loading | persona_activation_framework.md | `reference_context` | Domain name (JSON) |
 | Addressing system | persona_interaction_architecture_v1.md | `persona_name`, `display_name`, `custom_name` | All three required (JSON) |
 | Expertise scope | persona_interaction_architecture_v1.md | `collaboration.expertise_scope` | Persona-specific (JSON) |
-| Behavioral protocols | persona_collaboration_framework_v1.md | `behavioral_rules` | Persona-specific (JSON) |
+| Behavioral protocols | persona_collaboration_framework_v2.md | `behavioral_rules` | Persona-specific (JSON) |
 | Knowledge/references | persona_interaction_architecture_v1.md | `reference_libraries` | Persona-specific, not embedded (JSON) |
-| Collaboration patterns | persona_collaboration_framework_v1.md | Team definitions (not persona) | Formalized in teams, not personas (JSON) |
+| Collaboration patterns | persona_collaboration_framework_v2.md | Team definitions (not persona) | Formalized in teams, not personas (JSON) |
 | Operational protocols | All `/config/` files | `reference_guide` | Points to external documentation (Markdown) |

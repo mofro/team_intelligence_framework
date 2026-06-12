@@ -23,7 +23,7 @@ Complete technical reference for all configuration schemas, structures, and patt
 
 **Want to understand the principles?**
 - Universal framework principles → See files in `/config/*.md`
-- Collaboration & interaction → See `/config/persona_collaboration_framework_v1.md` and `/config/persona_interaction_architecture_v1.md`
+- Collaboration & interaction → See `/config/persona_collaboration_framework_v2.md` and `/config/persona_interaction_architecture_v1.md`
 
 ---
 
@@ -55,9 +55,11 @@ These rules are documented in Markdown files in `/config/`. This section summari
 
 **Read these files for detailed guidance:**
 - `persona_activation_framework.md` — How personas activate and transition between states
-- `persona_collaboration_framework_v1.md` — How personas work together (primary voice, skepticism, unified response)
+- `persona_collaboration_framework_v2.md` — Synthesis phase governance: primary voice, unified response (see below for challenge phase)
 - `persona_interaction_architecture_v1.md` — Addressing system, schema portability, fallback hierarchy
 - `measurement_framework.md` — Performance metrics and visibility
+- `challenge_synthesis_protocol.md` — Runtime-agnostic two-phase execution contract (challenge → synthesis)
+- `challenge_phase_prompt.md` — Standalone Phase 1 system prompt; drop into any LLM invocation
 
 **Quick reference on what Universal Rules define:**
 
@@ -134,8 +136,11 @@ Each domain has a `context_configuration.json` that applies universal rules in d
 
   "context_behavioral_protocols": {
     "[universal_principle]": "[How it applies here]",
-    "[domain_specific_rule]": "[Custom behavior]"
+    "[domain_specific_rule]": "[Custom behavior]",
+    "optimistic_skepticism": "See config/challenge_synthesis_protocol.md — challenge runs as Phase 1 in a separate execution context before synthesis"
   },
+
+  "challenge_focus": "[Domain-specific adversarial lens for Phase 1, e.g. 'architecture_goals_and_software_correctness']",
 
   "activation_triggers": {
     "persona_name": {
@@ -377,50 +382,64 @@ Teams are pre-defined collections of personas working together. See **TEAM_DEFIN
 ```
 team_intelligence_framework/
 ├── README.md
-├── ARCHITECTURAL_DECISIONS.md (Decision 1: two-layer config, Decision 2: JSON vs. Markdown)
-├── CONFIG_REFERENCE.md (this file—JSON schemas)
-├── TEAM_DEFINITION_GUIDE.md (Markdown—how to compose teams)
-├── PERSONA_FRAMEWORK_IMPLEMENTATION_GUIDE.md (Markdown—how to set up contexts)
-├── USER_GUIDE.md (Markdown—how to use personas/teams)
+├── ARCHITECTURAL_DECISIONS.md
+├── CONFIG_REFERENCE.md (this file — JSON schemas)
+├── TEAM_DEFINITION_GUIDE.md
+├── PERSONA_FRAMEWORK_IMPLEMENTATION_GUIDE.md
+├── EXPERTISE_DOMAINS.md
+├── USER_GUIDE.md
+├── TODO.md
 │
-├── config/ (Markdown—Universal Framework Rules)
+├── config/ (Markdown — Universal Framework Rules)
+│   ├── domain_agnostic_framework.md
 │   ├── persona_activation_framework.md
-│   ├── persona_collaboration_framework_v1.md
+│   ├── persona_collaboration_framework_v2.md     # Synthesis phase governance
 │   ├── persona_interaction_architecture_v1.md
-│   └── measurement_framework.md
+│   ├── measurement_framework.md
+│   ├── challenge_synthesis_protocol.md           # Two-phase execution contract
+│   └── challenge_phase_prompt.md                 # Phase 1 standalone prompt
 │
-├── personas/ (JSON Configs + Persona/Team Schemas)
-│   ├── gaming/
-│   │   ├── context_configuration.json ✅
-│   │   ├── hero_heaven/
-│   │   │   ├── lore_keeper_persona_schema.json
-│   │   │   ├── mythweaver_persona_schema.json
-│   │   │   └── teams/
-│   │   │       └── hero_heaven_worldbuilding_team.json ✅
-│   │   └── ttrpg_game_architect_persona_schema.json
-│   │
-│   ├── development/
-│   │   ├── context_configuration.json ✅
-│   │   ├── [9 persona schemas]
-│   │   └── teams/
-│   │       └── react_fullstack_team.json ✅
-│   │
-│   ├── financial/
-│   │   ├── context_configuration.json ✅
-│   │   ├── [6 persona schemas]
-│   │   └── teams/
-│   │       └── retirement_planning_team.json ✅
-│   │
-│   ├── writing/
-│   │   ├── context_configuration.json ✅
-│   │   ├── screenplays/
-│   │   │   └── [4 persona schemas]
-│   │   └── teams/
-│   │
-│   └── llm_prompt_specialist_persona_schema.json
+├── .claude/commands/ (Claude Code reference implementation)
+│   ├── challenge.md                              # /challenge slash command
+│   └── synthesize.md                             # /synthesize slash command
 │
-└── teams/
-    └── intelligence_framework_team.json
+└── personas/ (JSON Configs + Persona/Team Schemas)
+    ├── ai_development/
+    │   ├── context_configuration.json ✅
+    │   ├── llm_prompt_specialist_persona_schema.json
+    │   └── teams/
+    │       └── intelligence_framework_team.json ✅
+    │
+    ├── gaming/
+    │   ├── context_configuration.json ✅
+    │   ├── ttrpg_game_architect_persona_schema.json
+    │   ├── hero_heaven/
+    │   │   ├── context_configuration_hero_heaven.json ✅
+    │   │   ├── lore_keeper_persona_schema.json
+    │   │   ├── mythweaver_persona_schema.json
+    │   │   └── teams/
+    │   │       └── hero_heaven_worldbuilding_team.json ✅
+    │   └── teams/
+    │
+    ├── development/
+    │   ├── context_configuration.json ✅
+    │   ├── [11 persona schemas]
+    │   └── teams/
+    │       ├── react_fullstack_team.json ✅
+    │       ├── flutter_mobile_development_team.json ✅
+    │       └── news_aggregation_team.json ✅
+    │
+    ├── financial/
+    │   ├── context_configuration.json ✅
+    │   ├── [6 persona schemas]
+    │   └── teams/
+    │       └── retirement_planning_team.json ✅
+    │
+    └── writing/
+        ├── context_configuration.json ✅
+        └── screenplays/
+            ├── context_configuration_screenplays.json ✅
+            └── [4 persona schemas]
 ```
 
 ---
@@ -434,7 +453,7 @@ team_intelligence_framework/
 | Why this architecture exists | ARCHITECTURAL_DECISIONS.md |
 | How to compose a team | TEAM_DEFINITION_GUIDE.md |
 | How personas activate | /config/persona_activation_framework.md |
-| How personas collaborate | /config/persona_collaboration_framework_v1.md |
+| How personas collaborate | /config/persona_collaboration_framework_v2.md |
 | How to set up a new context | PERSONA_FRAMEWORK_IMPLEMENTATION_GUIDE.md |
 | How to use personas/teams | USER_GUIDE.md |
 | Persona schema details | CONFIG_REFERENCE.md Section 2.2 |

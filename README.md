@@ -22,9 +22,15 @@ Principles that apply across all domains and projects:
 /config
 ├── domain_agnostic_framework.md           # Base operating principles
 ├── persona_activation_framework.md        # How personas discover and activate
-├── persona_collaboration_framework_v1.md  # Collaboration patterns and primary voice
+├── persona_collaboration_framework_v2.md  # Collaboration patterns and primary voice (synthesis phase)
 ├── persona_interaction_architecture_v1.md # Addressing system (@persona_name)
-└── measurement_framework.md               # Performance measurement principles
+├── measurement_framework.md               # Performance measurement principles
+├── challenge_synthesis_protocol.md        # Runtime-agnostic two-phase execution contract
+└── challenge_phase_prompt.md              # Standalone Phase 1 (challenge) system prompt
+
+/.claude/commands
+├── challenge.md                           # /challenge slash command (Phase 1 reference impl)
+└── synthesize.md                          # /synthesize slash command (Phase 2 reference impl)
 ```
 
 ### Layer 2: Domains & Projects (`/personas/`)
@@ -66,15 +72,19 @@ Concrete implementations for specific domains:
 │   └── /teams/
 │       └── retirement_planning_team.json
 │
-└── /writing                        # Writing domain
+├── /writing                        # Writing domain
+│   ├── context_configuration.json
+│   └── /screenplays/
+│       ├── screenwriter_persona_schema.json
+│       ├── dialog_coach_persona_schema.json
+│       ├── science_advisor_persona_schema.json
+│       └── dp_persona_schema.json
+│
+└── /ai_development                 # AI/LLM development domain
     ├── context_configuration.json
-    └── /screenplays/
-        ├── screenwriter_persona_schema.json
-        ├── dialog_coach_persona_schema.json
-        ├── science_advisor_persona_schema.json
-        └── dp_persona_schema.json
-
-/PROJECT_MIGRATION_GUIDE.md         # Project-specific contexts and knowledge
+    ├── llm_prompt_specialist_persona_schema.json
+    └── /teams/
+        └── intelligence_framework_team.json
 ```
 
 ## How Teams Activate
@@ -179,7 +189,7 @@ All personas use consistent structure:
 - **Unified Team Voice**: Single coherent response with multiple expertise areas
 - **Seamless Handoffs**: Natural transitions between expertise boundaries
 - **Deference Patterns**: Each persona knows when to defer to domain authorities
-- **Optimistic Skepticism**: Personas challenge assumptions before solving
+- **Two-Phase Challenge/Synthesis**: Challenge runs as a hard phase gate before synthesis — see `config/challenge_synthesis_protocol.md`
 
 ### Portable & Discoverable
 - **Schema-Driven**: All personas and teams in discoverable JSON files
