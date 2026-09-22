@@ -50,6 +50,8 @@ The protocol exists because genuine challenge and integrated synthesis are struc
 - `domain_context` (required): The active `challenge_focus` from the domain's `context_configuration.json`
 - `active_personas` (optional): Which specialist lenses should challenge; defaults to all relevant
 
+> **Scope note**: This input surface assumes `original_request` is self-contained. No conversation history, session state, or project context is defined as an input. See Known Open Questions — Context Scope.
+
 **Output — Challenge Artifact Schema**:
 
 | Field | Cardinality | Notes |
@@ -111,6 +113,8 @@ The artifact format is intentionally human-readable prose, not JSON — structur
 - `challenge_artifact` (required): Full ID-tagged output of Phase 1
 - `domain_context` (required): Full domain `context_configuration.json`
 
+> **Scope note**: Same limitation as Phase 1 — no conversation history or session state is defined as an input. See Known Open Questions — Context Scope.
+
 **Output**: Unified synthesis response per the active collaboration framework (`persona_collaboration_framework_v2.md`)
 
 ---
@@ -154,6 +158,25 @@ Each domain's `context_configuration.json` contains a `challenge_focus` field th
 - **Domain-specific expertise routing**: Governed by `context_configuration.json`
 
 This protocol defines only the seam between challenge and synthesis. Everything else is downstream.
+
+---
+
+## Known Open Questions
+
+Unlike "What This Protocol Does Not Define" above — things intentionally delegated elsewhere — these are gaps this protocol has not yet resolved anywhere. Marked here so they're visible rather than silently discovered by whoever hits them first.
+
+### Context Scope (unresolved)
+
+The input surface for both phases (`original_request`, `domain_context`, `active_personas`, `challenge_artifact`) assumes the request is self-contained — fully meaningful without any prior conversation, session, or project history. This isn't incidental: every isolation mechanism this protocol relies on (a fresh subagent context, a genuinely separate conversation) achieves contamination-immunity specifically *by* withholding that history. Isolation and context-starvation are the same lever, not two separate properties.
+
+This is a real scope boundary on the protocol as currently specified, not a minor gap:
+
+- **Well-suited**: standalone decision points whose meaning doesn't depend on anything said earlier
+- **Poorly suited as specified**: questions embedded in an ongoing working session, where the request's real meaning depends on situational context the request text alone doesn't carry (constraints already ruled out, diagnoses already made, prior decisions the new question is downstream of) — arguably the more common real-world case
+
+**Unresolved**: whether to add an explicit `session_context` (or similar) input; what "appropriately scoped" context would mean if added — full history, a compacted/summarized subset, or something else; and how to admit any of it without reintroducing the context-contamination risk the current isolation exists to prevent. No dial position has been chosen.
+
+**Until resolved**: treat this protocol as scoped to self-contained requests. A runtime applying it to a context-dependent question embedded in an ongoing session is operating outside what this spec has actually considered.
 
 ---
 
@@ -251,6 +274,8 @@ This is a synthesis response wearing a challenge-phase hat. No premise interroga
 ---
 
 ## Changelog
+
+**v1.1 (amended)** — Added "Known Open Questions" section and scope notes on both phases' Inputs, marking that the input surface assumes self-contained requests with no defined path for conversation/session history. Surfaced while evaluating a Workflow-based runtime, which made the isolation-vs-context tradeoff concrete. No schema or conformance-criteria change; purely additive documentation of an unresolved gap.
 
 **v1.1** — Spec-hardening pass. Added RFC-2119 normative language, ID-tagged artifact fields (`PF-n`/`RE-n`/`AF-n`/`RC-n`), formal artifact schema table, replaced prose "Verification" section with itemized Conformance Criteria (structural/behavioral/runtime), added a worked example and anti-pattern examples. No change to the two-phase architecture or conforming runtimes list.
 
