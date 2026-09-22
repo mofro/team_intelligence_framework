@@ -30,25 +30,30 @@ Output the Challenge Artifact. The user will then run `/synthesize` with the sam
 
 ## Challenge Artifact Format
 
+Every list entry MUST carry a stable ID (`PF-n`, `RE-n`, `AF-n`, `RC-n`) — synthesis traces against these IDs.
+
 ```
 CHALLENGE ARTIFACT
 ==================
-Original request: [verbatim]
+schema_version: 1.1
+verdict: PROCEED | REFRAME | DEFER
 
-Premise flags:
-- ...
+original_request: [verbatim]
 
-Risks and edge cases:
-- ...
+premise_flags:
+- [PF-1] ...
 
-Alternative framings:
-- ...
+risks_and_edge_cases:
+- [RE-1] ...
 
-Required clarifications before synthesis:
-- ...
+alternative_framings:
+- [AF-1] ...
 
-Challenge verdict: [PROCEED | REFRAME | DEFER]
+required_clarifications:
+- [RC-1] ...
 ```
+
+Full schema, cardinality rules, and conformance criteria: `config/challenge_synthesis_protocol.md`.
 
 ---
 

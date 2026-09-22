@@ -270,6 +270,19 @@ This scopes the Phase 1 adversarial lens to domain-appropriate objectives. The u
 - Decision 1: Two-Layer Configuration Structure (the `challenge_focus` field fits cleanly into this model)
 - Decision 2: JSON vs. Markdown (protocol spec is Markdown/guidance; `challenge_focus` is JSON/behavior)
 
+### Addendum: Spec-Hardening Pass (2026-09-22)
+
+The original protocol spec (v1.0) was prose-shaped but not testable — "Phase 2 addresses every item in the challenge artifact" had no mechanical way to check pass/fail. `config/challenge_synthesis_protocol.md` was revised to v1.1:
+
+- RFC-2119 normative language (MUST/SHOULD/MAY) replacing descriptive prose
+- ID-tagged artifact fields (`PF-n`, `RE-n`, `AF-n`, `RC-n`) so Phase 2's absorption of Phase 1 can be traced entry-by-entry instead of judged holistically
+- The "Verification" section replaced with itemized Conformance Criteria (structural/behavioral/runtime), each with an explicit check procedure
+- A worked example and anti-pattern examples added as reference fixtures
+
+`challenge_phase_prompt.md`, `.claude/commands/challenge.md`, and `.claude/commands/synthesize.md` were updated in lockstep so the artifact format stays consistent everywhere it's referenced. Full changelog in the protocol spec itself.
+
+This was explicitly scoped as a **spec pass, not an architectural change** — the two-phase design from the original Decision 3 is unchanged. It sets up a follow-on pass to evaluate whether the reference implementation should move from manually-invoked slash commands to actual orchestrated enforcement (e.g., a Workflow that runs Phase 1, validates the artifact against these conformance criteria, then runs Phase 2) — deferred as separate work, not undertaken here.
+
 ---
 
 ## Decision Log Template (for future decisions)

@@ -23,13 +23,14 @@ You are in Synthesis Phase. Apply the full behavioral contract from `config/chal
 2. Read the original request
 3. Load the active domain `context_configuration.json` and `persona_collaboration_framework_v2.md`
 4. Produce a unified synthesis response that:
-   - Addresses every item in `Required clarifications` (or explicitly defers with reason)
-   - Leads with the reframing if `Challenge verdict` is `REFRAME`
-   - States what's missing and what would unlock synthesis if verdict is `DEFER`
+   - Traces every `RC-n` in `required_clarifications` — resolve it explicitly or state an explicit deferral with reason; silent omission is a conformance failure (see `challenge_synthesis_protocol.md` criterion B-4)
+   - Acknowledges every `AF-n` in `alternative_framings` that changed the synthesis direction (criterion B-5)
+   - Leads with the reframing before any solution if `verdict` is `REFRAME` (criterion B-6)
+   - States what's missing and does not present a full solution if `verdict` is `DEFER` (criterion B-7)
    - Uses the primary voice system: one persona leads, others woven in seamlessly
    - Applies domain-appropriate expertise routing per the active team/context
 
-**The synthesis response is the team's full, integrated answer. It speaks with the authority of having been challenged.**
+**The synthesis response is the team's full, integrated answer. It speaks with the authority of having been challenged.** Conformance criteria for this phase are defined in `config/challenge_synthesis_protocol.md`.
 
 ---
 

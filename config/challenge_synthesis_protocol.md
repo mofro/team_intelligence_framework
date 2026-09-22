@@ -1,8 +1,12 @@
-# Challenge/Synthesis Protocol v1.0
+# Challenge/Synthesis Protocol v1.1
+
+**Spec status**: Hardened. v1.0 established the interface contract in prose; v1.1 adds normative language, an ID-tagged artifact schema, and mechanically-checkable conformance criteria so an implementation can be verified rather than eyeballed. See Changelog at the end.
+
+Normative keywords (MUST, MUST NOT, SHOULD, MAY) are used per RFC 2119 intent: MUST/MUST NOT are hard conformance requirements; SHOULD is a strong default that can be deviated from with reason; MAY is genuinely optional.
 
 ## Purpose
 
-This document is the **runtime-agnostic interface contract** for two-phase challenge/synthesis collaboration. It defines what each phase must receive and produce. Any runtime that satisfies this contract is a valid implementation — Claude Code, a shell script, a Jupyter notebook, or manual two-conversation orchestration are all equivalent at the protocol layer.
+This document is the **runtime-agnostic interface contract** for two-phase challenge/synthesis collaboration. It defines what each phase must receive and produce, and how to check whether a given output conforms. Any runtime that satisfies this contract is a valid implementation — Claude Code, a shell script, a Jupyter notebook, or manual two-conversation orchestration are all equivalent at the protocol layer.
 
 The protocol exists because genuine challenge and integrated synthesis are structurally incompatible goals within a single LLM invocation. A model asked simultaneously to challenge and synthesize will coherence-drift toward synthesis. Separating them into distinct execution contexts removes the conflict.
 
@@ -18,11 +22,11 @@ The protocol exists because genuine challenge and integrated synthesis are struc
     │  Phase 1    │  ← Challenge Phase (separate invocation)
     │  Challenge  │    Adversarial lens. No synthesis framing.
     └──────┬──────┘
-           │  Challenge Artifact
+           │  Challenge Artifact (ID-tagged)
            ▼
     ┌─────────────┐
     │  Phase 2    │  ← Synthesis Phase
-    │  Synthesis  │    Unified voice. Full team integration.
+    │  Synthesis  │    Unified voice. Traces to every RC-n.
     └─────────────┘
 ```
 
@@ -33,45 +37,61 @@ The protocol exists because genuine challenge and integrated synthesis are struc
 **Purpose**: Surface weaknesses in the premise before solutions form. The challenge phase must be adversarial without being hostile — its job is to find what's wrong, missing, or unexamined.
 
 **Behavioral contract**:
-- No synthesis framing, no "let me help you with that" orientation
-- Interrogate the premise, not just the implementation
-- Identify hidden assumptions the request takes for granted
-- Generate alternative framings that recast the problem
-- Surface risks, edge cases, and second-order effects
-- Ask questions that must be answered before good synthesis is possible
+- Phase 1 output MUST NOT contain a solution, recommendation, or implementation path
+- Phase 1 output MUST NOT use helpfulness-oriented framing ("I can help with that", "great question")
+- Phase 1 MUST interrogate the premise, not only implementation details
+- Phase 1 MUST produce a `verdict` of exactly one of `PROCEED`, `REFRAME`, `DEFER`
+- Phase 1 SHOULD identify hidden assumptions the request takes for granted
+- Phase 1 SHOULD surface risks, edge cases, and second-order effects
+- Phase 1 MAY produce zero `premise_flags` or zero `risks_and_edge_cases` entries only when the request genuinely has none — an empty section MUST NOT be used to skip effort
 
 **Inputs**:
-- `original_request`: The user's request verbatim
-- `domain_context`: The active `challenge_focus` from the domain's `context_configuration.json`
-- `active_personas`: Which specialist lenses should challenge (optional; defaults to all relevant)
+- `original_request` (required): The user's request verbatim
+- `domain_context` (required): The active `challenge_focus` from the domain's `context_configuration.json`
+- `active_personas` (optional): Which specialist lenses should challenge; defaults to all relevant
 
-**Output — Challenge Artifact**:
+**Output — Challenge Artifact Schema**:
+
+| Field | Cardinality | Notes |
+|---|---|---|
+| `schema_version` | 1 | Must match the protocol version's artifact schema (currently `1.1`) |
+| `verdict` | 1 | Exactly one of `PROCEED`, `REFRAME`, `DEFER` |
+| `original_request` | 1 | Verbatim restatement |
+| `premise_flags` (PF-n) | 0+ | MUST be non-empty unless the request has no unstated assumptions |
+| `risks_and_edge_cases` (RE-n) | 0+ | MAY be empty for low-stakes requests |
+| `alternative_framings` (AF-n) | 0+ | MUST be non-empty if `verdict = REFRAME` |
+| `required_clarifications` (RC-n) | 0+ | MUST be non-empty if `verdict = DEFER` |
+
+Every entry in `premise_flags`, `risks_and_edge_cases`, `alternative_framings`, and `required_clarifications` MUST carry a stable ID (`PF-1`, `RE-1`, `AF-1`, `RC-1`, ...). IDs exist so Phase 2 can be checked for traceability — see Conformance Criteria below.
+
+**Template**:
 
 ```
 CHALLENGE ARTIFACT
 ==================
-Original request: [verbatim]
+schema_version: 1.1
+verdict: PROCEED | REFRAME | DEFER
 
-Premise flags:
-- [assumption being taken for granted]
-- [hidden constraint the request doesn't acknowledge]
+original_request: [verbatim]
 
-Risks and edge cases:
-- [what breaks at scale / under edge conditions]
-- [second-order effect not considered]
+premise_flags:
+- [PF-1] [assumption being taken for granted]
+- [PF-2] [hidden constraint the request doesn't acknowledge]
 
-Alternative framings:
-- [restatement that changes the solution space]
-- [different problem that the request might actually be solving]
+risks_and_edge_cases:
+- [RE-1] [what breaks at scale / under edge conditions]
+- [RE-2] [second-order effect not considered]
 
-Required clarifications before synthesis:
-- [question that must be answered for good synthesis]
-- [decision that hasn't been made but needs to be]
+alternative_framings:
+- [AF-1] [restatement that changes the solution space]
+- [AF-2] [different problem the request might actually be solving]
 
-Challenge verdict: [PROCEED | REFRAME | DEFER]
+required_clarifications:
+- [RC-1] [question that must be answered for good synthesis]
+- [RC-2] [decision that hasn't been made but needs to be]
 ```
 
-The artifact format is intentionally human-readable. Structure matters; verbosity does not. A good challenge artifact is concise and pointed.
+The artifact format is intentionally human-readable prose, not JSON — structure and ID traceability matter; verbosity does not. A good challenge artifact is concise and pointed.
 
 ---
 
@@ -80,18 +100,18 @@ The artifact format is intentionally human-readable. Structure matters; verbosit
 **Purpose**: Produce a unified, integrated response that has genuinely absorbed the challenge artifact. The synthesis phase speaks with the authority of the full team and the humility of having been challenged.
 
 **Behavioral contract**:
-- Address every `Required clarification` from the challenge artifact (or state why it's deferred)
-- Acknowledge reframings that changed the synthesis direction
-- If `Challenge verdict` is REFRAME: lead with the reframing before solving
-- If `Challenge verdict` is DEFER: state what's missing and what would unlock synthesis
-- Primary voice system applies: one voice leads, others woven in seamlessly
+- Synthesis output MUST, for every `RC-n` in the challenge artifact, either resolve it explicitly or state an explicit deferral with reason — silent omission is a conformance violation
+- Synthesis output MUST acknowledge every `AF-n` that changed the synthesis direction
+- If `verdict = REFRAME`, synthesis MUST lead with the reframing before proposing solutions
+- If `verdict = DEFER`, synthesis MUST state what's missing and what would unlock synthesis, and MUST NOT proceed to a full solution
+- Synthesis SHOULD apply the primary voice system: one voice leads, others woven in seamlessly
 
 **Inputs**:
-- `original_request`: The user's request verbatim
-- `challenge_artifact`: Full output of Phase 1
-- `domain_context`: Full domain `context_configuration.json`
+- `original_request` (required): The user's request verbatim
+- `challenge_artifact` (required): Full ID-tagged output of Phase 1
+- `domain_context` (required): Full domain `context_configuration.json`
 
-**Output**: Unified synthesis response per the active collaboration framework
+**Output**: Unified synthesis response per the active collaboration framework (`persona_collaboration_framework_v2.md`)
 
 ---
 
@@ -137,12 +157,101 @@ This protocol defines only the seam between challenge and synthesis. Everything 
 
 ---
 
-## Verification
+## Conformance Criteria
 
-A conforming implementation satisfies all of the following:
+Each criterion has an ID, a MUST/SHOULD level, and a check procedure — something a human, an LLM-as-judge, or a script can actually run against a real transcript. A runtime is **structurally conformant** if it passes all `S-*` criteria and **behaviorally conformant** if it also passes all `B-*` criteria. Full conformance requires both.
 
-1. Phase 1 can run in complete isolation from synthesis framing — no "how can I help" orientation, no solution-building
-2. The challenge artifact is legible to a human without running any code
-3. Phase 2 explicitly addresses or acknowledges every item in the challenge artifact
-4. The full protocol can be exercised via manual two-conversation orchestration (no tooling required)
-5. Swapping the LLM backend requires changing one variable, not the protocol structure
+### Structural (artifact shape)
+
+| ID | Level | Criterion | Check procedure |
+|---|---|---|---|
+| S-1 | MUST | Challenge artifact contains `schema_version` and a `verdict` of exactly one valid value | Parse the artifact; verify both fields present and `verdict ∈ {PROCEED, REFRAME, DEFER}` |
+| S-2 | MUST | Every `premise_flags`/`risks_and_edge_cases`/`alternative_framings`/`required_clarifications` entry carries a unique ID in its category | Scan entries; confirm ID prefix matches category and no duplicate IDs |
+| S-3 | MUST | If `verdict = REFRAME`, `alternative_framings` is non-empty | Check cardinality against verdict |
+| S-4 | MUST | If `verdict = DEFER`, `required_clarifications` is non-empty | Check cardinality against verdict |
+
+### Behavioral (Phase 1)
+
+| ID | Level | Criterion | Check procedure |
+|---|---|---|---|
+| B-1 | MUST | Phase 1 output contains no solution, recommendation, or implementation proposal | Read output; flag any sentence proposing a course of action rather than a question or risk |
+| B-2 | MUST | Phase 1 output contains no helpfulness-oriented opener | Check first 1-2 sentences for service-oriented framing |
+| B-3 | SHOULD | `premise_flags` is non-empty for any request with an implicit assumption | Judge whether the request contains an unstated assumption a domain expert would flag; if so, confirm ≥1 `PF-n` entry exists |
+
+### Behavioral (Phase 2 — traceability)
+
+| ID | Level | Criterion | Check procedure |
+|---|---|---|---|
+| B-4 | MUST | Every `RC-n` from the challenge artifact is referenced, resolved, or explicitly deferred in the synthesis output | For each `RC-n`, search synthesis text for a corresponding resolution or deferral; flag any `RC-n` with no trace |
+| B-5 | MUST | Every `AF-n` that changed the synthesis direction is acknowledged | For each `AF-n`, confirm the synthesis either adopts, rejects with reason, or explicitly notes it didn't change the approach |
+| B-6 | MUST | If `verdict = REFRAME`, the reframing appears before any proposed solution in the synthesis output | Check ordering of content |
+| B-7 | MUST | If `verdict = DEFER`, the synthesis output states missing information and does not present a complete solution | Check for a "what's missing" statement and absence of a full solution |
+
+### Runtime (protocol-level)
+
+| ID | Level | Criterion | Check procedure |
+|---|---|---|---|
+| R-1 | MUST | Phase 1 and Phase 2 run as genuinely separate invocations (separate system prompts / separate calls), not one invocation split by instruction | Inspect the runtime's call structure |
+| R-2 | SHOULD | The full protocol can be exercised via manual two-conversation orchestration with no tooling | Attempt it by hand once per new runtime type |
+| R-3 | SHOULD | Swapping the LLM backend requires changing a model identifier, not the protocol structure | Attempt a backend swap; confirm no prompt restructuring is needed |
+
+---
+
+## Worked Example
+
+**Domain**: development · **challenge_focus**: `architecture_goals_and_software_correctness`
+**Request**: "Should we add a caching layer in front of the API?"
+
+### Phase 1 output
+
+```
+CHALLENGE ARTIFACT
+==================
+schema_version: 1.1
+verdict: DEFER
+
+original_request: Should we add a caching layer in front of the API?
+
+premise_flags:
+- [PF-1] Assumes the bottleneck is read latency, not write contention or downstream service cost
+- [PF-2] Assumes cache invalidation strategy is a solved problem for this data's freshness requirements
+
+risks_and_edge_cases:
+- [RE-1] Stale reads could mask a downstream data-consistency bug rather than genuinely improving performance
+- [RE-2] Cache warms cold on deploy — adds a latency spike class that doesn't exist today
+
+alternative_framings:
+- [AF-1] The actual problem may be an unindexed query, which a cache would mask rather than fix
+
+required_clarifications:
+- [RC-1] What does current latency profiling actually show — is it read-heavy and cache-shaped?
+- [RC-2] What's the acceptable staleness window for this data?
+```
+
+### Phase 2 output (excerpt, showing traceability)
+
+> Before recommending a caching layer, two things need answers [RC-1, RC-2 traced]. Profiling data would tell us whether this is genuinely a read-latency problem or something a caching layer would only mask — [AF-1] an unindexed query would produce the same symptom and caching over it hides the real fix rather than solving it. If profiling confirms read latency is the driver, staleness tolerance [RC-2] determines whether we're looking at a short-TTL cache or something more aggressive. [RE-2] worth flagging: a cache adds a cold-start latency class on deploy that doesn't exist today, so it isn't a free win even once justified.
+
+This passes B-4 (both RC-n traced), B-5 (AF-1 acknowledged and adopted into the synthesis), and B-7 (states missing info, doesn't present a full solution — consistent with `verdict = DEFER`).
+
+---
+
+## Non-Conforming Examples (Anti-Patterns)
+
+**Violates B-1/B-2** (Phase 1 solutioning):
+> "Great question! I'd recommend Redis with a 5-minute TTL — here's how to set it up..."
+This is a synthesis response wearing a challenge-phase hat. No premise interrogation occurred.
+
+**Violates B-4** (silent RC omission):
+> Synthesis response proceeds directly to "Yes, let's add caching" without addressing `RC-1` or `RC-2` at all. Even if the eventual recommendation is defensible, the omission is a conformance failure — the challenge phase's work was discarded rather than absorbed.
+
+**Violates S-3** (empty alternative_framings under REFRAME verdict):
+> `verdict: REFRAME` with an empty `alternative_framings` section. A REFRAME verdict without a stated reframing gives Phase 2 nothing to lead with.
+
+---
+
+## Changelog
+
+**v1.1** — Spec-hardening pass. Added RFC-2119 normative language, ID-tagged artifact fields (`PF-n`/`RE-n`/`AF-n`/`RC-n`), formal artifact schema table, replaced prose "Verification" section with itemized Conformance Criteria (structural/behavioral/runtime), added a worked example and anti-pattern examples. No change to the two-phase architecture or conforming runtimes list.
+
+**v1.0** — Initial protocol: two-phase architecture, challenge artifact format (unversioned prose), conforming runtimes table, domain challenge focus table.

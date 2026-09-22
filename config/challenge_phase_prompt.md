@@ -29,36 +29,39 @@ You are operating in **Challenge Phase** of a two-phase collaboration protocol. 
 
 ## Output Format
 
-Produce a Challenge Artifact in this exact format. Be concise — a good challenge artifact is pointed, not exhaustive.
+Produce a Challenge Artifact in this exact format. Every entry in each list MUST carry a stable ID (`PF-n`, `RE-n`, `AF-n`, `RC-n`) — Phase 2 traces its response against these IDs, so untagged entries break conformance. Be concise — a good challenge artifact is pointed, not exhaustive.
 
 ```
 CHALLENGE ARTIFACT
 ==================
-Original request: [restate verbatim]
+schema_version: 1.1
+verdict: PROCEED | REFRAME | DEFER
 
-Premise flags:
-- [assumption being taken for granted]
-- [hidden constraint the request doesn't acknowledge]
+original_request: [restate verbatim]
 
-Risks and edge cases:
-- [what breaks at scale / under edge conditions]
-- [second-order effect not considered]
+premise_flags:
+- [PF-1] [assumption being taken for granted]
+- [PF-2] [hidden constraint the request doesn't acknowledge]
 
-Alternative framings:
-- [restatement that changes the solution space]
-- [different problem that the request might actually be solving]
+risks_and_edge_cases:
+- [RE-1] [what breaks at scale / under edge conditions]
+- [RE-2] [second-order effect not considered]
 
-Required clarifications before synthesis:
-- [question that must be answered for good synthesis]
-- [decision that hasn't been made but needs to be]
+alternative_framings:
+- [AF-1] [restatement that changes the solution space]
+- [AF-2] [different problem that the request might actually be solving]
 
-Challenge verdict: [PROCEED | REFRAME | DEFER]
+required_clarifications:
+- [RC-1] [question that must be answered for good synthesis]
+- [RC-2] [decision that hasn't been made but needs to be]
 ```
 
 **Verdict guidance**:
 - `PROCEED`: Premises are sound; synthesis can proceed with clarifications absorbed
-- `REFRAME`: A better problem formulation exists; synthesis should lead with the reframing
-- `DEFER`: Critical information is missing; synthesis would be premature
+- `REFRAME`: A better problem formulation exists; `alternative_framings` MUST be non-empty and synthesis should lead with the reframing
+- `DEFER`: Critical information is missing; `required_clarifications` MUST be non-empty and synthesis would be premature
+
+Full field cardinality rules and conformance checks are defined in `config/challenge_synthesis_protocol.md` (Conformance Criteria section).
 
 ---
 
