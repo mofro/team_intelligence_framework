@@ -281,7 +281,21 @@ The original protocol spec (v1.0) was prose-shaped but not testable — "Phase 2
 
 `challenge_phase_prompt.md`, `.claude/commands/challenge.md`, and `.claude/commands/synthesize.md` were updated in lockstep so the artifact format stays consistent everywhere it's referenced. Full changelog in the protocol spec itself.
 
-This was explicitly scoped as a **spec pass, not an architectural change** — the two-phase design from the original Decision 3 is unchanged. It sets up a follow-on pass to evaluate whether the reference implementation should move from manually-invoked slash commands to actual orchestrated enforcement (e.g., a Workflow that runs Phase 1, validates the artifact against these conformance criteria, then runs Phase 2) — deferred as separate work, not undertaken here.
+This was explicitly scoped as a **spec pass, not an architectural change** — the two-phase design from the original Decision 3 is unchanged. It set up a follow-on evaluation of whether the reference implementation should move from manually-invoked slash commands to actual orchestrated enforcement — see the addendum below for the outcome of that evaluation.
+
+### Addendum: Workflow-Based Enforcement — Evaluated, Not Pursued (2026-09-23)
+
+The follow-on above was carried out: traced a concrete example (the caching-layer worked example from the protocol spec) through both the current reference implementation and a proposed Workflow-based alternative, step by step, to understand the actual impact rather than reason about it abstractly.
+
+**Finding 1 — the current reference implementation has a real gap.** `/challenge` and `/synthesize` are separate turns, but same-conversation, so they share a context window. This weakly satisfies R-1's literal wording ("not one invocation split by instruction") but not its intent. The risk this creates was initially misnamed coherence-drift; on inspection it's mechanistically different and was renamed **context contamination**, with a specific sub-mechanism, **self-consistency pressure** — the synthesis turn can see its own just-produced Challenge Artifact in history and lean toward validating it rather than engaging each `RC-n` fresh. Coherence-drift (opposed instructions live in one generation) is already closed by any two-phase approach, including the current slash commands; context contamination is not.
+
+**Finding 2 — a real input gap, already marked in the spec.** Tracing what context would flow into an isolated Workflow subagent exposed that neither phase's input surface has ever included conversation/session history — see `config/challenge_synthesis_protocol.md` → Known Open Questions → Context Scope for the full finding; not duplicated here.
+
+**The Workflow trade-off, traced concretely:** a Workflow-based runtime would close Finding 1 by construction (genuinely isolated `agent()` calls, no shared history) and would make S-1–S-4 mechanically checkable (schema-validated structural output) and B-4–B-7 checkable via an added verify step (LLM-as-judge, not formal proof). Against that: it would run asynchronously rather than as a synchronous reply, cost more tokens/latency than two slash commands, require explicit per-use opt-in (so it wouldn't cover the common case even if built), and leaves the prose-vs-schema artifact representation unresolved.
+
+**Decision: not pursued, for now.** Every layer of this effort — the original coherence-drift diagnosis, the spec-hardening pass, and this Workflow evaluation itself — was motivated by architectural reasoning, not a documented incident. No transcript anywhere shows a synthesis response that actually dropped a required clarification with real consequence. (A specifically-recalled prior session that might have contained such an example was searched for across this account's full session history and not found.) Weighing a certain cost (UX shift, latency, opt-in friction, new code surface) against a theoretical benefit is a bad trade by default.
+
+**What would change this decision**: a real transcript where challenge-then-synthesis skipped genuine interrogation and it mattered, or a shift toward this framework's output being consumed by other agents unattended, where mechanical enforcement stops being optional because no human is left to catch the failure.
 
 ---
 
