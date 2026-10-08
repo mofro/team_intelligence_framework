@@ -1,6 +1,6 @@
 # Proposal: changes to TIF for compatibility with persona-conductor
 
-Status: **items 1, 3 and 4 applied on this branch (commits 004b6d4, 5603ab2, f872856); items 2, 5 and 6 are not applied.**
+Status: **items 1, 3, 4, 5 and 6 applied on this branch (004b6d4, 5603ab2, f872856, 9fc629b, e5c9a98); item 2 is not applied (see its section).**
 The first two commits on the branch were this document alone. Sections below describe each item as proposed; an
 **Applied** line says what was actually done, including where it departs from the proposal.
 Written 2026-10-07. Source project: `~/Code/persona-conductor-proto` (`DESIGN.md` section 8, decisions D4, D5, D7, D20).
@@ -61,8 +61,15 @@ Evidence was re-checked against the repo on 2026-10-07 (commit `1134cab`).
 - **Plugin impact if skipped:** none. The compiler drops `reference_libraries` and `reference_guide`
   from the prompt. **The plugin has no code that reads `references`**: lazy loading was deferred
   until a persona has one. Doing this change alone gives the plugin nothing new.
-- **Cost / risk:** the largest item: 21 persona files, and someone must decide what each
-  `path` is. Do not do it unless TIF itself wants lazy references.
+- **Cost / risk:** the largest item, and someone must decide what each `path` is. Do not do it unless TIF itself wants lazy references.
+- **Not applied; found while preparing it (2026-10-07):** the entries are objects `{type, description, url}`, not strings, in 21
+  persona files. Many `url` values are `internal://...` placeholders with no file behind them (all financial and screenplay
+  personas, parts of development), the rest are real web URLs. So there is no local path to write for any of them without
+  inventing a document. A mechanical rename to `references: [{when, source}]` (no `path`) is possible but would leave
+  entries nothing can load.
+- **Two more nonexistent guides found in the same scan** (missed in item 3): `financial/context_configuration.json` lists
+  `financial_collaboration_guide.md`, and `writing/screenplays/context_configuration_screenplays.json` lists
+  `writing_collaboration_guide.md`; neither exists. Not changed.
 
 ### 3. Missing and nonexistent references in `development/context_configuration.json`
 
@@ -123,11 +130,15 @@ Evidence was re-checked against the repo on 2026-10-07 (commit `1134cab`).
   `additionalProperties`, and one persona already has an extra key (`methodology`). An added field is
   not rejected by any tooling. The LLM reads it as text.
 - **Cost / risk:** one doc line and, at most, a handful of persona edits.
+- **Applied (9fc629b, e5c9a98):** documented in the collaboration framework and the overview. Set on the four colliding
+  personas (`UID`, `UXD`, `INSA`, `INVA`, the values the plugin's algorithm would pick anyway). A scan of all 24 persona
+  files found no other collision.
 
 ### 6. Small: glossary
 
 - The plugin's design added a short glossary (belief, consult, deference and similar terms), adopted only where TIF
   has no term. If useful, a section in `framework_configuration_overview.md`. Not needed by the plugin.
+- **Applied (e5c9a98):** a short glossary at the end of the overview (five terms from Konolige & Nilsson, AAAI-80).
 
 ## How I would rank them
 
