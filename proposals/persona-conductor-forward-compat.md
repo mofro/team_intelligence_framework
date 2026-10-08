@@ -105,8 +105,8 @@ Evidence was re-checked against the repo on 2026-10-07 (commit `1134cab`).
 - **Applied (f872856):** both `.meta` copies were added to `personas/gaming/hero_heaven/`.
   **Departure from the first draft:** the 23 `reference_guide` pointers were *not* repointed, because they refer to the
   project-supplied file, not to this copy. No persona file other than `10_foot_ui_designer` (item 1) was edited.
-  Open question for the reviewer: whether `hero_heaven`'s own `{PROJECT_ROOT}` references should now point at the
-  copies in this repo instead of the HeroHeaven folder. Not changed.
+  **Deferred (reviewer decision, 2026-10-07):** whether `hero_heaven`'s own `{PROJECT_ROOT}` references should point at
+  the copies in this repo instead of the HeroHeaven folder. Left unchanged; HeroHeaven cleanup will happen later.
 
 ### 5. Optional `persona.abbreviation` field (new, from plugin decision D20)
 
