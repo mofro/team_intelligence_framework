@@ -7,8 +7,7 @@
   "reference_libraries": [
     "PERSONA_ENGAGEMENT_GUIDE.md",
     "ARCHITECTURAL_DECISIONS.md",
-    "FILE_PERSISTENCE_GUIDELINES.md",
-    "development_collaboration_guide.md"
+    "FILE_PERSISTENCE_GUIDELINES.md"
   ],
 
   "context_behavioral_protocols": {
@@ -56,8 +55,7 @@
   ],
 
   "available_teams": [
-    "react_fullstack_team",
-    "security_review_team"
+    "react_fullstack_team"
   ],
 
   "default_primary_persona": "developer_coding_persona",
