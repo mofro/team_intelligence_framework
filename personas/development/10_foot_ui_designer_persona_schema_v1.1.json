@@ -47,7 +47,10 @@
       "technical_ux_implementation"
     ],
     "defers_to": [
-      "ux_designer"
+      {
+        "expertise_domain": "user_experience_design",
+        "description": "Defers on user experience design, interaction patterns and information architecture"
+      }
     ],
     "approach_style": "pragmatic",
     "conflict_style": "demonstrate",

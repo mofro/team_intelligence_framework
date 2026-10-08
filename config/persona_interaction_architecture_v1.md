@@ -47,7 +47,7 @@
   },
   "collaboration": {
     "expertise_scope": ["primary", "secondary", "tertiary"],
-    "defers_to": ["other_persona_names"],
+    "defers_to": [{"expertise_domain": "domain_name", "description": "what is deferred and why"}],
     "collaborates_well_with": ["complementary_personas"],
     "approach_style": "consultative|directive|supportive",
     "conflict_style": "defer|argue|compromise"
@@ -57,6 +57,8 @@
   ]
 }
 ```
+
+> **Superseded**: an earlier version of this schema showed `defers_to` as a list of persona names. It is now a list of `{expertise_domain, description}` objects that name a domain, not a persona (see `framework_configuration_overview.md`). `@persona_name` addressing is unchanged.
 
 ## Fallback Hierarchy
 

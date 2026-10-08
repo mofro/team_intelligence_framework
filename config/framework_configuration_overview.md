@@ -166,7 +166,12 @@ Each domain has a `context_configuration.json` that applies universal rules in d
 {
   "collaboration": {
     "expertise_scope": ["primary_expertise_areas"],
-    "defers_to": ["expertise_domain_not_persona_name"],
+    "defers_to": [
+      {
+        "expertise_domain": "domain_name_not_persona_name",
+        "description": "What this persona yields on, and why"
+      }
+    ],
     "collaborates_well_with": ["complementary_expertise_areas"],
     "approach_style": "consultative|directive|supportive",
     "conflict_style": "defer|argue|compromise|demonstrate",
@@ -175,7 +180,7 @@ Each domain has a `context_configuration.json` that applies universal rules in d
 }
 ```
 
-> **Note**: `defers_to` references expertise domains, not persona names. This keeps deference rules portable across teams with different membership.
+> **Note**: `defers_to` is a list of `{expertise_domain, description}` objects. It references expertise domains, not persona names, which keeps deference rules portable across teams with different membership. The `description` says what is deferred and why, so a reader (or a conductor) can relay the reason.
 
 **Behavioral configuration:**
 ```json
@@ -189,6 +194,8 @@ Each domain has a `context_configuration.json` that applies universal rules in d
   "reference_guide": "See PERSONA_ENGAGEMENT_GUIDE.md — [Section Name]"
 }
 ```
+
+> **Note**: `PERSONA_ENGAGEMENT_GUIDE.md` and `FILE_PERSISTENCE_GUIDELINES.md` are supplied by each project, not by this repo (project contexts reach them through `{PROJECT_ROOT}`). A worked example is in `personas/gaming/hero_heaven/`.
 
 > **Note**: No `knowledge_base` arrays in persona schemas. External references live in `reference_guide` (a pointer to documentation) and `reference_context` (the domain). Embedding knowledge base URLs in schemas caused maintenance drift and has been removed.
 
@@ -357,7 +364,7 @@ Teams live inside their domain folder, not at the repo root.
 
 - **Teams live inside domains**: `/personas/[domain]/teams/` — never at the repo root
 - **No embedded knowledge bases**: Use `reference_guide` pointers in persona schemas
-- **Deference by expertise, not by name**: `defers_to` field uses expertise domain strings
+- **Deference by expertise, not by name**: `defers_to` entries are `{expertise_domain, description}` objects
 - **Layer configs correctly**: Domain config provides defaults; project config overrides only what differs
 - **Version control schemas**: Increment persona schema version when behavioral rules change significantly
 - **Start small**: Build teams of 3–4 personas; scale based on actual need
