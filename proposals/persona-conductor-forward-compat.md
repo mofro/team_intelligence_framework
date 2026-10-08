@@ -1,6 +1,8 @@
 # Proposal: changes to TIF for compatibility with persona-conductor
 
-Status: **proposal for review. This commit contains only this document. No TIF file has been edited.**
+Status: **items 1, 3 and 4 applied on this branch (commits 004b6d4, 5603ab2, f872856); items 2, 5 and 6 are not applied.**
+The first two commits on the branch were this document alone. Sections below describe each item as proposed; an
+**Applied** line says what was actually done, including where it departs from the proposal.
 Written 2026-10-07. Source project: `~/Code/persona-conductor-proto` (`DESIGN.md` section 8, decisions D4, D5, D7, D20).
 
 ## Why this exists
@@ -42,6 +44,8 @@ Evidence was re-checked against the repo on 2026-10-07 (commit `1134cab`).
   deference stays portable across teams, which is what the overview says it wants.
 - **Plugin impact if skipped:** none. The compiler accepts strings and objects.
 - **Cost / risk:** documentation edits plus one JSON edit. Low.
+- **Applied (004b6d4):** both docs updated and the superseded form marked; `10_foot_ui_designer` now defers to the domain
+  `user_experience_design` (a domain name taken from the UX persona's `expertise_scope`, my choice of mapping).
 
 ### 2. `reference_libraries` embeds URLs the overview says do not exist
 
@@ -60,47 +64,49 @@ Evidence was re-checked against the repo on 2026-10-07 (commit `1134cab`).
 - **Cost / risk:** the largest item: 21 persona files, and someone must decide what each
   `path` is. Do not do it unless TIF itself wants lazy references.
 
-### 3. Dangling references in `development/context_configuration.json`
+### 3. Missing and nonexistent references in `development/context_configuration.json`
 
 - **Found:** `reference_libraries` lists four files. `ARCHITECTURAL_DECISIONS.md` exists in TIF. The other three do not:
-  - `PERSONA_ENGAGEMENT_GUIDE.md`: exists only in HeroHeaven (see item 4).
-  - `FILE_PERSISTENCE_GUIDELINES.md`: exists only in HeroHeaven. It is project-specific: its frontmatter says
-    `project: TTRPG_Hero_Heaven`, its examples are `world/mechanics.md` and `world/factions.md`, its closing rule
-    is about the Lore Keeper, and its `updated` field is an unfilled `{{date}}` placeholder. The underlying rule
-    (persist source-of-truth material and decision logs; keep brainstorming in context) is general, but the
-    file would need rewriting to serve as a framework guide.
+  - `PERSONA_ENGAGEMENT_GUIDE.md` and `FILE_PERSISTENCE_GUIDELINES.md`: exist only in HeroHeaven. **These are
+    not dangling by mistake.** TIF's overview template lists `PERSONA_ENGAGEMENT_GUIDE.md` in every context's
+    `reference_libraries`, and `personas/gaming/hero_heaven/context_configuration_hero_heaven.json` reaches both through
+    `{PROJECT_ROOT}/`. They are per-project files that each project supplies; the domain contexts (development, gaming,
+    financial, writing, AI development) name them as the expected filenames. (The first draft of this document called them
+    dangling; that was wrong.) The HeroHeaven copies are project-specific: frontmatter `project: TTRPG_Hero_Heaven`,
+    examples such as `world/mechanics.md`, rules about the Lore Keeper, and an unfilled `{{date}}` placeholder.
   - `development_collaboration_guide.md`: **not found.** Searched 2026-10-07: file names across the whole disk,
     Spotlight, TIF git history (never added or deleted), `~/Code` and HeroHeaven text, and the file listings of six
     zip archives. The only mentions are the config line itself. It was most likely named but never written.
     Not searched: file contents of conversation exports or notes, other zips, anything off this machine.
-  Line 60 also lists a team `security_review_team`; no such file is in `personas/development/teams/` (the name appears
-  only as an example in `personas/examples/team_definition_examples.json`).
-  23 persona files also point `reference_guide` at `PERSONA_ENGAGEMENT_GUIDE.md`.
-- **Change, decision needed per file:**
-  - `development_collaboration_guide.md`: remove the entry, unless the author has a copy somewhere not searched.
-  - `FILE_PERSISTENCE_GUIDELINES.md`: either move it to `personas/gaming/hero_heaven/` as HeroHeaven material
-    (and drop it from the development config), or write a short generic version.
-  - `PERSONA_ENGAGEMENT_GUIDE.md`: see item 4.
-  - `security_review_team`: create the team, or drop the entry.
-- **Why:** a reader (or model) following these hits nothing.
+  - `security_review_team` (line 60): no such file is in `personas/development/teams/`; the name appears only as an
+    example in `personas/examples/team_definition_examples.json`.
+- **Change:** remove `development_collaboration_guide.md` and `security_review_team`. Leave the two
+  project-supplied filenames, and state in the overview that projects supply them.
+- **Why:** a reader (or model) following the first two hits nothing and has no explanation. The other two are by design.
 - **Plugin impact if skipped:** none; the plugin ignores these fields.
-- **Cost / risk:** small, but each fix needs a decision (write the missing guide, or delete the reference).
+- **Applied (5603ab2, 004b6d4):** the two entries were removed from the development context. The overview gained a
+  note that projects supply `PERSONA_ENGAGEMENT_GUIDE.md` and `FILE_PERSISTENCE_GUIDELINES.md`.
+  Reversible: if a copy of `development_collaboration_guide.md` turns up, restore the line.
 
 ### 4. The HeroHeaven engagement guide is project-level
 
-- **Found:** `PERSONA_ENGAGEMENT_GUIDE.md` (165 lines) is project-specific: its frontmatter says
+- **Found:** `PERSONA_ENGAGEMENT_GUIDE.md` (165 lines in the older copy) is project-specific: its frontmatter says
   `project: TTRPG_Hero_Heaven` and it opens with the Lore Keeper's autonomous-editing and "Ahem..." protocols.
-  The development context and 23 persona files cite it as if generic. TIF already has `personas/gaming/hero_heaven/`
-  holding that project's personas and context.
-- **Copies on this machine (not compared with each other, so which is newest is unknown):**
-  `~/Documents/Games/HeroHeaven 2/` (not a git repo), `~/Documents/Games/HeroHeaven/.meta/`, and older versions
-  (dated 2025-12-05 and 2025-12-08) inside `~/Documents/Games/HeroHeaven.zip`.
-- **Change:** copy the newest version into `personas/gaming/hero_heaven/`; do not present it as a framework-level
-  guide. The 23 `reference_guide` pointers then need repointing (to the new path for HeroHeaven personas, and removal
-  or a generic replacement for the rest). Without that step they stay dangling.
-- **Why:** project docs belong with the project's personas.
+  23 persona files carry `reference_guide: "See PERSONA_ENGAGEMENT_GUIDE.md ..."`, which under the per-project design
+  above points at whatever guide the using project supplies. TIF already has `personas/gaming/hero_heaven/` holding that
+  project's personas and context.
+- **Copies on this machine:** `~/Documents/Games/HeroHeaven 2/` (2025-12 versions, not a git repo),
+  `~/Documents/Games/HeroHeaven/.meta/` (2026-03-15, larger: the engagement guide is 8,626 bytes against 8,487 and the
+  persistence guidelines 3,242 against 1,461), and 2025-12 versions inside `~/Documents/Games/HeroHeaven.zip`.
+  The `.meta` copies are the newest, and the hero_heaven context's `project_root` is `~/Documents/Games/HeroHeaven`.
+- **Change:** copy the newest versions into `personas/gaming/hero_heaven/` as that project's documents.
+- **Why:** project docs belong with the project's personas, and it gives the template a worked example.
 - **Plugin impact if skipped:** none.
-- **Cost / risk:** one file copy, plus editing up to 23 persona files and the item 3 references.
+- **Applied (f872856):** both `.meta` copies were added to `personas/gaming/hero_heaven/`.
+  **Departure from the first draft:** the 23 `reference_guide` pointers were *not* repointed, because they refer to the
+  project-supplied file, not to this copy. No persona file other than `10_foot_ui_designer` (item 1) was edited.
+  Open question for the reviewer: whether `hero_heaven`'s own `{PROJECT_ROOT}` references should now point at the
+  copies in this repo instead of the HeroHeaven folder. Not changed.
 
 ### 5. Optional `persona.abbreviation` field (new, from plugin decision D20)
 
@@ -130,8 +136,8 @@ This is the author's view; the decision is the reviewer's.
 | Item | Fixes an existing inconsistency in TIF | Helps the plugin | Effort |
 |---|---|---|---|
 | 1 `defers_to` | yes | no | low |
-| 3 dangling references | yes | no | low to medium |
-| 4 move the HeroHeaven guide | yes (with 3) | no | low |
+| 3 nonexistent references | yes | no | low |
+| 4 HeroHeaven guides | yes (with 3) | no | low |
 | 5 `abbreviation` | no | slightly | low |
 | 2 `references` | partly | no (no consumer yet) | high |
 | 6 glossary | no | no | low |
@@ -147,8 +153,8 @@ source of truth. The cost of not retrofitting is TIF's existing inconsistencies 
 
 ## Proposed commits on this branch (each needs a separate go)
 
-1. This document (done).
-2. Items 1, 3, 4: documentation and reference fixes.
+1. This document (done, a1729c5; revised 08c69b7 and again with the applied commits).
+2. Items 1, 3, 4 (done: 004b6d4, 5603ab2, f872856).
 3. Item 5: the optional field, documented.
 4. Item 6, if wanted.
 5. Item 2 only if the reviewer wants lazy references.
