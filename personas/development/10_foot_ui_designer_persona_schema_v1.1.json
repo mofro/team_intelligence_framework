@@ -9,6 +9,7 @@
   },
   "persona": {
     "persona_name": "ui_designer",
+    "abbreviation": "UID",
     "display_name": "UIDesigner",
     "custom_name": "Taylor Ten-Foot",
     "role": "TV interface designer specializing in Lightning framework patterns",

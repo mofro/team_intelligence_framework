@@ -87,6 +87,7 @@ This framework enables multiple AI personas to collaborate naturally within a si
 - **Primary voice tag**: `[PERSONA_NAME]` or `[CUSTOM_NAME]` at response beginning
 - **Expertise shift tags**: `[BD]` `[LD]` `[PD]` `[SS]` for Blits developer, Lightning developer, Prism developer, Security specialist  
 - **Custom abbreviations**: If custom names set, use first 2-3 letters: `[JB]` `[DEV]` `[SEC]`
+- **Pinned abbreviations**: A persona may set an optional `persona.abbreviation` (1-6 letters or digits) to fix its tag. Use it where initials collide (`ui_designer` and `ux_designer` would both be `[UD]`, so they set `UID` and `UXD`). Without it, derive the tag from the persona name as above
 - **Placement**: Before sentence or paragraph where expertise shift occurs
 
 ### Tagging Guidelines

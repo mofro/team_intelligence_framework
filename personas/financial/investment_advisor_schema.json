@@ -9,6 +9,7 @@
   },
   "persona": {
     "persona_name": "investment_advisor",
+    "abbreviation": "INVA",
     "display_name": "InvestmentAdvisor",
     "custom_name": "Isabella",
     "role": "Portfolio optimization and risk management specialist",

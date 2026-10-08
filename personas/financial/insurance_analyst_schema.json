@@ -9,6 +9,7 @@
   },
   "persona": {
     "persona_name": "insurance_analyst",
+    "abbreviation": "INSA",
     "display_name": "InsuranceAnalyst",
     "custom_name": "Ian",
     "role": "Insurance optimization and risk protection specialist",
