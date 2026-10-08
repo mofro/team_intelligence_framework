@@ -195,6 +195,8 @@ Each domain has a `context_configuration.json` that applies universal rules in d
 }
 ```
 
+> **Note**: `persona.abbreviation` is optional (1-6 letters or digits). When set, it is the persona's response tag; when absent, the tag is derived from `persona_name`. Set it where derived tags collide.
+
 > **Note**: `PERSONA_ENGAGEMENT_GUIDE.md` and `FILE_PERSISTENCE_GUIDELINES.md` are supplied by each project, not by this repo (project contexts reach them through `{PROJECT_ROOT}`). A worked example is in `personas/gaming/hero_heaven/`.
 
 > **Note**: No `knowledge_base` arrays in persona schemas. External references live in `reference_guide` (a pointer to documentation) and `reference_context` (the domain). Embedding knowledge base URLs in schemas caused maintenance drift and has been removed.
@@ -372,3 +374,19 @@ Teams live inside their domain folder, not at the repo root.
 ---
 
 **The two-layer architecture (universal `/config/` + domain `/personas/[domain]/`) is the single most important structural decision in this framework. See ARCHITECTURAL_DECISIONS.md for the full rationale.**
+
+---
+
+## Glossary
+
+Terms borrowed from Konolige & Nilsson, "Multiple-Agent Planning Systems" (AAAI-80), added only where this framework had no term of its own.
+
+| Term | Meaning here |
+|---|---|
+| **Spontaneous operator** | A persona behavior that fires automatically when its trigger conditions hold, not by user invocation. `always_on_personas` is the state; the spontaneous operator is the mechanism. The Lore Keeper's "Ahem" interruption is one. |
+| **Semantic attachment** | Simulating a persona by actually running it (a sub-agent) rather than reasoning about it from its description. "Consult" is the runtime mode that uses it. |
+| **Persona model** | A compact, lossy summary of a persona (for example a one-line index entry). It may be incomplete or wrong. |
+| **Communication act** | A deliberate act toward another agent or the user: tell, ask, hand off, consult. |
+| **Belief** | A persona's output is its belief: fallible, not ground truth. |
+
+Terms this framework already had (consult, primary voice, optimistic skepticism, roster, deference, graceful degradation, extensibility) keep their existing meaning.
