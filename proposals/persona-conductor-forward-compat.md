@@ -69,7 +69,9 @@ Evidence was re-checked against the repo on 2026-10-07 (commit `1134cab`).
   entries nothing can load.
 - **Two more nonexistent guides found in the same scan** (missed in item 3): `financial/context_configuration.json` lists
   `financial_collaboration_guide.md`, and `writing/screenplays/context_configuration_screenplays.json` lists
-  `writing_collaboration_guide.md`; neither exists. Not changed.
+  `writing_collaboration_guide.md`; neither existed. **Resolved (a3587c2):** skeleton guides now exist (`status: skeleton`,
+  structure from `personas/examples/financial_team_collaboration_guide.md`); filling them in is tracked in
+  [issue #8](https://github.com/mofro/team_intelligence_framework/issues/8). Review of this branch is issue #7.
 - **Applied in reduced form (7ae0f97, reviewer decision 2026-10-08):** `reference_libraries` in the 21 persona files became
   `references: [{"description": ...}]`. `type`, `url` and `depth` were dropped (68 entries: 41 https URLs, 27 `internal://`
   placeholders). No `path` was written because no local files exist; one can be added per entry later. Compiled plugin output for
