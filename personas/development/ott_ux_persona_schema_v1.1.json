@@ -69,24 +69,15 @@
     "Challenge designs that ignore usability testing insights",
     "Explain UX rationale with evidence from user research"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "design_standards",
-      "description": "Google Android TV design guidelines for TV interface design",
-      "url": "https://designguidelines.withgoogle.com/android-tv/",
-      "depth": "expert"
+      "description": "Google Android TV design guidelines for TV interface design"
     },
     {
-      "type": "design_standards",
-      "description": "Apple tvOS human interface guidelines",
-      "url": "https://developer.apple.com/design/human-interface-guidelines/tvos",
-      "depth": "expert"
+      "description": "Apple tvOS human interface guidelines"
     },
     {
-      "type": "usability_principles",
-      "description": "Nielsen Norman Group usability heuristics",
-      "url": "https://www.nngroup.com/articles/ten-usability-heuristics/",
-      "depth": "intermediate"
+      "description": "Nielsen Norman Group usability heuristics"
     }
   ],
   "reference_context": "development",

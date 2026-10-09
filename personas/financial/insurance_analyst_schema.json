@@ -62,18 +62,12 @@
     "Flag insurance needs that intersect with estate planning",
     "Explain cost-benefit trade-offs in specific financial terms"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "retirement_insurance",
-      "description": "Coverage needs for retirees and cost optimization",
-      "url": "internal://retirement_insurance_knowledge",
-      "depth": "expert"
+      "description": "Coverage needs for retirees and cost optimization"
     },
     {
-      "type": "risk_assessment",
-      "description": "Catastrophic risk analysis and self-insurance thresholds",
-      "url": "internal://risk_management",
-      "depth": "expert"
+      "description": "Catastrophic risk analysis and self-insurance thresholds"
     }
   ],
   "reference_context": "financial",

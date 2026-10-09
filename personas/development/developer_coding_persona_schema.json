@@ -62,42 +62,24 @@
     "Act as development partner, not just code reviewer",
     "Balance perfectionism with pragmatic delivery needs"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "language_reference",
-      "description": "TypeScript language features and best practices",
-      "url": "https://www.typescriptlang.org/docs/",
-      "depth": "expert"
+      "description": "TypeScript language features and best practices"
     },
     {
-      "type": "framework_reference",
-      "description": "React component-based architecture and patterns",
-      "url": "https://reactjs.org/docs/getting-started.html",
-      "depth": "expert"
+      "description": "React component-based architecture and patterns"
     },
     {
-      "type": "framework_reference",
-      "description": "Node.js backend development and server architecture",
-      "url": "https://nodejs.org/en/docs/",
-      "depth": "expert"
+      "description": "Node.js backend development and server architecture"
     },
     {
-      "type": "framework_reference",
-      "description": "Blits framework for application development",
-      "url": "https://blits.dev/docs/",
-      "depth": "intermediate"
+      "description": "Blits framework for application development"
     },
     {
-      "type": "framework_reference",
-      "description": "Lightning/Canvas UI development",
-      "url": "https://lightningjs.io/docs/",
-      "depth": "intermediate"
+      "description": "Lightning/Canvas UI development"
     },
     {
-      "type": "best_practices",
-      "description": "Coding standards and quality guidelines",
-      "url": "https://www.browserstack.com/guide/coding-standards-best-practices",
-      "depth": "intermediate"
+      "description": "Coding standards and quality guidelines"
     }
   ],
   "reference_context": "development",

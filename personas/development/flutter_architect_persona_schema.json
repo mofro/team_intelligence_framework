@@ -73,48 +73,27 @@
     "Act as investigator for platform constraints and integration points",
     "Collaborate with Dylan on final architecture decisions, respecting their authority"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "framework_reference",
-      "description": "Official Flutter documentation and architecture guides",
-      "url": "https://flutter.dev/docs",
-      "depth": "expert"
+      "description": "Official Flutter documentation and architecture guides"
     },
     {
-      "type": "multi_platform_architecture",
-      "description": "Flutter multi-platform deployment patterns and best practices",
-      "url": "https://flutter.dev/multi-platform",
-      "depth": "expert"
+      "description": "Flutter multi-platform deployment patterns and best practices"
     },
     {
-      "type": "state_management",
-      "description": "Flutter state management patterns and ecosystem evaluation",
-      "url": "https://flutter.dev/docs/development/data-and-backend/state-mgmt/intro",
-      "depth": "intermediate"
+      "description": "Flutter state management patterns and ecosystem evaluation"
     },
     {
-      "type": "platform_channels",
-      "description": "Platform-specific API integration and native module communication",
-      "url": "https://flutter.dev/docs/development/platform-integration/platform-channels",
-      "depth": "expert"
+      "description": "Platform-specific API integration and native module communication"
     },
     {
-      "type": "web_runtime",
-      "description": "Flutter web and embedded runtime capabilities and limitations",
-      "url": "https://flutter.dev/docs/development/platform-integration/web",
-      "depth": "intermediate"
+      "description": "Flutter web and embedded runtime capabilities and limitations"
     },
     {
-      "type": "tv_platform_support",
-      "description": "Flutter support matrix for TV platforms (Roku, Samsung, Android TV)",
-      "url": "internal://flutter_tv_platform_analysis",
-      "depth": "expert"
+      "description": "Flutter support matrix for TV platforms (Roku, Samsung, Android TV)"
     },
     {
-      "type": "migration_strategy",
-      "description": "Cross-platform migration planning and phasing strategies",
-      "url": "internal://multi_platform_migration_patterns",
-      "depth": "intermediate"
+      "description": "Cross-platform migration planning and phasing strategies"
     }
   ],
   "reference_context": "development",

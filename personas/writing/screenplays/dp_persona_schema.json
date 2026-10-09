@@ -66,18 +66,12 @@
     "Challenge visual approaches that don't serve story objectives",
     "Explain cinematographic choices with narrative and emotional reasoning"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "cinematography",
-      "description": "Visual storytelling and cinematographic techniques",
-      "url": "internal://cinematography_knowledge",
-      "depth": "expert"
+      "description": "Visual storytelling and cinematographic techniques"
     },
     {
-      "type": "filmmaking_technology",
-      "description": "Camera, lighting, and emerging filmmaking technologies",
-      "url": "internal://filmmaking_tech",
-      "depth": "expert"
+      "description": "Camera, lighting, and emerging filmmaking technologies"
     }
   ],
   "reference_context": "writing",

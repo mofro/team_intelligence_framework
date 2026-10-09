@@ -67,18 +67,12 @@
     "Act as expert on framework constraints and capabilities",
     "Provide practical solutions that don't compromise framework integrity"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "framework_reference",
-      "description": "Lightning v3 Blits framework documentation",
-      "url": "https://lightningjs.io/v3-docs/blits/getting_started/intro.html",
-      "depth": "expert"
+      "description": "Lightning v3 Blits framework documentation"
     },
     {
-      "type": "framework_reference",
-      "description": "Lightning core framework concepts and APIs",
-      "url": "https://lightningjs.io/docs/",
-      "depth": "expert"
+      "description": "Lightning core framework concepts and APIs"
     }
   ],
   "reference_context": "development",

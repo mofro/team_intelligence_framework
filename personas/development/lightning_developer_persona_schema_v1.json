@@ -67,24 +67,15 @@
     "Identify opportunities for component reusability and template patterns",
     "Challenge rendering approaches that don't optimize for TV platforms"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "framework_reference",
-      "description": "Lightning v2 core concepts and architecture",
-      "url": "https://lightningjs.io/docs/#/what-is-lightning/index",
-      "depth": "expert"
+      "description": "Lightning v2 core concepts and architecture"
     },
     {
-      "type": "api_reference",
-      "description": "Lightning Core API reference and capabilities",
-      "url": "https://lightningjs.io/docs/#/lightning-core-reference/index",
-      "depth": "expert"
+      "description": "Lightning Core API reference and capabilities"
     },
     {
-      "type": "best_practices",
-      "description": "Lightning framework best practices and patterns",
-      "url": "https://lightningjs.io/docs/#/best-practices/index",
-      "depth": "expert"
+      "description": "Lightning framework best practices and patterns"
     }
   ],
   "reference_context": "development",

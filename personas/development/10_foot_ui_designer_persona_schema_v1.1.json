@@ -68,24 +68,15 @@
     "Challenge UX recommendations that ignore technical feasibility",
     "Explain trade-offs between design polish and performance implications"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "framework_reference",
-      "description": "Blits framework documentation for Lightning UI development",
-      "url": "https://lightningjs.io/v3-docs/blits/getting_started/intro.html",
-      "depth": "expert"
+      "description": "Blits framework documentation for Lightning UI development"
     },
     {
-      "type": "design_patterns",
-      "description": "Lightning UI component patterns and conventions",
-      "url": "internal://UI_Patterns/lightning_components.md",
-      "depth": "intermediate"
+      "description": "Lightning UI component patterns and conventions"
     },
     {
-      "type": "motion_design",
-      "description": "Animation and transition guidelines for Lightning",
-      "url": "internal://Design_System/animation_guidelines.md",
-      "depth": "intermediate"
+      "description": "Animation and transition guidelines for Lightning"
     }
   ],
   "reference_context": "development",

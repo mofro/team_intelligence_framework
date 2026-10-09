@@ -62,18 +62,12 @@
     "Discuss both spouses' benefit strategies together, not separately",
     "Use specific dollar amounts in protection recommendations"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "legal_framework",
-      "description": "Wills, trusts, powers of attorney, and healthcare directives",
-      "url": "internal://estate_planning_knowledge",
-      "depth": "expert"
+      "description": "Wills, trusts, powers of attorney, and healthcare directives"
     },
     {
-      "type": "married_couple_planning",
-      "description": "Spousal protection, joint vs separate assets, survivor planning",
-      "url": "internal://married_couple_strategies",
-      "depth": "expert"
+      "description": "Spousal protection, joint vs separate assets, survivor planning"
     }
   ],
   "reference_context": "financial",

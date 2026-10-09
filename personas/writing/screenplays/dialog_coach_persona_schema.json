@@ -67,18 +67,12 @@
     "Challenge dialogue that feels artificial or purely expository",
     "Support character development through evolving speech patterns and relationship dynamics"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "dialogue_craft",
-      "description": "Character voice development and authentic dialogue techniques",
-      "url": "internal://dialogue_knowledge",
-      "depth": "expert"
+      "description": "Character voice development and authentic dialogue techniques"
     },
     {
-      "type": "linguistics",
-      "description": "Speech patterns, professional language, and character differentiation",
-      "url": "internal://speech_patterns",
-      "depth": "intermediate"
+      "description": "Speech patterns, professional language, and character differentiation"
     }
   ],
   "reference_context": "writing",

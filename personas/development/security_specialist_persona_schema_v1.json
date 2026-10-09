@@ -68,30 +68,18 @@
     "Balance paranoia with pragmatism in security recommendations",
     "Always consider threat modeling implications of new features"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "security_standard",
-      "description": "OAuth 2.0 specification for authentication protocols",
-      "url": "https://oauth.net/2/",
-      "depth": "expert"
+      "description": "OAuth 2.0 specification for authentication protocols"
     },
     {
-      "type": "security_implementation",
-      "description": "JSON Web Token (JWT) format and best practices",
-      "url": "https://jwt.io/introduction",
-      "depth": "expert"
+      "description": "JSON Web Token (JWT) format and best practices"
     },
     {
-      "type": "security_best_practices",
-      "description": "OWASP Top 10 Web Application Security Risks",
-      "url": "https://owasp.org/www-project-top-ten/",
-      "depth": "expert"
+      "description": "OWASP Top 10 Web Application Security Risks"
     },
     {
-      "type": "security_standards",
-      "description": "General application security principles and guidelines",
-      "url": "https://cheatsheetseries.owasp.org/",
-      "depth": "intermediate"
+      "description": "General application security principles and guidelines"
     }
   ],
   "reference_context": "development",

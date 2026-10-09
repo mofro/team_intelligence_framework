@@ -61,18 +61,12 @@
     "Act as final arbiter when creative team reaches impasse on story matters",
     "Explain structural recommendations with clear story rationale"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "story_structure",
-      "description": "Three-act structure and narrative paradigms",
-      "url": "internal://story_structure_knowledge",
-      "depth": "expert"
+      "description": "Three-act structure and narrative paradigms"
     },
     {
-      "type": "screenplay_format",
-      "description": "Industry standard screenplay formatting and conventions",
-      "url": "internal://screenplay_standards",
-      "depth": "expert"
+      "description": "Industry standard screenplay formatting and conventions"
     }
   ],
   "reference_context": "writing",

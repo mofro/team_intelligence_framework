@@ -67,30 +67,18 @@
     "Be willing to recommend non-React solutions when they're more appropriate",
     "Explain performance and complexity implications of architectural choices"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "framework_reference",
-      "description": "Official React documentation and best practices",
-      "url": "https://react.dev/",
-      "depth": "expert"
+      "description": "Official React documentation and best practices"
     },
     {
-      "type": "best_practices",
-      "description": "React team guidance on avoiding unnecessary complexity",
-      "url": "https://react.dev/learn/you-might-not-need-an-effect",
-      "depth": "intermediate"
+      "description": "React team guidance on avoiding unnecessary complexity"
     },
     {
-      "type": "performance_optimization",
-      "description": "React performance optimization patterns and guidance",
-      "url": "https://web.dev/react/",
-      "depth": "intermediate"
+      "description": "React performance optimization patterns and guidance"
     },
     {
-      "type": "state_management",
-      "description": "Pragmatic state management approaches for React",
-      "url": "https://kentcdodds.com/blog/application-state-management-with-react",
-      "depth": "intermediate"
+      "description": "Pragmatic state management approaches for React"
     }
   ],
   "reference_context": "development",

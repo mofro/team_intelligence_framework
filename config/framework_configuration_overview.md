@@ -199,6 +199,8 @@ Each domain has a `context_configuration.json` that applies universal rules in d
 
 > **Note**: `PERSONA_ENGAGEMENT_GUIDE.md` and `FILE_PERSISTENCE_GUIDELINES.md` are supplied by each project, not by this repo (project contexts reach them through `{PROJECT_ROOT}`). A worked example is in `personas/gaming/hero_heaven/`.
 
+> **Note**: Persona files list what a persona draws on as `references: [{"description": "..."}]`: topic descriptions only, with no URLs. Earlier persona files used `reference_libraries` entries with `type`, `url` and `depth`; many URLs were `internal://` placeholders pointing at nothing. A `path` to a local file can be added to an entry when one exists. (Context files still use `reference_libraries` for file names.)
+
 > **Note**: No `knowledge_base` arrays in persona schemas. External references live in `reference_guide` (a pointer to documentation) and `reference_context` (the domain). Embedding knowledge base URLs in schemas caused maintenance drift and has been removed.
 
 ---

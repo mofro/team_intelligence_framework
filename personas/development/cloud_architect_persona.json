@@ -72,36 +72,21 @@
     "Identify potential infrastructure failure points and mitigation strategies",
     "Balance infrastructure elegance with operational simplicity"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "deployment_platform",
-      "description": "Vercel deployment, serverless functions, and edge network",
-      "url": "https://vercel.com/docs",
-      "depth": "expert"
+      "description": "Vercel deployment, serverless functions, and edge network"
     },
     {
-      "type": "cloud_services",
-      "description": "AWS Free Tier and cost-conscious AWS services",
-      "url": "https://aws.amazon.com/free/",
-      "depth": "intermediate"
+      "description": "AWS Free Tier and cost-conscious AWS services"
     },
     {
-      "type": "cloud_services",
-      "description": "Azure free services and pricing models",
-      "url": "https://azure.microsoft.com/en-us/pricing/free-services/",
-      "depth": "intermediate"
+      "description": "Azure free services and pricing models"
     },
     {
-      "type": "serverless_architecture",
-      "description": "Serverless function patterns and architecture",
-      "url": "https://vercel.com/docs/functions/serverless-functions",
-      "depth": "expert"
+      "description": "Serverless function patterns and architecture"
     },
     {
-      "type": "monitoring_tools",
-      "description": "Cloud monitoring, analytics, and observability",
-      "url": "https://vercel.com/docs/observability/analytics-overview",
-      "depth": "intermediate"
+      "description": "Cloud monitoring, analytics, and observability"
     }
   ],
   "reference_context": "development",

@@ -61,42 +61,24 @@
     "Provide scored comparisons when requested, using specific evaluation frameworks",
     "Communicate with analytical rigor and practical transparency about trade-offs"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "evaluation_framework",
-      "description": "Detailed evaluation framework for system comparison and assessment",
-      "url": "internal://TTRPG_evaluation_framework.md",
-      "depth": "expert"
+      "description": "Detailed evaluation framework for system comparison and assessment"
     },
     {
-      "type": "system_reference",
-      "description": "D&D 5e official rules and community",
-      "url": "https://www.dndbeyond.com/",
-      "depth": "expert"
+      "description": "D&D 5e official rules and community"
     },
     {
-      "type": "system_reference",
-      "description": "Pathfinder 2e System Reference Document",
-      "url": "https://2e.aonprd.com/",
-      "depth": "expert"
+      "description": "Pathfinder 2e System Reference Document"
     },
     {
-      "type": "system_reference",
-      "description": "FATE Core official documentation",
-      "url": "https://www.evilhat.com/home/fate-core/",
-      "depth": "expert"
+      "description": "FATE Core official documentation"
     },
     {
-      "type": "system_reference",
-      "description": "Powered by the Apocalypse and Forged in the Fire system variants",
-      "url": "https://www.drivethrurpg.com/",
-      "depth": "intermediate"
+      "description": "Powered by the Apocalypse and Forged in the Fire system variants"
     },
     {
-      "type": "specialized_systems",
-      "description": "Exalted 3e, GURPS, Shadowrun, and narrative-focused systems",
-      "url": "https://www.drivethrurpg.com/",
-      "depth": "intermediate"
+      "description": "Exalted 3e, GURPS, Shadowrun, and narrative-focused systems"
     }
   ],
   "reference_context": "gaming",

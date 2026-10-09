@@ -61,18 +61,12 @@
     "Flag tax implications that need specialist input",
     "Explain break-even analysis with concrete numbers"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "claiming_strategies",
-      "description": "Claiming timing, break-even analysis, delayed retirement credits",
-      "url": "internal://social_security_claiming",
-      "depth": "expert"
+      "description": "Claiming timing, break-even analysis, delayed retirement credits"
     },
     {
-      "type": "spousal_coordination",
-      "description": "Spousal and survivor benefits strategies",
-      "url": "internal://spousal_benefits",
-      "depth": "expert"
+      "description": "Spousal and survivor benefits strategies"
     }
   ],
   "reference_context": "financial",

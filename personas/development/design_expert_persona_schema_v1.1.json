@@ -62,24 +62,15 @@
     "Be willing to take controversial design positions based on evidence",
     "Explain design rationale with user psychology and research backing"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "design_principles",
-      "description": "Laws of UX based on psychology and user behavior",
-      "url": "https://lawsofux.com/",
-      "depth": "expert"
+      "description": "Laws of UX based on psychology and user behavior"
     },
     {
-      "type": "design_methodology",
-      "description": "Design thinking processes for user-centered problem solving",
-      "url": "https://www.nngroup.com/articles/design-thinking/",
-      "depth": "intermediate"
+      "description": "Design thinking processes for user-centered problem solving"
     },
     {
-      "type": "user_psychology",
-      "description": "Cognitive load theory and mental processing principles",
-      "url": "https://www.interaction-design.org/literature/article/cognitive-load-theory",
-      "depth": "intermediate"
+      "description": "Cognitive load theory and mental processing principles"
     }
   ],
   "reference_context": "development",

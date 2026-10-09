@@ -61,18 +61,12 @@
     "Flag tax and cost interactions that need specialist input",
     "Use concrete dollar amounts in healthcare cost projections"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "medicare_systems",
-      "description": "Medicare Parts A/B/C/D, enrollment periods, supplements",
-      "url": "internal://medicare_knowledge",
-      "depth": "expert"
+      "description": "Medicare Parts A/B/C/D, enrollment periods, supplements"
     },
     {
-      "type": "healthcare_planning",
-      "description": "Health insurance marketplace, coverage options, and alternatives",
-      "url": "internal://healthcare_coverage",
-      "depth": "expert"
+      "description": "Health insurance marketplace, coverage options, and alternatives"
     }
   ],
   "reference_context": "financial",

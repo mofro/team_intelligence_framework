@@ -65,18 +65,12 @@
     "Provide technical depth without overwhelming non-technical team members",
     "Use concrete examples from research when explaining scientific concepts"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "astrophysics",
-      "description": "Orbital mechanics, stellar physics, space environments",
-      "url": "internal://astrophysics_knowledge",
-      "depth": "expert"
+      "description": "Orbital mechanics, stellar physics, space environments"
     },
     {
-      "type": "neuroscience",
-      "description": "Consciousness research and neuroscience theory",
-      "url": "internal://neuroscience_knowledge",
-      "depth": "expert"
+      "description": "Consciousness research and neuroscience theory"
     }
   ],
   "reference_context": "writing",

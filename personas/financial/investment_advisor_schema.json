@@ -62,24 +62,15 @@
     "Challenge overly conservative allocations with analysis",
     "Provide clear rationale for allocation recommendations"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "retirement_portfolios",
-      "description": "Age-based allocation strategies, glide paths, withdrawal sustainability",
-      "url": "internal://retirement_portfolio_knowledge",
-      "depth": "expert"
+      "description": "Age-based allocation strategies, glide paths, withdrawal sustainability"
     },
     {
-      "type": "sequence_risk_management",
-      "description": "Bond tents, bucket strategies, flexible withdrawal methods",
-      "url": "internal://sequence_risk",
-      "depth": "expert"
+      "description": "Bond tents, bucket strategies, flexible withdrawal methods"
     },
     {
-      "type": "asset_location",
-      "description": "Tax-efficient placement across account types",
-      "url": "internal://asset_location",
-      "depth": "expert"
+      "description": "Tax-efficient placement across account types"
     }
   ],
   "reference_context": "financial",

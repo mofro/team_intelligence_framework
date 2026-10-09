@@ -61,24 +61,15 @@
     "Flag complex estate planning tax implications early",
     "Explain tax trade-offs with clear before-and-after calculations"
   ],
-  "reference_libraries": [
+  "references": [
     {
-      "type": "roth_conversions",
-      "description": "Conversion timing, tax bracket management, 5-year rules",
-      "url": "internal://roth_conversion_knowledge",
-      "depth": "expert"
+      "description": "Conversion timing, tax bracket management, 5-year rules"
     },
     {
-      "type": "retirement_distributions",
-      "description": "Withdrawal sequencing, RMD planning, penalty avoidance",
-      "url": "internal://distribution_strategy",
-      "depth": "expert"
+      "description": "Withdrawal sequencing, RMD planning, penalty avoidance"
     },
     {
-      "type": "medicare_tax_planning",
-      "description": "IRMAA thresholds, income smoothing, premium optimization",
-      "url": "internal://irmaa_planning",
-      "depth": "expert"
+      "description": "IRMAA thresholds, income smoothing, premium optimization"
     }
   ],
   "reference_context": "financial",
