@@ -15,7 +15,7 @@ See proposal.md for motivation. Current state, from an audit of the repo on 2026
 **Goals:**
 - A deterministic index, derived entirely from files already in the repo, that a consumer can use to fetch a subset.
 - Zero changes to the format or content of existing persona, team or context files.
-- A process guard so teams cannot again name members that have no file.
+- Visibility, not a hard guard, when a team names a member that has no file: the index reports it so a consumer can tell the bundle is incomplete.
 
 **Non-Goals:**
 - Tags and any keyword/search ranking. Domain from path, summary, role and expertise are enough for a first version.
@@ -71,9 +71,9 @@ Output formatting: sorted keys within entries where order is not meaningful, ent
 
 ### Decision: severity model
 
-Errors fail generation and CI: unparseable candidate files, missing required fields, duplicate `persona_name`, alias collisions, team members or `default_primary` that do not resolve. Warnings and notes never fail: context-config references that resolve only via alias (note) or not at all (warning).
+Errors fail generation and CI: unparseable candidate files, missing required fields, duplicate `persona_name`, and alias collisions. Warnings and notes never fail: team members or `default_primary` that do not resolve (warning), context-config persona references that resolve only via alias (note) or not at all (warning), and context-config team references with no file (note, virtual team).
 
-Unresolved team members are an error because that is the process failure this change closes: a team referring to a persona that exists only in a conversation. Context-config problems are warnings because five of them exist today and are being deliberately left alone, and failing CI on them would force the rename this change defers.
+Unresolved team members are a warning, not an error. The risk they carry is real: a team referring to a persona that exists only in a conversation yields a bundle that silently comes up short for a consumer. But teams may be composed ad hoc and the framework itself does not require a member file (UNVERIFIED for current framework behavior), so failing CI is stricter than the risk justifies. Instead the team entry lists `unresolved_members` and takes status `incomplete`, which a consumer can check before installing. Context-config problems are warnings because five of them exist today and are being deliberately left alone, and failing CI on them would force the rename this change defers.
 
 ### Decision: teams are first-class index entries and a bundle install path
 
@@ -81,7 +81,7 @@ Team entries carry `members`, so selecting a team expands to the team file plus 
 
 ### Decision: stub personas, marked with an optional top-level key
 
-The four missing members get stub files so the team resolves, the CI error is satisfied, and, more importantly, so the gap is visible and self-correcting rather than just silenced.
+The four missing members get stub files so the team resolves, and so the gap is visible and self-correcting rather than just silenced. They are kept because each implies a real role need, not because a check demands them.
 
 How the "imperative to flesh out" works inside the existing framework: the stub's `behavioral_rules` carries a rule to announce its stub status on first invocation per session and offer to define itself from the work in progress, without refusing the task. This relies only on the mechanism all personas already use (rules read by the model), with no new framework behavior.
 

@@ -135,12 +135,36 @@ class FixtureTests(unittest.TestCase):
         self.assertEqual(t["domain"], "dev")
         self.assertEqual(levels(diags, bpi.ERROR), [])
 
-    def test_team_missing_member_is_error_naming_team_and_member(self):
+    def test_team_missing_member_is_warning_and_incomplete(self):
         self.f.write("personas/dev/a.json", persona("a"))
-        self.f.write("personas/dev/teams/t.json", team("my_team", ["a", "ghost"]))
-        _, diags = self.f.build()
-        errs = levels(diags, bpi.ERROR)
-        self.assertTrue(any("my_team" in m and "ghost" in m for m in errs))
+        self.f.write("personas/dev/teams/t.json", team("my_team", ["a", "ghost"], primary="a"))
+        index, diags = self.f.build()
+        self.assertEqual(levels(diags, bpi.ERROR), [])
+        self.assertTrue(any("my_team" in m and "ghost" in m for m in levels(diags, bpi.WARNING)))
+        t = index["teams"][0]
+        self.assertEqual(t["status"], "incomplete")
+        self.assertEqual(t["unresolved_members"], ["ghost"])
+        self.assertEqual(t["members"], ["a", "ghost"])
+
+    def test_team_missing_default_primary_is_warning_and_incomplete(self):
+        self.f.write("personas/dev/a.json", persona("a"))
+        self.f.write("personas/dev/teams/t.json", team("my_team", ["a"], primary="ghost"))
+        index, diags = self.f.build()
+        self.assertEqual(levels(diags, bpi.ERROR), [])
+        self.assertTrue(any("default_primary 'ghost'" in m for m in levels(diags, bpi.WARNING)))
+        self.assertEqual(index["teams"][0]["unresolved_members"], ["ghost"])
+        self.assertEqual(index["teams"][0]["status"], "incomplete")
+
+    def test_incomplete_takes_precedence_over_contains_stubs(self):
+        self.f.write("personas/dev/s.json", persona("s", stub=True))
+        self.f.write("personas/dev/teams/t.json", team("my_team", ["s", "ghost"], primary="s"))
+        self.assertEqual(self.f.build()[0]["teams"][0]["status"], "incomplete")
+
+    def test_complete_team_has_no_unresolved_members(self):
+        self.f.write("personas/dev/a.json", persona("a"))
+        self.f.write("personas/dev/teams/t.json", team("my_team", ["a"]))
+        t = self.f.build()[0]["teams"][0]
+        self.assertEqual((t["status"], t["unresolved_members"]), ("complete", []))
 
     def test_team_with_stub_member_flagged(self):
         self.f.write("personas/dev/a.json", persona("a"))
@@ -199,7 +223,7 @@ class CheckModeTests(unittest.TestCase):
         self.assertEqual(bpi.main(["--check"] + self.args), 0)
 
     def test_errors_block_write_and_check(self):
-        self.f.write("personas/dev/teams/t.json", team("t", ["ghost"]))
+        self.f.write("personas/dev/broken.json", "{not json")
         self.assertEqual(bpi.main(self.args), 1)
         self.assertFalse((self.f.root / "index.json").exists())
         self.assertEqual(bpi.main(["--check"] + self.args), 1)
@@ -266,6 +290,8 @@ class RealRepoTests(unittest.TestCase):
         ids = {e["id"] for e in self.index["personas"]}
         for t in self.index["teams"]:
             self.assertTrue(set(t["members"]) <= ids, t["id"])
+            self.assertEqual(t["unresolved_members"], [], t["id"])
+            self.assertNotEqual(t["status"], "incomplete", t["id"])
 
 
 if __name__ == "__main__":

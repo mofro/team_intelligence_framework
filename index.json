@@ -808,6 +808,7 @@
         "cloud_architect"
       ],
       "default_primary": "experienced_developer",
+      "unresolved_members": [],
       "aliases": [],
       "path": "personas/development/teams/flutter_mobile_development_team.json",
       "bytes": 4110,
@@ -825,6 +826,7 @@
         "ttrpg_game_architect"
       ],
       "default_primary": "lore_keeper",
+      "unresolved_members": [],
       "aliases": [],
       "path": "personas/gaming/teams/hero_heaven_worldbuilding_team.json",
       "bytes": 2341,
@@ -844,6 +846,7 @@
         "product_manager"
       ],
       "default_primary": "llm_prompt_specialist",
+      "unresolved_members": [],
       "aliases": [],
       "path": "personas/ai_development/teams/intelligence_framework_team.json",
       "bytes": 2945,
@@ -864,6 +867,7 @@
         "cloud_architect"
       ],
       "default_primary": "react_specialist",
+      "unresolved_members": [],
       "aliases": [
         "news_aggregation_team"
       ],
@@ -886,6 +890,7 @@
         "cloud_architect"
       ],
       "default_primary": "experienced_developer",
+      "unresolved_members": [],
       "aliases": [
         "react_fullstack_team"
       ],
@@ -908,6 +913,7 @@
         "estate_planner"
       ],
       "default_primary": "investment_advisor",
+      "unresolved_members": [],
       "aliases": [],
       "path": "personas/financial/teams/retirement_planning_team.json",
       "bytes": 4436,
