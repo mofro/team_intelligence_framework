@@ -1,6 +1,6 @@
 # Proposal: changes to TIF for compatibility with persona-conductor
 
-Status: **items 1, 3, 4, 5 and 6 applied on this branch (004b6d4, 5603ab2, f872856, 9fc629b, e5c9a98); item 2 is not applied (see its section).**
+Status: **all six items applied on this branch (004b6d4, 5603ab2, f872856, 9fc629b, e5c9a98, 7ae0f97); item 2 in a reduced form (see its section).**
 The first two commits on the branch were this document alone. Sections below describe each item as proposed; an
 **Applied** line says what was actually done, including where it departs from the proposal.
 Written 2026-10-07. Source project: `~/Code/persona-conductor-proto` (`DESIGN.md` section 8, decisions D4, D5, D7, D20).
@@ -62,7 +62,7 @@ Evidence was re-checked against the repo on 2026-10-07 (commit `1134cab`).
   from the prompt. **The plugin has no code that reads `references`**: lazy loading was deferred
   until a persona has one. Doing this change alone gives the plugin nothing new.
 - **Cost / risk:** the largest item, and someone must decide what each `path` is. Do not do it unless TIF itself wants lazy references.
-- **Not applied; found while preparing it (2026-10-07):** the entries are objects `{type, description, url}`, not strings, in 21
+- **Found while preparing it (2026-10-07):** the entries are objects `{type, description, url}`, not strings, in 21
   persona files. Many `url` values are `internal://...` placeholders with no file behind them (all financial and screenplay
   personas, parts of development), the rest are real web URLs. So there is no local path to write for any of them without
   inventing a document. A mechanical rename to `references: [{when, source}]` (no `path`) is possible but would leave
@@ -70,6 +70,10 @@ Evidence was re-checked against the repo on 2026-10-07 (commit `1134cab`).
 - **Two more nonexistent guides found in the same scan** (missed in item 3): `financial/context_configuration.json` lists
   `financial_collaboration_guide.md`, and `writing/screenplays/context_configuration_screenplays.json` lists
   `writing_collaboration_guide.md`; neither exists. Not changed.
+- **Applied in reduced form (7ae0f97, reviewer decision 2026-10-08):** `reference_libraries` in the 21 persona files became
+  `references: [{"description": ...}]`. `type`, `url` and `depth` were dropped (68 entries: 41 https URLs, 27 `internal://`
+  placeholders). No `path` was written because no local files exist; one can be added per entry later. Compiled plugin output for
+  the security specialist is byte-identical before and after. The URLs are gone from the files but remain in git history.
 
 ### 3. Missing and nonexistent references in `development/context_configuration.json`
 
