@@ -176,4 +176,4 @@ source of truth. The cost of not retrofitting is TIF's existing inconsistencies 
 4. Item 6, if wanted.
 5. Item 2 only if the reviewer wants lazy references.
 
-Nothing is merged. The branch can be deleted without effect on the plugin.
+Nothing is merged; the branch is pushed to `origin` (2026-10-08) for review under issue #7. The branch can be deleted without effect on the plugin.
