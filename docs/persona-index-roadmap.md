@@ -28,5 +28,5 @@ Rule of thumb: pull an item in when a real consumer needs it, not before.
 ## Repo hygiene follow-ups (not index work)
 
 - Reconcile the four stale ids in `personas/development/context_configuration.json`. Needs a decision on which handle users should type, and a before/after behavior check. See design.md "Decision: do not edit context_configuration".
-- Decide `security_review_team`: write a real team file or remove it from `available_teams`.
+- `security_review_team` is a virtual team by design (no file needed). If a consumer wants virtual teams resolvable, `available_teams` entries without files could be listed in the index.
 - Rename `personas/examples/*.json` (Markdown content) to `.md`.

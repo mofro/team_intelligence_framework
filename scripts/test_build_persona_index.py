@@ -168,7 +168,8 @@ class FixtureTests(unittest.TestCase):
         self.assertEqual(levels(diags, bpi.ERROR), [])
         self.assertTrue(any("'real_persona' resolves via alias to 'real'" in m for m in levels(diags, bpi.NOTE)))
         self.assertTrue(any("'nobody'" in m for m in levels(diags, bpi.WARNING)))
-        self.assertTrue(any("'no_such_team'" in m for m in levels(diags, bpi.WARNING)))
+        self.assertTrue(any("'no_such_team'" in m for m in levels(diags, bpi.NOTE)))
+        self.assertFalse(any("'no_such_team'" in m for m in levels(diags, bpi.WARNING)))
         self.assertEqual((self.f.root / "personas/dev/context_configuration.json").read_bytes(), before)
 
     def test_deterministic_output(self):
@@ -247,10 +248,10 @@ class RealRepoTests(unittest.TestCase):
         self.assertEqual(teams["intelligence_framework_team"], "contains_stubs")
         self.assertEqual([k for k, v in teams.items() if v == "contains_stubs"], ["intelligence_framework_team"])
 
-    def test_security_review_team_is_only_warning_about_teams(self):
-        warns = [m for m in levels(self.diags, bpi.WARNING) if "available_teams" in m]
-        self.assertEqual(len(warns), 1)
-        self.assertIn("security_review_team", warns[0])
+    def test_security_review_team_is_a_note_not_a_warning(self):
+        self.assertFalse([m for m in levels(self.diags, bpi.WARNING) if "available_teams" in m])
+        notes = [m for m in levels(self.diags, bpi.NOTE) if "security_review_team" in m]
+        self.assertEqual(len(notes), 1)
 
     def test_every_entry_hash_matches_file(self):
         for e in self.index["personas"] + self.index["teams"]:

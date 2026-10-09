@@ -236,7 +236,7 @@ def check_context(rel, obj, by_id, alias_owner, team_ids, team_alias_owner, diag
         if value in team_alias_owner:
             diagnostics.append((NOTE, f"{rel}: available_teams '{value}' resolves via alias to '{team_alias_owner[value]}'"))
         else:
-            diagnostics.append((WARNING, f"{rel}: available_teams '{value}' does not match any team file"))
+            diagnostics.append((NOTE, f"{rel}: available_teams '{value}' has no team file (treated as a virtual team)"))
 
 
 def render(index):

@@ -110,7 +110,7 @@ Conductor is a separate repo and this repo cannot enforce what a consumer does. 
 ## Migration Plan
 
 1. Add stubs, generator, workflow and `index.json` in one branch/PR. Existing files are untouched, so there is no data migration.
-2. Run the generator and review its error, warning and note output. The expected result is zero errors, one warning (`security_review_team`), and notes for the four alias-resolved ids.
+2. Run the generator and review its error, warning and note output. The expected result is zero errors, zero warnings, and notes for the four alias-resolved ids and for `security_review_team` (a virtual team with no file).
 3. Merge, then optionally tag a release for Conductor to pin to.
 4. Rollback: delete `index.json`, the script, the workflow and the stub files. Nothing else depends on them.
 
@@ -118,4 +118,4 @@ Conductor is a separate repo and this repo cannot enforce what a consumer does. 
 
 - Which spelling should users type for the development personas (`@developer_coding_persona` or `@experienced_developer`)? Needed for the deferred follow-up change, not for this one.
 - Does Conductor need `context_configuration.json` files at all? If so, listing them in the index is a roadmap item.
-- Should `security_review_team` become a real team file or be removed from `available_teams`? It is reported as a warning until decided.
+- Resolved: `security_review_team` is a virtual team by design. Teams need no file, and personas need not belong to any team. The generator reports it as a note.

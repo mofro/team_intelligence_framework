@@ -72,7 +72,7 @@ Each team file under a `teams/` directory inside `personas/` SHALL be indexed wi
 - **THEN** generation fails with an error naming the team and the member
 
 ### Requirement: Context configuration references
-Generation SHALL read each `context_configuration*.json` file and check its `available_personas`, `always_on_personas`, `default_primary_persona` and `available_teams` against persona ids, aliases and team ids. A reference that resolves only through an alias SHALL produce an informational note. A reference that does not resolve at all SHALL produce a warning. Neither SHALL fail generation or cause any context configuration file to be modified.
+Generation SHALL read each `context_configuration*.json` file and check its `available_personas`, `always_on_personas`, `default_primary_persona` and `available_teams` against persona ids, aliases and team ids. A reference that resolves only through an alias SHALL produce an informational note. A persona reference that does not resolve at all SHALL produce a warning. A team reference with no team file SHALL produce an informational note only, because a team may be virtual (composed ad hoc from any personas, with no file). Neither SHALL fail generation or cause any context configuration file to be modified.
 
 #### Scenario: Config id resolves via alias
 - **WHEN** `available_personas` contains `design_expert`
@@ -80,7 +80,7 @@ Generation SHALL read each `context_configuration*.json` file and check its `ava
 
 #### Scenario: Config lists a team that has no file
 - **WHEN** `available_teams` contains `security_review_team` and no team file defines it
-- **THEN** generation emits a warning naming the config file and the team id and succeeds
+- **THEN** generation emits a note naming the config file and the team id, treating it as a virtual team, and succeeds
 
 ### Requirement: Index freshness check
 The repository SHALL provide a check mode that regenerates the index in memory, compares it with the committed `index.json`, and exits non-zero without modifying any file when they differ or when generation has errors. A continuous-integration workflow SHALL run this check on pull requests and pushes to the default branch.
