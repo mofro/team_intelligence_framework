@@ -10,7 +10,7 @@ Auditing the repo for this change also found that the catalog has gaps a machine
 - Add a generator script (`scripts/build_persona_index.py`, Python 3 standard library only) with a `--check` mode, and a CI workflow that fails when `index.json` is stale or the catalog has errors.
 - Define **id resolution**: `persona.persona_name` is the canonical id, matching the existing documented convention. Each entry also carries `aliases` (derived from the file name) so a consumer reading the index can resolve the ids used in the older `context_configuration.json` files. This helps index consumers only; it does not change how the framework itself treats those ids.
 - Add **stub personas** for the four team members that have no file (`system_architect`, `data_scientist`, `backend_developer`, `product_manager`). A stub is a valid persona file in the current 1.2 schema, seeded from what the team file already says about the role. It tells the user it is a stub the first time it is invoked and proposes fleshing it out.
-- Define the minimal **retrieval contract**: a consumer fetches `index.json` at a git ref, selects personas by id or alias and/or teams by id, and fetches only those files by path. A team entry lists its members, so a team works as a one-step bundle. Further consumer behavior (hash verification, tag pinning, compatibility checks, stub disclosure, install layout) is recorded as recommendations in `.devnotes/persona-index-roadmap.md` rather than required here.
+- Define the minimal **retrieval contract**: a consumer fetches `index.json` at a git ref, selects personas by id or alias and/or teams by id, and fetches only those files by path. A team entry lists its members, so a team works as a one-step bundle. Further consumer behavior (hash verification, tag pinning, compatibility checks, stub disclosure, install layout) is recorded as recommendations in `docs/persona-index-roadmap.md` rather than required here.
 - **No change** to any existing persona, team or `context_configuration.json` file. The id mismatches in `personas/development/context_configuration.json` are reported by the generator as warnings and resolved through aliases. Whether to edit that config is deferred to a separate change (see design.md, "Decision: do not edit context_configuration").
 - Tags are explicitly out of scope for this change.
 
@@ -28,7 +28,7 @@ None. `openspec/specs/` is empty, so there are no existing capability requiremen
 
 ## Impact
 
-- **New files:** `index.json`, `scripts/build_persona_index.py`, `.github/workflows/persona-index.yml`, four stub persona files under `personas/ai_development/`, and a README section on retrieval, and `.devnotes/persona-index-roadmap.md`.
+- **New files:** `index.json`, `scripts/build_persona_index.py`, `.github/workflows/persona-index.yml`, four stub persona files under `personas/ai_development/`, and a README section on retrieval, and `docs/persona-index-roadmap.md`.
 - **Existing files:** the existing 24 persona files, the template, 6 team files and 7 `context_configuration.json` files are not modified.
 - **Not touched:** the existing `.github/workflows/collect-context.yml`.
 - **Other repos:** `persona-conductor-proto` needs a follow-up change to use the retrieval contract. That change is out of scope here, and this proposal has not examined that repo's loading code, so the contract is written from this repo's side only and kept minimal. The roadmap file lists additions to pass to that work.

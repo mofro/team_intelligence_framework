@@ -21,7 +21,7 @@
 
 ## 4. Documentation
 
-- [x] 4.1 Add a "Retrieving personas" section to `README.md` describing `index.json`, how to regenerate it, how to look up personas by id or alias and teams by id, the stub marker, and a pointer to `.devnotes/persona-index-roadmap.md`. Verify every command in the section runs as written.
+- [x] 4.1 Add a "Retrieving personas" section to `README.md` describing `index.json`, how to regenerate it, how to look up personas by id or alias and teams by id, the stub marker, and a pointer to `docs/persona-index-roadmap.md`. Verify every command in the section runs as written.
 - [x] 4.2 Record the deferred decisions in `TODO.md`: reconcile development context ids (needs the `@developer_coding_persona` vs `@experienced_developer` decision, and a manual check of current framework behavior with the mismatched ids), `security_review_team` fate, and tags. Verify the entries link to `design.md` and the roadmap file.
 
 ## 5. Acceptance

@@ -95,7 +95,7 @@ Entries copy `role`, `expertise`, `schema_version` and `version` from the existi
 
 ### Decision: keep the retrieval contract minimal, park the rest
 
-Conductor is a separate repo and this repo cannot enforce what a consumer does. The specs therefore require only what this repo controls: a fetchable index, lookup by id or alias, and team entries that list their members. Consumer-side behavior (hash verification, compatibility checks, stub and dependency disclosure, install layout, listing context configs and dependencies in the index) is recorded as roadmap items in `.devnotes/persona-index-roadmap.md`, to be pulled into Conductor's work or into this repo's index when a consumer needs them. `sha256` and `bytes` stay in the index because they are free to generate and make those later features possible.
+Conductor is a separate repo and this repo cannot enforce what a consumer does. The specs therefore require only what this repo controls: a fetchable index, lookup by id or alias, and team entries that list their members. Consumer-side behavior (hash verification, compatibility checks, stub and dependency disclosure, install layout, listing context configs and dependencies in the index) is recorded as roadmap items in `docs/persona-index-roadmap.md`, to be pulled into Conductor's work or into this repo's index when a consumer needs them. `sha256` and `bytes` stay in the index because they are free to generate and make those later features possible.
 
 ## Risks / Trade-offs
 

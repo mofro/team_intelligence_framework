@@ -158,7 +158,7 @@
 - **`security_review_team`**: listed in `available_teams` with no team file. Create the team or drop the reference.
 - **Tags** for discovery: deferred.
 - **Stub personas** (`system_architect`, `data_scientist`, `backend_developer`, `product_manager`): flesh out when next invoked.
-- See `openspec/changes/persona-index/design.md` and `.devnotes/persona-index-roadmap.md`.
+- See `openspec/changes/persona-index/design.md` and `docs/persona-index-roadmap.md`.
 
 ---
 
