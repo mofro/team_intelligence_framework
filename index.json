@@ -1,0 +1,918 @@
+{
+  "index_version": 1,
+  "personas": [
+    {
+      "id": "backend_developer",
+      "name": "Backend Developer - Stub (placeholder)",
+      "summary": "STUB: placeholder persona, not yet fleshed out. Created 2026-10-09 so intelligence_framework_team resolves. Seeded only from intelligence_framework_team.json: backend_developer decides implementation feasibility; paired with llm_prompt_specialist on API implementation patterns.",
+      "role": "Implementation feasibility and API implementation",
+      "domain": "ai_development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/ai_development/backend_developer_persona_schema.json",
+      "bytes": 2455,
+      "sha256": "25474b9f5f81f08309c4e3c0257f10e088670489dbd2c9c08802300201dae65f",
+      "aliases": [
+        "backend_developer_persona_schema",
+        "backend_developer_persona"
+      ],
+      "expertise": [
+        "implementation_feasibility",
+        "api_implementation"
+      ],
+      "status": "stub"
+    },
+    {
+      "id": "blits_developer",
+      "name": "Blits - UI Application Architecture Specialist",
+      "summary": "Experienced Blits/Lightning developer focused on performant TV/OTT application development",
+      "role": "Lightning/Blits framework specialist and performance optimization expert",
+      "domain": "development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/development/blits_developer_persona_schema_v1.json",
+      "bytes": 3305,
+      "sha256": "7767b3e3d3d8307a2f685d700e6223eb58277eec51e59cf20933adff8dd1fed4",
+      "aliases": [
+        "blits_developer_persona_schema_v1",
+        "blits_developer_persona_schema",
+        "blits_developer_persona"
+      ],
+      "expertise": [
+        "lightning_architecture",
+        "blits_component_patterns",
+        "canvas_rendering",
+        "performance_optimization",
+        "tv_application_ux",
+        "responsive_layouts",
+        "state_management",
+        "animation_pipelines",
+        "remote_control_navigation",
+        "memory_management"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "cloud_architect",
+      "name": "Cloud Architecture Specialist - Infrastructure & Deployment Expert",
+      "summary": "Pragmatic cloud architect focused on cost-effective, maintainable infrastructure",
+      "role": "Cloud infrastructure specialist and deployment strategy expert",
+      "domain": "development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/development/cloud_architect_persona.json",
+      "bytes": 4092,
+      "sha256": "8870e087f8d3c692966fa715593342fcfc657da5777142f2b2999de236042cec",
+      "aliases": [
+        "cloud_architect_persona"
+      ],
+      "expertise": [
+        "serverless_architecture",
+        "vercel_deployment",
+        "aws_services",
+        "azure_cloud",
+        "cost_optimization",
+        "infrastructure_automation",
+        "cicd_pipelines",
+        "monitoring_setup",
+        "scalability_planning",
+        "security_infrastructure"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "data_scientist",
+      "name": "Data Scientist - Stub (placeholder)",
+      "summary": "STUB: placeholder persona, not yet fleshed out. Created 2026-10-09 so intelligence_framework_team resolves. Seeded only from intelligence_framework_team.json: data_scientist provides model performance insights and owns model evaluation and metrics; paired with llm_prompt_specialist on model performance optimization.",
+      "role": "Model evaluation, metrics and model performance insights",
+      "domain": "ai_development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/ai_development/data_scientist_persona_schema.json",
+      "bytes": 2482,
+      "sha256": "d643ac5b1ef5d9eba2efac1999ab1086b28f4b75d415b5cf1cf5a93b9128aa9d",
+      "aliases": [
+        "data_scientist_persona_schema",
+        "data_scientist_persona"
+      ],
+      "expertise": [
+        "model_evaluation",
+        "performance_metrics"
+      ],
+      "status": "stub"
+    },
+    {
+      "id": "dialog_coach",
+      "name": "Dialog Coach - Character Voice and Conversation Specialist",
+      "summary": "Expert in character voice development, authentic dialogue, and conversational dynamics",
+      "role": "Character voice development and dialogue authenticity specialist",
+      "domain": "writing",
+      "subdomain": "screenplays",
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/writing/screenplays/dialog_coach_persona_schema.json",
+      "bytes": 3476,
+      "sha256": "0ed89266b3d04636deba6082f121d8c3db683d00f3a92dc07ea0947be38a3662",
+      "aliases": [
+        "dialog_coach_persona_schema",
+        "dialog_coach_persona"
+      ],
+      "expertise": [
+        "character_voice_development",
+        "dialogue_authenticity",
+        "conversational_dynamics",
+        "subtext_and_implication",
+        "character_consistency",
+        "professional_dialogue_patterns",
+        "emotional_authenticity",
+        "speech_patterns_and_cadence",
+        "character_differentiation",
+        "dialogue_efficiency"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "director_of_photography",
+      "name": "Director of Photography - Visual Storytelling Specialist",
+      "summary": "Seasoned cinematographer with expertise in visual storytelling, framing, and modern filmmaking techniques",
+      "role": "Visual storytelling and cinematography specialist",
+      "domain": "writing",
+      "subdomain": "screenplays",
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/writing/screenplays/dp_persona_schema.json",
+      "bytes": 3261,
+      "sha256": "f813699261299234706bc9dbcbe48f007f20df2989c4b2b69f71e2807b339214",
+      "aliases": [
+        "dp_persona_schema",
+        "dp_persona",
+        "dp"
+      ],
+      "expertise": [
+        "visual_storytelling",
+        "framing_and_composition",
+        "lighting_design",
+        "color_theory",
+        "camera_movement",
+        "lens_selection",
+        "mood_creation",
+        "visual_pacing",
+        "modern_filming_techniques",
+        "emerging_technology_integration"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "estate_planner",
+      "name": "Estate Planner - Legacy Planning and Wealth Transfer Specialist",
+      "summary": "Estate planning expert focused on asset protection, legacy strategy, and wealth transfer optimization",
+      "role": "Legacy planning and wealth transfer specialist",
+      "domain": "financial",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/financial/estate_planner_schema.json",
+      "bytes": 3116,
+      "sha256": "a3eb7f05911a0f2bc927c16785910c32bf24f91a7c6119b2611a5efd901ec4d0",
+      "aliases": [
+        "estate_planner_schema"
+      ],
+      "expertise": [
+        "wills_and_trusts",
+        "beneficiary_optimization",
+        "legacy_planning",
+        "charitable_strategies",
+        "power_of_attorney",
+        "healthcare_directives",
+        "asset_protection"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "experienced_developer",
+      "name": "Developer Coding Persona - Senior Developer and Architect",
+      "summary": "Software development expert with expertise in code review, architecture design, and best practices across multiple technology stacks",
+      "role": "Senior developer/architect and development partnership specialist",
+      "domain": "development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/development/developer_coding_persona_schema.json",
+      "bytes": 3918,
+      "sha256": "036fa6c502a6281bc11112c7c93577486f7013c382ba0835e989fa0315c76794",
+      "aliases": [
+        "developer_coding_persona_schema",
+        "developer_coding_persona",
+        "developer_coding"
+      ],
+      "expertise": [
+        "system_design",
+        "architecture_patterns",
+        "code_quality",
+        "refactoring_strategies",
+        "testing_strategies",
+        "performance_optimization",
+        "maintainable_code",
+        "scalable_architecture",
+        "design_patterns",
+        "root_cause_analysis"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "flutter_architect",
+      "name": "Flutter Architect - Multi-Platform Architecture Specialist",
+      "summary": "Flutter expert specializing in cross-platform architecture, platform-specific constraints, and sustainable migration strategies",
+      "role": "Multi-platform Flutter architecture specialist and migration strategist",
+      "domain": "development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/development/flutter_architect_persona_schema.json",
+      "bytes": 5429,
+      "sha256": "efd2133cd847f2b05504a58f29637805a4849508d46c78356b0287b02cf2882d",
+      "aliases": [
+        "flutter_architect_persona_schema",
+        "flutter_architect_persona"
+      ],
+      "expertise": [
+        "multi_platform_flutter_architecture",
+        "platform_specific_constraints",
+        "state_management_patterns",
+        "navigation_and_routing",
+        "build_pipeline_configuration",
+        "deployment_strategies",
+        "flutter_ecosystem_knowledge",
+        "web_runtime_integration",
+        "platform_api_integration",
+        "performance_optimization",
+        "testing_and_quality_assurance"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "healthcare_expert",
+      "name": "Healthcare Expert - Medicare and Benefits Specialist",
+      "summary": "Healthcare benefits and Medicare planning specialist focused on cost management and enrollment optimization",
+      "role": "Healthcare cost planning and benefits optimization specialist",
+      "domain": "financial",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/financial/healthcare_expert_schema.json",
+      "bytes": 3173,
+      "sha256": "22527642605ccf159f9294c7466a6fc6063c2e4327d5ba8db27edee213c82f1c",
+      "aliases": [
+        "healthcare_expert_schema"
+      ],
+      "expertise": [
+        "medicare_planning",
+        "cobra_bridge_strategies",
+        "health_insurance_marketplace",
+        "long_term_care_insurance",
+        "health_savings_accounts",
+        "medicare_supplement_insurance",
+        "healthcare_cost_estimation"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "insurance_analyst",
+      "name": "Insurance Analyst - Risk Management and Coverage Specialist",
+      "summary": "Insurance needs analysis and risk management specialist focused on catastrophic protection",
+      "role": "Insurance optimization and risk protection specialist",
+      "domain": "financial",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/financial/insurance_analyst_schema.json",
+      "bytes": 3091,
+      "sha256": "8a56612cc306250593be02f14be710e18d0b8849dacc5a84f15bb6b90ce9d060",
+      "aliases": [
+        "insurance_analyst_schema"
+      ],
+      "expertise": [
+        "life_insurance_needs_analysis",
+        "disability_insurance_evaluation",
+        "long_term_care_insurance",
+        "umbrella_liability_coverage",
+        "insurance_cost_optimization",
+        "self_insurance_strategies",
+        "risk_assessment"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "investment_advisor",
+      "name": "Investment Advisor - Portfolio and Risk Management Specialist",
+      "summary": "Portfolio allocation and retirement phase investment specialist",
+      "role": "Portfolio optimization and risk management specialist",
+      "domain": "financial",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/financial/investment_advisor_schema.json",
+      "bytes": 3315,
+      "sha256": "d9cda0d5c1e65ebf556a38c0cfbec75ebc1557fac2533948741a80fbf9a2c95e",
+      "aliases": [
+        "investment_advisor_schema"
+      ],
+      "expertise": [
+        "retirement_portfolio_allocation",
+        "sequence_of_returns_risk",
+        "bond_ladders_and_buckets",
+        "dividend_growth_strategies",
+        "asset_location_optimization",
+        "rebalancing_strategies",
+        "market_volatility_management"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "lightning_developer",
+      "name": "Lightning v2 - Core Framework Specialist",
+      "summary": "Experienced Lightning v2 developer focused on core framework patterns and rendering optimization",
+      "role": "Lightning v2 framework specialist and rendering pipeline expert",
+      "domain": "development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/development/lightning_developer_persona_schema_v1.json",
+      "bytes": 3435,
+      "sha256": "07493de064e234ebf28116e587ee7216cb02f3fd1b6d1a0f2fccb048efcc44c2",
+      "aliases": [
+        "lightning_developer_persona_schema_v1",
+        "lightning_developer_persona_schema",
+        "lightning_developer_persona"
+      ],
+      "expertise": [
+        "lightning_node_structure",
+        "texture_management",
+        "shader_programming",
+        "lightning_stage_tree",
+        "input_handling",
+        "patch_operations",
+        "text_rendering",
+        "complex_animations",
+        "low_level_rendering",
+        "template_patterns"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "llm_prompt_specialist",
+      "name": "LLM Prompt Specialist - Large Language Model Expert",
+      "summary": "Expert in large language models, prompt engineering, and commercial AI platform implementations with deep understanding of UI/UX differences and optimization strategies",
+      "role": "Large language model specialist and prompt engineering expert",
+      "domain": "ai_development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/ai_development/llm_prompt_specialist_persona_schema.json",
+      "bytes": 5863,
+      "sha256": "773192107db58e8a23f7c829df00d1f785a37f1c09b8b4e38e10fbc7133b414d",
+      "aliases": [
+        "llm_prompt_specialist_persona_schema",
+        "llm_prompt_specialist_persona"
+      ],
+      "expertise": [
+        "large_language_models",
+        "prompt_engineering",
+        "commercial_ai_platforms",
+        "prompt_optimization",
+        "ai_system_architecture",
+        "model_comparison",
+        "conversation_design",
+        "ai_interface_design"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "lore_keeper",
+      "name": "Lore Keeper - World-Building Memory and Consistency Guardian",
+      "summary": "Formal scholarly archivist who maintains world documentation, catches inconsistencies, and serves as authoritative expert on established lore and narrative decisions",
+      "role": "World-building documentation specialist and narrative consistency guardian",
+      "domain": "gaming",
+      "subdomain": "hero_heaven",
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/gaming/hero_heaven/lore_keeper_persona_schema.json",
+      "bytes": 4018,
+      "sha256": "c6bf1b63422fedf30137aba78e1f18c3d7a298033d3e12aa451b9c3cbe2a8f99",
+      "aliases": [
+        "lore_keeper_persona_schema",
+        "lore_keeper_persona"
+      ],
+      "expertise": [
+        "world_documentation",
+        "lore_consolidation",
+        "consistency_tracking",
+        "narrative_mechanics",
+        "decision_rationale_capture",
+        "cross_reference_management",
+        "inconsistency_detection",
+        "world_index_maintenance",
+        "file_organization",
+        "collaborative_world_building"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "mythweaver",
+      "name": "Mythweaver - Narrative Resonance and Cosmological Architect",
+      "summary": "Historian and storyteller who weaves myth into modified history, maps cosmological patterns onto narrative, and maintains the dual-truth system where storytellers know reality while players experience deliberate moral ambiguity",
+      "role": "Narrative resonance specialist and cosmological architect; myth-to-history integrator",
+      "domain": "gaming",
+      "subdomain": "hero_heaven",
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/gaming/hero_heaven/mythweaver_persona_schema.json",
+      "bytes": 5131,
+      "sha256": "ee78c0f177534c858f7dba187e8c2203d39ba58809dd8038d0ede62a5aaac782",
+      "aliases": [
+        "mythweaver_persona_schema",
+        "mythweaver_persona"
+      ],
+      "expertise": [
+        "myth_pattern_recognition",
+        "archetypal_mapping",
+        "cosmological_structure_design",
+        "allegory_integration",
+        "historical_adaptation",
+        "thematic_resonance_building",
+        "dual_truth_system_maintenance",
+        "moral_ambiguity_seeding",
+        "player_uncertainty_management",
+        "transcendence_narrative_design",
+        "earned_grimness_framework",
+        "lie_and_revelation_architecture"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "product_manager",
+      "name": "Product Manager - Stub (placeholder)",
+      "summary": "STUB: placeholder persona, not yet fleshed out. Created 2026-10-09 so intelligence_framework_team resolves. Seeded only from intelligence_framework_team.json: product_manager owns business requirements and constraints; paired with llm_prompt_specialist on feature prioritization and cost analysis.",
+      "role": "Business requirements, constraints, feature prioritization and cost analysis",
+      "domain": "ai_development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/ai_development/product_manager_persona_schema.json",
+      "bytes": 2521,
+      "sha256": "d9b72f816fe945f4acc334ba98ca6ac6cbfc88ceedea0a7dc53cd52e88ec4e2d",
+      "aliases": [
+        "product_manager_persona_schema",
+        "product_manager_persona"
+      ],
+      "expertise": [
+        "business_requirements",
+        "feature_prioritization",
+        "cost_analysis"
+      ],
+      "status": "stub"
+    },
+    {
+      "id": "react_specialist",
+      "name": "React Specialist - Pragmatic Framework Expert",
+      "summary": "Pragmatic React specialist who balances framework best practices with simplicity and project reality",
+      "role": "React framework specialist and pragmatic development advisor",
+      "domain": "development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/development/react_specialist_persona_schema.json",
+      "bytes": 3828,
+      "sha256": "4c874ebb635af56c5f5256c128088214aa71b1d04b58f85a074b0f3271fd3118",
+      "aliases": [
+        "react_specialist_persona_schema",
+        "react_specialist_persona"
+      ],
+      "expertise": [
+        "react_patterns",
+        "component_architecture",
+        "state_management",
+        "performance_optimization",
+        "progressive_enhancement",
+        "framework_assessment",
+        "build_tooling",
+        "testing_strategies"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "science_advisor",
+      "name": "Science Advisor - Technical Accuracy Specialist",
+      "summary": "Astrophysicist and technical specialist ensuring scientific plausibility and accuracy",
+      "role": "Technical accuracy specialist and scientific authenticity consultant",
+      "domain": "writing",
+      "subdomain": "screenplays",
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/writing/screenplays/science_advisor_persona_schema.json",
+      "bytes": 3214,
+      "sha256": "6601150c479458f68f10e268059676fcc2075541c3541080a6a1e362741834d9",
+      "aliases": [
+        "science_advisor_persona_schema",
+        "science_advisor_persona"
+      ],
+      "expertise": [
+        "astrophysics",
+        "astronomy",
+        "orbital_mechanics",
+        "physics",
+        "computer_science",
+        "neuroscience",
+        "psychology",
+        "materials_science",
+        "space_technology",
+        "scientific_methodology"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "screenwriter",
+      "name": "Screenwriter - Story Structure and Vision Keeper",
+      "summary": "Experienced screenwriter focused on maintaining story integrity, structure, and writer's vision",
+      "role": "Story structure specialist and vision keeper",
+      "domain": "writing",
+      "subdomain": "screenplays",
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/writing/screenplays/screenwriter_persona_schema.json",
+      "bytes": 3029,
+      "sha256": "cb0466ee16dffcead60ad4e1b4ec4bd2d19f9a42ccf040e899bc4a26737fad97",
+      "aliases": [
+        "screenwriter_persona_schema",
+        "screenwriter_persona"
+      ],
+      "expertise": [
+        "story_structure",
+        "three_act_paradigm",
+        "character_arc_development",
+        "pacing_and_rhythm",
+        "genre_conventions",
+        "screenplay_format",
+        "industry_standards",
+        "narrative_coherence",
+        "plot_mechanics",
+        "story_integrity"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "security_specialist",
+      "name": "Security Specialist - Application Security Expert",
+      "summary": "Experienced security specialist focused on application security, token management, and secure coding practices",
+      "role": "Application security expert and secure coding advisor",
+      "domain": "development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/development/security_specialist_persona_schema_v1.json",
+      "bytes": 3547,
+      "sha256": "c02267d4f2f8d2ccb1f0ba4ad36d24dedaa557b63be3be9c4b05f480acdb4628",
+      "aliases": [
+        "security_specialist_persona_schema_v1",
+        "security_specialist_persona_schema",
+        "security_specialist_persona"
+      ],
+      "expertise": [
+        "token_security",
+        "authentication_best_practices",
+        "secure_storage",
+        "csrf_prevention",
+        "xss_mitigation",
+        "secure_api_design",
+        "penetration_testing",
+        "threat_modeling",
+        "security_compliance",
+        "user_data_protection"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "social_security_specialist",
+      "name": "Social Security Specialist - Benefits Optimization Expert",
+      "summary": "Social Security timing and optimization specialist focused on household benefit maximization",
+      "role": "Social Security timing and spousal benefits optimization specialist",
+      "domain": "financial",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/financial/social_security_specialist_schema.json",
+      "bytes": 3136,
+      "sha256": "8c9207100092f86a2c20f09dc1a1496ecec2b712976491b458ce239e39a0b6a3",
+      "aliases": [
+        "social_security_specialist_schema"
+      ],
+      "expertise": [
+        "social_security_timing",
+        "spousal_benefits_optimization",
+        "survivor_benefits_planning",
+        "earnings_test_implications",
+        "delayed_retirement_credits",
+        "file_and_suspend_strategies",
+        "social_security_taxation"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "system_architect",
+      "name": "System Architect - Stub (placeholder)",
+      "summary": "STUB: placeholder persona, not yet fleshed out. Created 2026-10-09 so intelligence_framework_team resolves. Seeded only from intelligence_framework_team.json: system_architect handles integration architecture and makes technical architecture decisions; paired with llm_prompt_specialist on platform integration strategy.",
+      "role": "Technical architecture and integration architecture decisions",
+      "domain": "ai_development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/ai_development/system_architect_persona_schema.json",
+      "bytes": 2525,
+      "sha256": "c69b849b937f3c51e6529f843c35572140d3728a305019b941f7c7a2ef79c68d",
+      "aliases": [
+        "system_architect_persona_schema",
+        "system_architect_persona"
+      ],
+      "expertise": [
+        "technical_architecture",
+        "integration_architecture"
+      ],
+      "status": "stub"
+    },
+    {
+      "id": "tax_strategist",
+      "name": "Tax Strategist - Tax Optimization Specialist",
+      "summary": "Tax-efficient retirement distribution and strategy specialist",
+      "role": "Tax optimization and distribution strategy specialist",
+      "domain": "financial",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/financial/tax_strategist_schema.json",
+      "bytes": 3266,
+      "sha256": "2da214db875214fe4acb3949e144abf17d7ea159daf103603b63d0f107e2941f",
+      "aliases": [
+        "tax_strategist_schema"
+      ],
+      "expertise": [
+        "roth_conversion_strategies",
+        "tax_efficient_withdrawals",
+        "retirement_account_distributions",
+        "state_tax_implications",
+        "medicare_income_thresholds",
+        "required_minimum_distributions",
+        "tax_bracket_management"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "ttrpg_game_architect",
+      "name": "TTRPG Game Architect - Tabletop RPG System Expert",
+      "summary": "Expert in TTRPG system design, player experience prediction, and mechanical adaptation for narrative-driven campaigns",
+      "role": "TTRPG system expert and mechanical design consultant",
+      "domain": "gaming",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/gaming/ttrpg_game_architect_persona_schema.json",
+      "bytes": 4474,
+      "sha256": "22f8ba883ef668591e529d947028a46005bf4dd6fe6ca037e827aa592eee7c57",
+      "aliases": [
+        "ttrpg_game_architect_persona_schema",
+        "ttrpg_game_architect_persona"
+      ],
+      "expertise": [
+        "ttrpg_system_literacy",
+        "player_experience_prediction",
+        "mechanical_progression_design",
+        "rule_adaptation_and_hacking",
+        "system_accessibility_analysis",
+        "narrative_mechanical_fit",
+        "complexity_vs_fun_balance",
+        "community_resource_evaluation"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "ui_designer",
+      "name": "10-foot UI Specialist - Lightning Interface Expert",
+      "summary": "Experienced 10-foot UI designer with deep knowledge of Lightning-specific design patterns and performance considerations",
+      "role": "TV interface designer specializing in Lightning framework patterns",
+      "domain": "development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/development/10_foot_ui_designer_persona_schema_v1.1.json",
+      "bytes": 3452,
+      "sha256": "c23f31aec3d6b6a1fae64dcd6bd9fc76c11fab06065e09653e6715cd9fcd40ac",
+      "aliases": [
+        "10_foot_ui_designer_persona_schema_v1.1",
+        "10_foot_ui_designer_persona_schema",
+        "10_foot_ui_designer_persona",
+        "10_foot_ui_designer"
+      ],
+      "expertise": [
+        "lightning_ui_patterns",
+        "focus_state_design",
+        "smooth_transitions",
+        "performance_conscious_design",
+        "grid_navigation_systems",
+        "smart_loading_patterns",
+        "content_prioritization",
+        "remote_friendly_interactions",
+        "animation_timing",
+        "color_contrast_for_tv"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "ux_designer",
+      "name": "UX Design Specialist - TV/OTT Experience Expert",
+      "summary": "Experienced UX designer focused on 10-foot UI experiences and usability patterns for TV applications",
+      "role": "UX designer and usability advocate for TV interfaces",
+      "domain": "development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/development/ott_ux_persona_schema_v1.1.json",
+      "bytes": 3493,
+      "sha256": "725778209d333d67a83ef1db50e542b860b7f934a0b05ed81a062c0bdd63b7be",
+      "aliases": [
+        "ott_ux_persona_schema_v1.1",
+        "ott_ux_persona_schema",
+        "ott_ux_persona",
+        "ott_ux"
+      ],
+      "expertise": [
+        "10foot_ui_patterns",
+        "remote_control_navigation",
+        "cognitive_load_management",
+        "accessibility_standards",
+        "information_architecture",
+        "content_discovery_patterns",
+        "user_research",
+        "usability_testing",
+        "interaction_design",
+        "visual_hierarchy"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "ux_ui_strategist",
+      "name": "Holistic UX/UI Strategist - Cross-Platform Expert",
+      "summary": "Opinionated UX/UI strategist with experience across multiple platforms and strong views on platform-appropriate design",
+      "role": "Product design strategist and cross-platform UX/UI expert",
+      "domain": "development",
+      "subdomain": null,
+      "schema_version": "1.2",
+      "version": "1.0",
+      "path": "personas/development/design_expert_persona_schema_v1.1.json",
+      "bytes": 3355,
+      "sha256": "1d6cc534d1a057f330248890bb11fdac2e5ae993773a51092cb185991ce752dc",
+      "aliases": [
+        "design_expert_persona_schema_v1.1",
+        "design_expert_persona_schema",
+        "design_expert_persona",
+        "design_expert"
+      ],
+      "expertise": [
+        "platform_appropriate_design",
+        "design_system_architecture",
+        "user_psychology",
+        "content_strategy",
+        "cross_platform_consistency",
+        "information_architecture",
+        "rapid_prototyping",
+        "interaction_design",
+        "usability_heuristics",
+        "micro_interactions"
+      ],
+      "status": "complete"
+    }
+  ],
+  "teams": [
+    {
+      "id": "flutter_mobile_development_team",
+      "name": "Flutter Mobile Development Team",
+      "summary": "Collaborative mobile development team specializing in Flutter implementation, platform-specific optimization, and multi-platform architecture",
+      "domain": "development",
+      "members": [
+        "experienced_developer",
+        "flutter_architect",
+        "react_specialist",
+        "security_specialist",
+        "cloud_architect"
+      ],
+      "default_primary": "experienced_developer",
+      "aliases": [],
+      "path": "personas/development/teams/flutter_mobile_development_team.json",
+      "bytes": 4110,
+      "sha256": "35d67108b028045019c16934c758312b99b8dc59ce3a6f96b4a06faa4e0162d8",
+      "status": "complete"
+    },
+    {
+      "id": "hero_heaven_worldbuilding_team",
+      "name": "Hero Heaven Worldbuilding Team",
+      "summary": "Comprehensive team for building Hero Heaven world, integrating mythology, and evaluating TTRPG systems",
+      "domain": "gaming",
+      "members": [
+        "lore_keeper",
+        "mythweaver",
+        "ttrpg_game_architect"
+      ],
+      "default_primary": "lore_keeper",
+      "aliases": [],
+      "path": "personas/gaming/teams/hero_heaven_worldbuilding_team.json",
+      "bytes": 2341,
+      "sha256": "43b0bd7a402b1b4b06974347d502e577f8336c1c964d8d57b624cfa0b8c13a3b",
+      "status": "complete"
+    },
+    {
+      "id": "intelligence_framework_team",
+      "name": "Intelligence Framework Team",
+      "summary": "Expert team for AI system design, LLM integration, and intelligent framework development",
+      "domain": "ai_development",
+      "members": [
+        "llm_prompt_specialist",
+        "system_architect",
+        "data_scientist",
+        "backend_developer",
+        "product_manager"
+      ],
+      "default_primary": "llm_prompt_specialist",
+      "aliases": [],
+      "path": "personas/ai_development/teams/intelligence_framework_team.json",
+      "bytes": 2945,
+      "sha256": "d00e4a481d83999cad316d94684fc7f43f0959440dce7b3e2a461d755987a691",
+      "status": "contains_stubs"
+    },
+    {
+      "id": "news_aggregation_app_team",
+      "name": "News Aggregation App Team",
+      "summary": "Cross-functional team for building Nemo - personal newsletter aggregation system with email forwarding, dashboard, and digest capabilities",
+      "domain": "development",
+      "members": [
+        "react_specialist",
+        "experienced_developer",
+        "ux_ui_strategist",
+        "ux_designer",
+        "security_specialist",
+        "cloud_architect"
+      ],
+      "default_primary": "react_specialist",
+      "aliases": [
+        "news_aggregation_team"
+      ],
+      "path": "personas/development/teams/news_aggregation_team.json",
+      "bytes": 3501,
+      "sha256": "6558d85cdd6f3e3d4ca14873c3703573413232d4eda9c3dc583b840287110995",
+      "status": "complete"
+    },
+    {
+      "id": "react_fullstack_development_team",
+      "name": "React Full-Stack Development Team",
+      "summary": "End-to-end React application development from design strategy to secure deployment",
+      "domain": "development",
+      "members": [
+        "experienced_developer",
+        "react_specialist",
+        "ux_ui_strategist",
+        "ux_designer",
+        "security_specialist",
+        "cloud_architect"
+      ],
+      "default_primary": "experienced_developer",
+      "aliases": [
+        "react_fullstack_team"
+      ],
+      "path": "personas/development/teams/react_fullstack_team.json",
+      "bytes": 3893,
+      "sha256": "f24cf1393ef76579e1c6b888a3083f80f769e97ee295c0a6ac1081ef9554f40a",
+      "status": "complete"
+    },
+    {
+      "id": "retirement_planning_team",
+      "name": "Retirement Planning Team",
+      "summary": "Collaborative financial planning team specializing in retirement timeline optimization, tax-efficient withdrawal strategies, and comprehensive retirement transition planning",
+      "domain": "financial",
+      "members": [
+        "investment_advisor",
+        "tax_strategist",
+        "healthcare_expert",
+        "social_security_specialist",
+        "insurance_analyst",
+        "estate_planner"
+      ],
+      "default_primary": "investment_advisor",
+      "aliases": [],
+      "path": "personas/financial/teams/retirement_planning_team.json",
+      "bytes": 4436,
+      "sha256": "4be665bf7d1e96e5712d21b30aeb25079feaefb402ccecce5494bafbda10f5c0",
+      "status": "complete"
+    }
+  ]
+}
