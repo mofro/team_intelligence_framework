@@ -6,7 +6,7 @@ Usage:
     python3 scripts/build_persona_index.py --check    # exit 1 if index.json is stale or errors exist
 
 The index is derived only from files under personas/. Nothing else is read or
-modified. Spec: openspec/changes/persona-index/.
+modified. Specs: openspec/specs/; design: openspec/changes/archive/2026-10-10-persona-index/.
 """
 
 import argparse
