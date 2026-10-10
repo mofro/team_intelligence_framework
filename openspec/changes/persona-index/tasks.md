@@ -2,7 +2,7 @@
 
 - [x] 1.1 Create `personas/ai_development/{system_architect,data_scientist,backend_developer,product_manager}_persona_schema.json` with all 1.2 top-level and `persona` keys, `"stub": true`, a stub notice in `metadata.description`, and role/expertise/approach seeded only from `intelligence_framework_team.json` (`decision_hierarchy` and `collaboration_patterns`). Verify each parses as JSON and has the same key set as `estate_planner_schema.json` plus `stub`.
 - [x] 1.2 Add the first-invocation notice rule to each stub's `behavioral_rules` (announce stub status once per session, offer to define the persona, still help with the task). Verify the rule text is present in all four and read it against the persona-stubs spec scenarios.
-- [ ] 1.3 In a scratch session, load one stub through the normal persona procedure and address it with `@<persona_name>`. Verify the notice appears once on first use and is not repeated, and that the task is still answered.
+- [x] 1.3 In a scratch session, load one stub through the normal persona procedure and address it with `@<persona_name>`. Verify the notice appears once on first use and is not repeated, and that the task is still answered.
 
 ## 2. Generator
 
