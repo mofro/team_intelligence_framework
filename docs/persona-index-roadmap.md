@@ -1,6 +1,6 @@
 # persona-index roadmap
 
-Items deliberately left out of `openspec/changes/persona-index/` to keep that change small. Each can be handed to `persona-conductor-proto` as consumer behavior, or implemented in this repo's index/generator when a consumer needs it. Source: design discussion of 2026-10-09.
+Items deliberately left out of `openspec/changes/archive/2026-10-10-persona-index/` to keep that change small. Each can be handed to `persona-conductor-proto` as consumer behavior, or implemented in this repo's index/generator when a consumer needs it. Source: design discussion of 2026-10-09.
 
 Rule of thumb: pull an item in when a real consumer needs it, not before.
 
