@@ -158,6 +158,8 @@
 - **`security_review_team`**: virtual team by design (no file needed); the generator reports it as a note. No action.
 - **Tags** for discovery: deferred.
 - **Stub personas** (`system_architect`, `data_scientist`, `backend_developer`, `product_manager`): flesh out when next invoked.
+- **`add @persona` writes to a tracked config file**: during the task 1.3 test, `add @system_architect` edited `personas/ai_development/context_configuration.json` (added to `available_personas` plus an auto-suggest trigger) while the framework said state lasts for this session only. Decide whether activation should persist to tracked config or stay session-only. Not caused by `persona-index`; reverted locally (UNVERIFIED which framework step performs the write).
+- **"Project Coordinator" default roster**: `personas on` reported no Project Coordinator persona file and fell back to `default_primary_persona` (`llm_prompt_specialist`) alone. The phrase appears in `config/persona_activation_framework.md`, `config/domain_agnostic_framework.md` and `config/measurement_framework.md`. How the default roster is generated is not traced (UNVERIFIED); decide whether a Project Coordinator persona should exist or the docs should change.
 - See `openspec/changes/persona-index/design.md` and `docs/persona-index-roadmap.md`.
 
 ---
