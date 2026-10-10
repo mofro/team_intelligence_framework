@@ -182,7 +182,7 @@ python3 scripts/build_persona_index.py          # regenerate
 python3 scripts/build_persona_index.py --check  # fail if stale (run in CI)
 ```
 
-To fetch only what you need, read `index.json` at a git ref, pick personas by `id` (or an alias) and/or a team by `id`, then fetch those entries' `path` files. A team entry's `members` gives the persona ids to fetch with it. Entries with `status: "stub"` are placeholder personas that ask to be fleshed out when first invoked; teams containing them are marked `contains_stubs`.
+To fetch only what you need, read `index.json` at a git ref, pick personas by `id` (or an alias) and/or a team by `id`, then fetch those entries' `path` files. A team entry's `members` gives the persona ids to fetch with it. Entries with `status: "stub"` are placeholder personas that ask to be fleshed out when first invoked; teams containing them are marked `contains_stubs`. A team that names a member with no persona file is marked `incomplete`, with the missing ids in `unresolved_members`; check this before installing a team.
 
 Recommended consumer behavior beyond this (hash verification, tag pinning, install layout) is in [docs/persona-index-roadmap.md](docs/persona-index-roadmap.md). Design: `openspec/changes/persona-index/`.
 

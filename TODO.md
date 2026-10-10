@@ -155,9 +155,11 @@
 #### 11. Persona index follow-ups (deferred from `persona-index` change)
 - **Reconcile development context ids**: `personas/development/context_configuration.json` uses file-name ids (`ott_ux_persona`, `10_foot_ui_designer`, `design_expert`, `developer_coding_persona`) that differ from `persona_name` ids. Currently bridged by index aliases only. Before editing: decide `@developer_coding_persona` vs `@experienced_developer` and manually check how the framework behaves today with the mismatched ids (UNVERIFIED).
 - **Generic ids on specialist personas**: `ux_designer` (file `ott_ux_persona_schema_v1.1.json`) and `ui_designer` (file `10_foot_ui_designer_persona_schema_v1.1.json`) are TV/OTT and 10-foot/Lightning specialists, a narrower discipline than their generic ids suggest. Index aliases map the old config ids to these files by file name only, not by comparing roles. Also confirm `design_expert` → `ux_ui_strategist` (cross-platform) is the intended target. Consider when reconciling the development config; tags (below) could carry "10-foot/TV" without renaming ids.
-- **`security_review_team`**: listed in `available_teams` with no team file. Create the team or drop the reference.
+- **`security_review_team`**: virtual team by design (no file needed); the generator reports it as a note. No action.
 - **Tags** for discovery: deferred.
 - **Stub personas** (`system_architect`, `data_scientist`, `backend_developer`, `product_manager`): flesh out when next invoked.
+- **`add @persona` writes to a tracked config file**: during the task 1.3 test, `add @system_architect` edited `personas/ai_development/context_configuration.json` (added to `available_personas` plus an auto-suggest trigger) while the framework said state lasts for this session only. Decide whether activation should persist to tracked config or stay session-only. Not caused by `persona-index`; reverted locally (UNVERIFIED which framework step performs the write).
+- **"Project Coordinator" default roster**: `personas on` reported no Project Coordinator persona file and fell back to `default_primary_persona` (`llm_prompt_specialist`) alone. The phrase appears in `config/persona_activation_framework.md`, `config/domain_agnostic_framework.md` and `config/measurement_framework.md`. How the default roster is generated is not traced (UNVERIFIED); decide whether a Project Coordinator persona should exist or the docs should change.
 - See `openspec/changes/persona-index/design.md` and `docs/persona-index-roadmap.md`.
 
 ---

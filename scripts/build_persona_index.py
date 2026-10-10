@@ -191,11 +191,15 @@ def team_entry(rel, raw, obj, by_id, diagnostics):
     primary = require(diagnostics, rel, obj, "team.default_primary", "team.default_primary")
     if None in (tid, name, summary, members, primary):
         return None
+    unresolved = []
     for m in members:
-        if m not in by_id:
-            diagnostics.append((ERROR, f"team '{tid}' ({rel}): member '{m}' has no persona file"))
+        if m not in by_id and m not in unresolved:
+            unresolved.append(m)
+            diagnostics.append((WARNING, f"team '{tid}' ({rel}): member '{m}' has no persona file"))
     if primary not in by_id:
-        diagnostics.append((ERROR, f"team '{tid}' ({rel}): default_primary '{primary}' has no persona file"))
+        if primary not in unresolved:
+            unresolved.append(primary)
+        diagnostics.append((WARNING, f"team '{tid}' ({rel}): default_primary '{primary}' has no persona file"))
     has_stub = any(m in by_id and by_id[m]["status"] == "stub" for m in members)
     domain, _ = domain_parts(rel)
     aliases = []
@@ -209,11 +213,12 @@ def team_entry(rel, raw, obj, by_id, diagnostics):
         "domain": domain,
         "members": members,
         "default_primary": primary,
+        "unresolved_members": unresolved,
         "aliases": aliases,
         "path": rel,
         "bytes": len(raw),
         "sha256": sha256_of(raw),
-        "status": "contains_stubs" if has_stub else "complete",
+        "status": "incomplete" if unresolved else ("contains_stubs" if has_stub else "complete"),
     }
 
 
@@ -236,7 +241,7 @@ def check_context(rel, obj, by_id, alias_owner, team_ids, team_alias_owner, diag
         if value in team_alias_owner:
             diagnostics.append((NOTE, f"{rel}: available_teams '{value}' resolves via alias to '{team_alias_owner[value]}'"))
         else:
-            diagnostics.append((WARNING, f"{rel}: available_teams '{value}' does not match any team file"))
+            diagnostics.append((NOTE, f"{rel}: available_teams '{value}' has no team file (treated as a virtual team)"))
 
 
 def render(index):
