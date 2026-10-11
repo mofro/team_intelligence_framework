@@ -58,6 +58,6 @@ No migration. Everything is additive. Existing users of the standalone conventio
 
 ## Open Questions
 
-- Should the generator change be described as a modification of the `persona-index` capability, or kept as packaging-only? Check the existing spec wording.
+- Should the generator change be described as a modification of the `persona-index` capability, or kept as packaging-only? **Answered by the merged spec: it must be a delta.** `openspec/specs/persona-index/spec.md`, requirement "Source files are read-only to generation", scenario "Files unchanged after generation", says the only file written is `index.json`. Task 1.1 makes the generator also write `plugin/catalog/`, which contradicts that scenario. The requirement itself (never modify persona, team or context configuration files) still holds. Add a MODIFIED delta for that requirement under `specs/persona-index/` in this change, and update `test_only_index_json_is_written` in `scripts/test_build_persona_index.py`, which asserts exactly that.
 - Should `list` show status markers by default or behind a flag?
 - When Conductor eventually honors team files, which side owns the team-file location? Current assumption: `.persona/teams/`.
