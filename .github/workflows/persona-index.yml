@@ -15,5 +15,9 @@ jobs:
           python-version: "3.x"
       - name: Unit tests
         run: python3 -m unittest discover -s scripts
+      - name: Plugin tests
+        run: python3 -m unittest discover -s plugin/scripts
+      - name: Plugin docs match the command table
+        run: python3 plugin/scripts/tif.py --check
       - name: index.json is current and catalog has no errors
         run: python3 scripts/build_persona_index.py --check

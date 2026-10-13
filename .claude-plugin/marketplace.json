@@ -1,0 +1,14 @@
+{
+  "name": "team-intelligence-framework",
+  "description": "Personas and teams from the Team Intelligence Framework.",
+  "owner": {
+    "name": "Maurice Gaston"
+  },
+  "plugins": [
+    {
+      "name": "tif",
+      "source": "./plugin",
+      "description": "Browse the Team Intelligence Framework catalog and install personas and teams into a project's .persona/ directory."
+    }
+  ]
+}
