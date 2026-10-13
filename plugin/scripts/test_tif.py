@@ -2,6 +2,7 @@
 """Tests for tif.py. Run: python3 -m unittest discover -s plugin/scripts"""
 
 import contextlib
+import hashlib
 import io
 import json
 import sys
@@ -13,10 +14,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import tif  # noqa: E402
 
 
-def run(*argv, catalog=None):
+def run(*argv, catalog=None, project=None):
     out, err = io.StringIO(), io.StringIO()
     with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
-        code = tif.main(list(argv), catalog=catalog)
+        code = tif.main(list(argv), catalog=catalog, project=project)
     return code, out.getvalue(), err.getvalue()
 
 
@@ -224,6 +225,188 @@ class InfoTests(unittest.TestCase):
         self.assertIn("x summary", out)
 
 
+class InstallTests(unittest.TestCase):
+    """install copies files from a catalog directory into <project>/.persona/."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.cat = Path(self._tmp.name) / "catalog"
+        self.proj = Path(self._tmp.name) / "project"
+        self.proj.mkdir()
+        self.personas, self.teams = [], []
+
+    def add_persona(self, pid, status="complete", body=None, **extra):
+        rel = f"personas/dev/{pid}_persona.json"
+        data = (body or f'{{"persona": "{pid}"}}').encode()
+        (self.cat / rel).parent.mkdir(parents=True, exist_ok=True)
+        (self.cat / rel).write_bytes(data)
+        self.personas.append(P(pid, status=status, path=rel, sha256=hashlib.sha256(data).hexdigest(), **extra))
+
+    def add_team(self, tid, members, primary=None, unresolved=(), status="complete", **extra):
+        rel = f"personas/dev/teams/{tid}.json"
+        data = f'{{"team": "{tid}"}}'.encode()
+        (self.cat / rel).parent.mkdir(parents=True, exist_ok=True)
+        (self.cat / rel).write_bytes(data)
+        t = T(tid, list(members) + list(unresolved), status, path=rel, sha256=hashlib.sha256(data).hexdigest(),
+              unresolved_members=list(unresolved), default_primary=primary or members[0], **extra)
+        self.teams.append(t)
+
+    def write_index(self):
+        self.cat.mkdir(parents=True, exist_ok=True)
+        (self.cat / "index.json").write_text(json.dumps(
+            {"index_version": 1, "personas": self.personas, "teams": self.teams}))
+
+    def install(self, *argv):
+        self.write_index()
+        return run("install", *argv, catalog=self.cat, project=self.proj)
+
+    def files(self):
+        base = self.proj / ".persona"
+        return sorted(p.relative_to(base).as_posix() for p in base.rglob("*") if p.is_file()) if base.exists() else []
+
+    # -- targets
+    def test_persona_installs_under_personas_and_names_the_path(self):
+        self.add_persona("alpha")
+        code, out, _ = self.install("alpha")
+        self.assertEqual(code, 0)
+        self.assertEqual(self.files(), ["personas/alpha_persona.json"])
+        self.assertIn(".persona/personas/alpha_persona.json", out)
+        self.assertEqual((self.proj / ".persona/personas/alpha_persona.json").read_bytes(),
+                         (self.cat / "personas/dev/alpha_persona.json").read_bytes())
+
+    def test_install_by_alias(self):
+        self.add_persona("alpha", aliases=["alpha_file"])
+        self.assertEqual(self.install("alpha_file")[0], 0)
+        self.assertEqual(self.files(), ["personas/alpha_persona.json"])
+
+    def test_team_installs_file_and_members(self):
+        self.add_persona("alpha"); self.add_persona("beta"); self.add_persona("other")
+        self.add_team("t", ["alpha", "beta"])
+        code, out, _ = self.install("t")
+        self.assertEqual(code, 0)
+        self.assertEqual(self.files(), ["personas/alpha_persona.json", "personas/beta_persona.json", "teams/t.json"])
+
+    def test_team_note_says_conductor_ignores_team_files(self):
+        self.add_persona("alpha"); self.add_team("t", ["alpha"])
+        out = self.install("t")[1]
+        self.assertIn("Conductor", out)
+        self.assertIn("not yet", out)
+
+    def test_persona_install_has_no_team_note(self):
+        self.add_persona("alpha")
+        self.assertNotIn("Conductor", self.install("alpha")[1])
+
+    # -- verification
+    def test_corrupted_bundled_file_is_not_copied_and_fails(self):
+        self.add_persona("alpha"); self.add_persona("beta")
+        self.add_team("t", ["alpha", "beta"])
+        (self.cat / "personas/dev/beta_persona.json").write_bytes(b"corrupt")
+        code, out, err = self.install("t")
+        self.assertNotEqual(code, 0)
+        self.assertNotIn("personas/beta_persona.json", self.files())
+        self.assertIn("beta_persona.json", out + err)
+        self.assertIn("personas/alpha_persona.json", self.files())
+
+    def test_missing_bundled_file_is_reported_and_fails(self):
+        self.add_persona("alpha")
+        (self.cat / "personas/dev/alpha_persona.json").unlink()
+        code, out, err = self.install("alpha")
+        self.assertNotEqual(code, 0)
+        self.assertEqual(self.files(), [])
+        self.assertIn("alpha_persona.json", out + err)
+
+    # -- local edits
+    def test_repeat_install_reports_already_installed_and_changes_nothing(self):
+        self.add_persona("alpha")
+        self.install("alpha")
+        dest = self.proj / ".persona/personas/alpha_persona.json"
+        before = dest.stat().st_mtime_ns
+        code, out, _ = self.install("alpha")
+        self.assertEqual(code, 0)
+        self.assertIn("already installed", out)
+        self.assertEqual(dest.stat().st_mtime_ns, before)
+
+    def test_locally_edited_file_is_skipped_with_how_to_override(self):
+        self.add_persona("alpha")
+        self.install("alpha")
+        dest = self.proj / ".persona/personas/alpha_persona.json"
+        dest.write_text("my edit")
+        code, out, _ = self.install("alpha")
+        self.assertEqual(code, 0)
+        self.assertEqual(dest.read_text(), "my edit")
+        self.assertIn("skipped", out)
+        self.assertIn("--force", out)
+
+    def test_force_replaces_edited_file(self):
+        self.add_persona("alpha")
+        self.install("alpha")
+        dest = self.proj / ".persona/personas/alpha_persona.json"
+        dest.write_text("my edit")
+        code, out, _ = self.install("alpha", "--force")
+        self.assertEqual(code, 0)
+        self.assertEqual(dest.read_bytes(), (self.cat / "personas/dev/alpha_persona.json").read_bytes())
+
+    # -- disclosure, never refusing
+    def test_team_with_stubs_installs_and_names_them(self):
+        self.add_persona("alpha"); self.add_persona("s1", status="stub"); self.add_persona("s2", status="stub")
+        self.add_team("t", ["alpha", "s1", "s2"], status="contains_stubs")
+        code, out, _ = self.install("t")
+        self.assertEqual(code, 0)
+        self.assertIn("2 stub", out)
+        self.assertIn("s1", out)
+        self.assertIn("s2", out)
+        self.assertEqual(len(self.files()), 4)
+
+    def test_persona_stub_is_disclosed(self):
+        self.add_persona("s1", status="stub")
+        code, out, _ = self.install("s1")
+        self.assertEqual(code, 0)
+        self.assertIn("1 stub", out)
+
+    def test_no_stub_line_when_there_are_none(self):
+        self.add_persona("alpha")
+        self.assertNotIn("stub", self.install("alpha")[1].lower())
+
+    def test_unresolved_members_named_and_install_completes(self):
+        self.add_persona("alpha"); self.add_persona("beta")
+        self.add_team("t", ["alpha", "beta"], unresolved=["ghost"], status="incomplete")
+        code, out, _ = self.install("t")
+        self.assertEqual(code, 0)
+        self.assertIn("ghost", out)
+        self.assertIn("teams/t.json", self.files())
+
+    def test_missing_primary_voice_gets_a_distinct_warning_and_completes(self):
+        self.add_persona("alpha")
+        self.add_team("t", ["alpha"], primary="ghost", unresolved=["ghost"], status="incomplete")
+        code, out, _ = self.install("t")
+        self.assertEqual(code, 0)
+        self.assertIn("PRIMARY VOICE MISSING", out)
+        self.assertIn("ghost", out)
+        self.assertIn("teams/t.json", self.files())
+
+    def test_no_primary_warning_when_primary_present(self):
+        self.add_persona("alpha"); self.add_team("t", ["alpha"])
+        self.assertNotIn("PRIMARY", self.install("t")[1])
+
+    # -- unknown / ambiguous
+    def test_unknown_name_writes_nothing_and_fails(self):
+        self.add_persona("alpha")
+        code, out, err = self.install("nonesuch")
+        self.assertNotEqual(code, 0)
+        self.assertEqual(self.files(), [])
+        self.assertFalse((self.proj / ".persona").exists())
+        self.assertIn("nonesuch", err)
+
+    def test_ambiguous_alias_lists_candidates_and_writes_nothing(self):
+        self.add_persona("alpha", aliases=["shared"]); self.add_persona("beta", aliases=["shared"])
+        code, out, err = self.install("shared")
+        self.assertNotEqual(code, 0)
+        self.assertEqual(self.files(), [])
+        self.assertIn("alpha", err)
+        self.assertIn("beta", err)
+
+
 class RealCatalogTests(unittest.TestCase):
     """Facts about the bundled catalog on 2026-10-10 (28 personas, 6 teams)."""
 
@@ -249,6 +432,22 @@ class RealCatalogTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn("contains_stubs", out)
         self.assertIn("system_architect", out)
+
+    def test_virtual_team_name_is_unknown_and_writes_nothing(self):
+        with tempfile.TemporaryDirectory() as proj:
+            code, out, err = run("install", "security_review_team", project=Path(proj))
+            self.assertNotEqual(code, 0)
+            self.assertEqual(out, "")
+            self.assertIn("security_review_team", err)
+            self.assertFalse(Path(proj, ".persona").exists())
+
+    def test_install_every_real_item_into_a_clean_project(self):
+        index = json.loads((tif.DEFAULT_CATALOG / "index.json").read_text())
+        for item in index["personas"] + index["teams"]:
+            with tempfile.TemporaryDirectory() as proj:
+                code, out, err = run("install", item["id"], project=Path(proj))
+                self.assertEqual(code, 0, (item["id"], err))
+                self.assertTrue(any(Path(proj, ".persona").rglob("*.json")), item["id"])
 
     def test_domain_filter_on_real_catalog(self):
         _, out, _ = run("list", "--domain", "writing")

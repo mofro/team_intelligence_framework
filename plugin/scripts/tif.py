@@ -5,6 +5,7 @@ Run `tif.py help` for the subcommands. Standard library only.
 """
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -172,10 +173,80 @@ def cmd_info(index, ns):
     return 0
 
 
+PERSONAS_DIR = ".persona/personas"
+TEAMS_DIR = ".persona/teams"
+
+
+def copy_one(catalog, project, kind, entry, force):
+    """Verify one catalog file against the index and copy it. Returns (outcome, path shown to the user)."""
+    dest_dir = PERSONAS_DIR if kind == "persona" else TEAMS_DIR
+    rel_dest = f"{dest_dir}/{Path(entry['path']).name}"
+    try:
+        data = (Path(catalog) / entry["path"]).read_bytes()
+    except OSError as exc:
+        return "unreadable", rel_dest, exc.strerror or str(exc)
+    if hashlib.sha256(data).hexdigest() != entry["sha256"]:
+        return "corrupt", rel_dest, "bundled file does not match the sha256 in the index"
+    dest = Path(project) / rel_dest
+    if dest.exists():
+        if dest.read_bytes() == data:
+            return "already", rel_dest, ""
+        if not force:
+            return "skipped", rel_dest, ""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(data)
+    return "installed", rel_dest, ""
+
+
+def cmd_install(index, ns, catalog, project):
+    matches = resolve(index, ns.name)
+    if not matches:
+        print(f"tif.py: no persona or team matches '{ns.name}'. Nothing was installed. "
+              "Run 'tif.py list' or 'tif.py teams' to see what exists.", file=sys.stderr)
+        return 1
+    if len(matches) > 1:
+        candidates = ", ".join(f"{e['id']} ({k})" for k, e in matches)
+        print(f"tif.py: '{ns.name}' matches more than one item: {candidates}. Nothing was installed. "
+              "Ask again with one of these ids.", file=sys.stderr)
+        return 1
+
+    kind, item = matches[0]
+    by_id = {p["id"]: p for p in index["personas"]}
+    personas = [by_id[m] for m in item["members"] if m in by_id] if kind == "team" else [item]
+    work = [("persona", p) for p in personas] + ([("team", item)] if kind == "team" else [])
+
+    failed = False
+    for k, entry in work:
+        outcome, shown, why = copy_one(catalog, project, k, entry, ns.force)
+        if outcome == "installed":
+            print(f"installed          {shown}")
+        elif outcome == "already":
+            print(f"already installed  {shown}")
+        elif outcome == "skipped":
+            print(f"skipped            {shown} (differs from the catalog, probably edited; use --force to overwrite)")
+        else:
+            failed = True
+            print(f"NOT COPIED         {shown}: {why}")
+
+    stubs = [p["id"] for p in personas if p["status"] == "stub"]
+    if stubs:
+        noun = "persona" if len(stubs) == 1 else "personas"
+        print(f"note: {len(stubs)} stub {noun} (placeholders, not yet fleshed out): {', '.join(stubs)}")
+    if kind == "team":
+        if item["unresolved_members"]:
+            print(f"warning: no catalog file for team members: {', '.join(item['unresolved_members'])}")
+        if item["default_primary"] not in by_id:
+            print("!!! WARNING: PRIMARY VOICE MISSING !!!")
+            print(f"!!! The team's default primary, '{item['default_primary']}', has no catalog file. "
+                  "The team has no lead voice until you add that persona. !!!")
+        print("note: team files are stored for later use and not yet read by Conductor.")
+    return 1 if failed else 0
+
+
 HANDLERS = {"list": cmd_list, "teams": cmd_teams, "info": cmd_info}
 
 
-def main(argv=None, catalog=None):
+def main(argv=None, catalog=None, project=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     if not argv or argv in (["help"], ["--help"]):
         sys.stdout.write(help_text())
@@ -185,16 +256,16 @@ def main(argv=None, catalog=None):
     except ParseError as exc:
         print(f"tif.py: {exc}. Run 'tif.py help' for usage.", file=sys.stderr)
         return 2
-    handler = HANDLERS.get(ns.command)
-    if handler is None:
-        print(f"tif.py: '{ns.command}' is not implemented yet.", file=sys.stderr)
-        return 1
+    catalog = DEFAULT_CATALOG if catalog is None else catalog
+    project = Path.cwd() if project is None else project
     try:
-        index = load_index(DEFAULT_CATALOG if catalog is None else catalog)
+        index = load_index(catalog)
     except CatalogError as exc:
         print(f"tif.py: {exc}", file=sys.stderr)
         return 1
-    return handler(index, ns)
+    if ns.command == "install":
+        return cmd_install(index, ns, catalog, project)
+    return HANDLERS[ns.command](index, ns)
 
 
 if __name__ == "__main__":

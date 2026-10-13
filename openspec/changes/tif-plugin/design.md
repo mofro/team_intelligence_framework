@@ -21,6 +21,7 @@ An installed plugin runs from a cache copy of the plugin directory, not from the
 - Hooks in the TIF plugin. Conductor owns session start.
 - Reading or acting on team collaboration fields (`primary_voice`, `decision_pattern`). The files are installed so they are available later.
 - An `update` subcommand. Deferred until a real need appears.
+- Installing virtual teams. The catalog has no member list for them (see "Team install pulls member personas"). **Committed follow-up work, not yet specified:** (a) a persona creation flow that creates a net-new persona, optionally deploys it into a project, and optionally associates it with a team; and (b) an ad hoc team flow that defines a team from a bespoke grouping of existing personas. Each needs its own OpenSpec change. Tracked in `TODO.md` item #12.
 - Deciding the voice policy (one unified voice versus labeled voices). That is a separate layer from packaging.
 
 ## Decisions
@@ -39,7 +40,7 @@ An installed plugin runs from a cache copy of the plugin directory, not from the
 
 **Warn, never refuse.** A half-filled team can still be useful, and "incomplete" depends on what the user needs. So install always proceeds and discloses: the count and names of stub personas, any missing members, and, loudly, a missing primary voice. This follows the index status values (`complete`, `contains_stubs`, `incomplete` for teams; `complete`, `stub` for personas).
 
-**Team install pulls member personas.** A team file without its members is not usable. Members that exist are installed; members that do not exist are named in a warning. Virtual teams (no file by design, for example `security_review_team`) install their members only and say so.
+**Team install pulls member personas.** A team file without its members is not usable. Members that exist are installed; members that do not exist are named in a warning. Virtual teams (no file by design, for example `security_review_team`) cannot be installed: they exist only as a name in a context configuration's `available_teams`, the index does not list them, and no member list exists anywhere in the catalog. `install` reports them as unknown names. Supporting them needs the creation flows listed under Non-Goals.
 
 **One command table.** The subcommand names, arguments and one-line descriptions live in one table in `tif.py`. `--help`, the SKILL.md help block and the README Quick Start are generated from it, and `--check` fails if any of the three differ. This avoids the usual drift between code and docs.
 
