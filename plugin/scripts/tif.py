@@ -7,6 +7,7 @@ Run `tif.py help` for the subcommands. Standard library only.
 import argparse
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 from dataclasses import dataclass, field
@@ -58,6 +59,77 @@ def help_text():
     lines = ["Usage: tif.py <command> [arguments]", "", "Commands:"]
     lines += [f"  {c.usage():<{width}}  {c.description}" for c in COMMANDS]
     return "\n".join(lines) + "\n"
+
+
+PLUGIN_DIR = Path(__file__).resolve().parent.parent
+FENCE = "```"
+
+
+def quickstart_text():
+    width = max(len(c.usage()) for c in COMMANDS)
+    return "\n".join(f"/tif:catalog {c.usage():<{width}}  {c.description}" for c in COMMANDS) + "\n"
+
+
+def doc_blocks(plugin_dir, readme):
+    """(label, file, block name, generated content) for every block derived from the command table."""
+    return [
+        ("SKILL.md help block", Path(plugin_dir) / "skills" / "catalog" / "SKILL.md", "help", help_text()),
+        ("README.md Quick Start block", Path(readme), "quickstart", quickstart_text()),
+    ]
+
+
+def _block_pattern(name):
+    return re.compile(rf"(<!-- tif:{name}:start[^\n]*-->\n)(.*?)(<!-- tif:{name}:end -->)", re.DOTALL)
+
+
+def _render(content):
+    return f"{FENCE}text\n{content}{FENCE}\n"
+
+
+def check_docs(plugin_dir, readme):
+    problems = []
+    for label, path, name, content in doc_blocks(plugin_dir, readme):
+        try:
+            text = path.read_text(encoding="utf-8")
+        except OSError as exc:
+            problems.append(f"{path}: cannot read ({exc.strerror or exc}); expected the {label}")
+            continue
+        m = _block_pattern(name).search(text)
+        if not m:
+            problems.append(f"{path}: the {label} markers (tif:{name}:start / tif:{name}:end) are missing")
+        elif m.group(2) != _render(content):
+            problems.append(f"{path}: the {label} differs from the command table")
+    return problems
+
+
+def sync_docs(plugin_dir, readme):
+    problems = check_docs(plugin_dir, readme)
+    missing = [p for p in problems if "differs" not in p]
+    if missing:
+        return missing
+    for label, path, name, content in doc_blocks(plugin_dir, readme):
+        text = path.read_text(encoding="utf-8")
+        new = _block_pattern(name).sub(lambda m: m.group(1) + _render(content) + m.group(3), text, count=1)
+        if new != text:
+            path.write_text(new, encoding="utf-8")
+    return []
+
+
+def run_docs(flag, plugin_dir, readme):
+    if flag == "--check":
+        problems = check_docs(plugin_dir, readme)
+        action = "tif.py --check:"
+    else:
+        problems = sync_docs(plugin_dir, readme)
+        action = "tif.py --sync:"
+    for problem in problems:
+        print(f"{action} {problem}", file=sys.stderr)
+    if problems:
+        if flag == "--check":
+            print("fix: run python3 plugin/scripts/tif.py --sync and commit the result", file=sys.stderr)
+        return 1
+    print("docs are in sync with the command table" if flag == "--check" else "docs synced from the command table")
+    return 0
 
 
 class ParseError(Exception):
@@ -246,11 +318,15 @@ def cmd_install(index, ns, catalog, project):
 HANDLERS = {"list": cmd_list, "teams": cmd_teams, "info": cmd_info}
 
 
-def main(argv=None, catalog=None, project=None):
+def main(argv=None, catalog=None, project=None, plugin_dir=None, readme=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     if not argv or argv in (["help"], ["--help"]):
         sys.stdout.write(help_text())
         return 0
+    if argv in (["--check"], ["--sync"]):
+        plugin_dir = PLUGIN_DIR if plugin_dir is None else plugin_dir
+        readme = PLUGIN_DIR.parent / "README.md" if readme is None else readme
+        return run_docs(argv[0], plugin_dir, readme)
     try:
         ns = parse(argv)
     except ParseError as exc:

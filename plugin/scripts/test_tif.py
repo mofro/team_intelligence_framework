@@ -407,6 +407,95 @@ class InstallTests(unittest.TestCase):
         self.assertIn("beta", err)
 
 
+class DocBlockTests(unittest.TestCase):
+    """--check compares generated help blocks in SKILL.md and README.md with the command table."""
+
+    SKILL_BODY = "# skill\n\nintro\n\n<!-- tif:help:start (generated) -->\nold\n<!-- tif:help:end -->\n\ntail\n"
+    README_BODY = "# readme\n\n<!-- tif:quickstart:start (generated) -->\nold\n<!-- tif:quickstart:end -->\n\nmore\n"
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        root = Path(self._tmp.name)
+        self.plugin = root / "plugin"
+        self.skill = self.plugin / "skills" / "catalog" / "SKILL.md"
+        self.readme = root / "README.md"
+        self.skill.parent.mkdir(parents=True)
+        self.skill.write_text(self.SKILL_BODY)
+        self.readme.write_text(self.README_BODY)
+
+    def doc(self, *argv):
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            code = tif.main(list(argv), plugin_dir=self.plugin, readme=self.readme)
+        return code, out.getvalue(), err.getvalue()
+
+    def synced(self):
+        self.assertEqual(self.doc("--sync")[0], 0)
+
+    def test_check_fails_before_sync_and_passes_after(self):
+        self.assertEqual(self.doc("--check")[0], 1)
+        self.synced()
+        self.assertEqual(self.doc("--check")[0], 0)
+
+    def test_sync_replaces_only_the_block_and_embeds_the_table(self):
+        self.synced()
+        text = self.skill.read_text()
+        self.assertTrue(text.startswith("# skill\n\nintro\n\n<!-- tif:help:start"))
+        self.assertTrue(text.endswith("<!-- tif:help:end -->\n\ntail\n"))
+        for cmd in tif.COMMANDS:
+            self.assertIn(cmd.usage(), text)
+            self.assertIn(cmd.description, text)
+        quick = self.readme.read_text()
+        self.assertIn("/tif:catalog list [--domain D]", quick)
+        self.assertTrue(quick.endswith("<!-- tif:quickstart:end -->\n\nmore\n"))
+
+    def test_sync_is_idempotent(self):
+        self.synced()
+        first = (self.skill.read_text(), self.readme.read_text())
+        self.synced()
+        self.assertEqual((self.skill.read_text(), self.readme.read_text()), first)
+
+    def test_hand_edited_skill_block_fails_and_names_the_file(self):
+        self.synced()
+        self.skill.write_text(self.skill.read_text().replace("Show this help", "Show some help"))
+        code, _, err = self.doc("--check")
+        self.assertEqual(code, 1)
+        self.assertIn("SKILL.md", err)
+        self.assertIn("--sync", err)
+
+    def test_hand_edited_readme_block_fails_and_names_the_file(self):
+        self.synced()
+        self.readme.write_text(self.readme.read_text().replace("/tif:catalog teams", "/tif:catalog TEAMS"))
+        code, _, err = self.doc("--check")
+        self.assertEqual(code, 1)
+        self.assertIn("README.md", err)
+
+    def test_text_outside_the_blocks_may_change_freely(self):
+        self.synced()
+        self.skill.write_text(self.skill.read_text().replace("intro", "different intro"))
+        self.assertEqual(self.doc("--check")[0], 0)
+
+    def test_missing_markers_fail_check_and_sync(self):
+        self.skill.write_text("# no markers\n")
+        self.assertEqual(self.doc("--check")[0], 1)
+        code, _, err = self.doc("--sync")
+        self.assertEqual(code, 1)
+        self.assertIn("SKILL.md", err)
+        self.assertEqual(self.skill.read_text(), "# no markers\n")
+
+    def test_missing_file_fails(self):
+        self.readme.unlink()
+        code, _, err = self.doc("--check")
+        self.assertEqual(code, 1)
+        self.assertIn("README.md", err)
+
+    def test_check_writes_nothing(self):
+        before = (self.skill.read_text(), self.readme.read_text())
+        self.doc("--check")
+        self.assertEqual((self.skill.read_text(), self.readme.read_text()), before)
+
+
 class RealCatalogTests(unittest.TestCase):
     """Facts about the bundled catalog on 2026-10-10 (28 personas, 6 teams)."""
 
