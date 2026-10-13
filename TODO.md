@@ -162,6 +162,12 @@
 - **"Project Coordinator" default roster**: `personas on` reported no Project Coordinator persona file and fell back to `default_primary_persona` (`llm_prompt_specialist`) alone. The phrase appears in `config/persona_activation_framework.md`, `config/domain_agnostic_framework.md` and `config/measurement_framework.md`. How the default roster is generated is not traced (UNVERIFIED); decide whether a Project Coordinator persona should exist or the docs should change.
 - See `openspec/changes/archive/2026-10-10-persona-index/design.md` and `docs/persona-index-roadmap.md`.
 
+#### 12. Persona creation and ad hoc team flows (committed follow-up to `tif-plugin`)
+- **Why**: virtual teams (a name in `available_teams` with no team file, e.g. `security_review_team`) cannot be installed from the bundled catalog: there is no member list for them. `tif-plugin` reports them as unknown names. See `openspec/changes/tif-plugin/design.md` Non-Goals.
+- **Persona creation flow**: create a net-new persona, optionally deploy it into a project (`.persona/personas/`), and optionally associate it with a team.
+- **Ad hoc team flow**: define a team from a bespoke grouping of existing personas (catalog or locally created).
+- Each needs its own OpenSpec change. Not yet specified.
+
 ---
 
 ## Optional / Nice-to-Have

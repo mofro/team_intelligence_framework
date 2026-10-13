@@ -58,13 +58,6 @@ When a team's default primary voice is missing from the catalog, install SHALL p
 - **WHEN** a user installs a team whose default primary is not in the catalog
 - **THEN** the output contains a distinct primary-voice warning and the install completes
 
-### Requirement: Virtual teams
-Install SHALL handle a team that has no file by design by installing its member personas only and stating that no team file exists.
-
-#### Scenario: Virtual team
-- **WHEN** a user installs a virtual team
-- **THEN** its members are installed, no file is written under `.persona/teams/`, and the output says why
-
 ### Requirement: State what installed team files do
 After installing a team, the output SHALL state that Conductor currently ignores team files.
 
@@ -73,8 +66,12 @@ After installing a team, the output SHALL state that Conductor currently ignores
 - **THEN** the output includes a one-line note that team files are stored for later use and not yet read by Conductor
 
 ### Requirement: Unknown names
-Install SHALL fail with a nonzero status and write nothing when the name matches no catalog item, and SHALL treat an ambiguous alias as an error that lists candidates.
+Install SHALL fail with a nonzero status and write nothing when the name matches no catalog item, and SHALL treat an ambiguous alias as an error that lists candidates. A virtual team (a team named in a `context_configuration*.json` `available_teams` list with no team file, such as `security_review_team`) has no catalog entry and no member list, so it is an unknown name here; installing virtual teams is out of scope.
 
 #### Scenario: Unknown name
 - **WHEN** a user runs `install` with a name that matches nothing
 - **THEN** no files are written and the exit status is nonzero
+
+#### Scenario: Virtual team name
+- **WHEN** a user runs `install` with the name of a virtual team such as `security_review_team`
+- **THEN** it is reported as unknown, no files are written and the exit status is nonzero
