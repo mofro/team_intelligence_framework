@@ -1,3 +1,7 @@
+## 0. Spec delta
+
+- [x] 0.1 Add the MODIFIED delta `specs/persona-index/spec.md` and change `test_only_index_json_is_written` in `scripts/test_build_persona_index.py` to assert that source files are unchanged and that writes are confined to `index.json` and `plugin/catalog/`. Verify `openspec validate tif-plugin --strict` passes and `python3 -m unittest discover -s scripts` passes.
+
 ## 1. Bundled catalog generation
 
 - [ ] 1.1 Extend `scripts/build_persona_index.py` to emit `plugin/catalog/` containing `index.json` and copies of every persona and team file listed in it, preserving relative paths. Verify by running it and diffing the copied files against their sources.

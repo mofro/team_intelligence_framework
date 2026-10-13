@@ -228,12 +228,26 @@ class CheckModeTests(unittest.TestCase):
         self.assertFalse((self.f.root / "index.json").exists())
         self.assertEqual(bpi.main(["--check"] + self.args), 1)
 
-    def test_only_index_json_is_written(self):
-        def snapshot():
-            return {p: p.read_bytes() for p in self.f.root.rglob("*") if p.is_file() and p.name != "index.json"}
-        before = snapshot()
+    def _snapshot(self, generated=()):
+        """Bytes of every file except the generator's own outputs."""
+        root = self.f.root
+        def is_output(p):
+            rel = p.relative_to(root).as_posix()
+            return rel == "index.json" or any(rel.startswith(g) for g in generated)
+        return {p: p.read_bytes() for p in root.rglob("*") if p.is_file() and not is_output(p)}
+
+    def test_generation_writes_only_its_outputs(self):
+        before = self._snapshot(generated=("plugin/catalog/",))
         bpi.main(self.args)
-        self.assertEqual(snapshot(), before)
+        self.assertEqual(self._snapshot(generated=("plugin/catalog/",)), before)
+
+    def test_check_mode_writes_nothing(self):
+        bpi.main(self.args)
+        def everything():
+            return {p: p.read_bytes() for p in self.f.root.rglob("*") if p.is_file()}
+        before = everything()
+        bpi.main(["--check"] + self.args)
+        self.assertEqual(everything(), before)
 
 
 class RealRepoTests(unittest.TestCase):
