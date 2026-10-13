@@ -228,12 +228,127 @@ class CheckModeTests(unittest.TestCase):
         self.assertFalse((self.f.root / "index.json").exists())
         self.assertEqual(bpi.main(["--check"] + self.args), 1)
 
-    def test_only_index_json_is_written(self):
-        def snapshot():
-            return {p: p.read_bytes() for p in self.f.root.rglob("*") if p.is_file() and p.name != "index.json"}
-        before = snapshot()
+    def _snapshot(self, generated=()):
+        """Bytes of every file except the generator's own outputs."""
+        root = self.f.root
+        def is_output(p):
+            rel = p.relative_to(root).as_posix()
+            return rel == "index.json" or any(rel.startswith(g) for g in generated)
+        return {p: p.read_bytes() for p in root.rglob("*") if p.is_file() and not is_output(p)}
+
+    def test_generation_writes_only_its_outputs(self):
+        before = self._snapshot(generated=("plugin/catalog/",))
         bpi.main(self.args)
-        self.assertEqual(snapshot(), before)
+        self.assertEqual(self._snapshot(generated=("plugin/catalog/",)), before)
+
+    def test_check_mode_writes_nothing(self):
+        bpi.main(self.args)
+        def everything():
+            return {p: p.read_bytes() for p in self.f.root.rglob("*") if p.is_file()}
+        before = everything()
+        bpi.main(["--check"] + self.args)
+        self.assertEqual(everything(), before)
+
+
+class BundleTests(unittest.TestCase):
+    """plugin/catalog/ is a generated copy of index.json plus every file the index lists."""
+
+    def setUp(self):
+        self.f = Fixture()
+        self.addCleanup(self.f.close)
+        self.f.write("personas/dev/a.json", persona("a"))
+        self.f.write("personas/dev/teams/t.json", team("t", ["a"]))
+        self.f.write("personas/persona_schema_example.json", persona("tmpl"))
+        self.f.write("personas/dev/context_configuration.json", {"available_personas": ["a"]})
+        self.args = ["--root", str(self.f.root)]
+        self.bundle = self.f.root / "plugin" / "catalog"
+
+    def bundled(self):
+        return sorted(p.relative_to(self.bundle).as_posix() for p in self.bundle.rglob("*") if p.is_file())
+
+    def test_copies_index_and_listed_files_byte_identical(self):
+        self.assertEqual(bpi.main(self.args), 0)
+        self.assertEqual(self.bundled(), ["index.json", "personas/dev/a.json", "personas/dev/teams/t.json"])
+        for rel in self.bundled():
+            src = self.f.root / ("index.json" if rel == "index.json" else rel)
+            self.assertEqual((self.bundle / rel).read_bytes(), src.read_bytes(), rel)
+
+    def test_unlisted_files_not_bundled(self):
+        bpi.main(self.args)
+        self.assertNotIn("personas/persona_schema_example.json", self.bundled())
+        self.assertNotIn("personas/dev/context_configuration.json", self.bundled())
+
+    def test_regeneration_removes_stale_bundled_files(self):
+        bpi.main(self.args)
+        (self.f.root / "personas/dev/teams/t.json").unlink()
+        bpi.main(self.args)
+        self.assertEqual(self.bundled(), ["index.json", "personas/dev/a.json"])
+
+    def test_errors_write_no_bundle(self):
+        self.f.write("personas/dev/broken.json", "{not json")
+        self.assertEqual(bpi.main(self.args), 1)
+        self.assertFalse(self.bundle.exists())
+
+
+class BundleCheckTests(unittest.TestCase):
+    """--check also guards plugin/catalog/."""
+
+    def check(self):
+        import contextlib, io
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            code = bpi.main(["--check"] + self.args)
+        return code, err.getvalue()
+
+    def setUp(self):
+        self.f = Fixture()
+        self.addCleanup(self.f.close)
+        self.f.write("personas/dev/a.json", persona("a"))
+        self.f.write("personas/dev/teams/t.json", team("t", ["a"]))
+        self.args = ["--root", str(self.f.root)]
+        self.bundle = self.f.root / "plugin" / "catalog"
+        bpi.main(self.args)
+
+    def test_clean_bundle_passes(self):
+        self.assertEqual(self.check()[0], 0)
+
+    def test_missing_bundle_fails_with_command(self):
+        import shutil
+        shutil.rmtree(self.bundle)
+        code, err = self.check()
+        self.assertEqual(code, 1)
+        self.assertIn("python3 scripts/build_persona_index.py", err)
+        self.assertIn("plugin/catalog/index.json", err)
+
+    def test_missing_one_file_fails(self):
+        (self.bundle / "personas/dev/a.json").unlink()
+        code, err = self.check()
+        self.assertEqual(code, 1)
+        self.assertIn("personas/dev/a.json", err)
+
+    def test_extra_file_fails(self):
+        (self.bundle / "stray.txt").write_text("x")
+        code, err = self.check()
+        self.assertEqual(code, 1)
+        self.assertIn("stray.txt", err)
+        self.assertIn("python3 scripts/build_persona_index.py", err)
+
+    def test_edited_bundled_file_fails(self):
+        (self.bundle / "personas/dev/a.json").write_text("{}")
+        code, err = self.check()
+        self.assertEqual(code, 1)
+        self.assertIn("personas/dev/a.json", err)
+
+    def test_edited_source_without_regeneration_fails(self):
+        changed = persona("a")
+        changed["metadata"]["description"] = "edited"
+        self.f.write("personas/dev/a.json", changed)
+        self.assertEqual(self.check()[0], 1)
+
+    def test_check_does_not_repair_bundle(self):
+        (self.bundle / "stray.txt").write_text("x")
+        self.check()
+        self.assertTrue((self.bundle / "stray.txt").exists())
 
 
 class RealRepoTests(unittest.TestCase):

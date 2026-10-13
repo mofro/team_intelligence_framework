@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0",
+  "metadata": {
+    "name": "retirement_planning_team",
+    "description": "Comprehensive retirement planning and financial strategy team",
+    "author": "Financial Planning Framework",
+    "version": "1.0",
+    "created_date": "2025-06-29",
+    "context": "financial"
+  },
+  "team": {
+    "team_name": "retirement_planning_team",
+    "display_name": "Retirement Planning Team",
+    "description": "Collaborative financial planning team specializing in retirement timeline optimization, tax-efficient withdrawal strategies, and comprehensive retirement transition planning",
+    "members": [
+      "investment_advisor",
+      "tax_strategist",
+      "healthcare_expert",
+      "social_security_specialist",
+      "insurance_analyst",
+      "estate_planner"
+    ],
+    "default_primary": "investment_advisor"
+  },
+  "expertise_mapping": {
+    "tax_optimization": "tax_strategist",
+    "estate_planning": "estate_planner",
+    "portfolio_management": "investment_advisor",
+    "healthcare_planning": "healthcare_expert",
+    "retirement_benefits": "social_security_specialist",
+    "risk_management": "insurance_analyst"
+  },
+  "collaboration_framework": {
+    "decision_hierarchy": {
+      "withdrawal_sequencing": {
+        "primary_authority_domain": "tax_optimization",
+        "required_consultation": ["portfolio_management"],
+        "can_veto": ["estate_planning"],
+        "rationale": "Tax efficiency drives sequencing, but investment sustainability and estate protection must align"
+      },
+      "estate_structure": {
+        "primary_authority_domain": "estate_planning",
+        "required_consultation": ["tax_optimization"],
+        "can_veto": ["portfolio_management"],
+        "rationale": "Legal structure is primary, but tax efficiency and portfolio impact must be considered"
+      },
+      "healthcare_coverage": {
+        "primary_authority_domain": "healthcare_planning",
+        "required_consultation": ["tax_optimization", "retirement_benefits"],
+        "rationale": "Coverage timing and cost are primary; IRMAA thresholds create tax coordination points"
+      },
+      "benefits_claiming": {
+        "primary_authority_domain": "retirement_benefits",
+        "required_consultation": ["portfolio_management", "tax_optimization"],
+        "rationale": "Claiming strategy impacts household cash flow and tax brackets"
+      },
+      "insurance_needs": {
+        "primary_authority_domain": "risk_management",
+        "required_consultation": ["estate_planning"],
+        "rationale": "Risk assessment is primary; estate protection considerations may adjust coverage needs"
+      }
+    },
+    "collaboration_patterns": [
+      {
+        "members": ["tax_optimization", "portfolio_management"],
+        "focus": "withdrawal sequencing and tax-efficient rebalancing"
+      },
+      {
+        "members": ["healthcare_planning", "retirement_benefits"],
+        "focus": "Medicare enrollment timing with Social Security claiming"
+      },
+      {
+        "members": ["estate_planning", "risk_management"],
+        "focus": "life insurance needs and asset protection strategies"
+      }
+    ]
+  },
+  "activation": {
+    "auto_suggest_contexts": [
+      "retirement planning", "early retirement", "withdrawal strategy",
+      "401k rollover", "roth conversion", "retirement timeline",
+      "medicare planning", "social security optimization", "estate planning",
+      "retirement budget", "financial independence", "pension planning"
+    ],
+    "auto_suggest_keywords": [
+      "retire", "retirement", "401k", "roth", "ira", "pension",
+      "medicare", "social security", "withdrawal", "early retirement",
+      "financial independence", "FIRE", "estate planning"
+    ],
+    "discovery_priority": "high"
+  },
+  "team_expertise": {
+    "core_competencies": [
+      "Retirement timeline optimization",
+      "Tax-efficient withdrawal strategies",
+      "Early retirement bridge planning",
+      "Healthcare coverage transitions",
+      "Social Security timing optimization",
+      "Portfolio allocation for retirement phase",
+      "Estate planning coordination",
+      "Insurance needs analysis"
+    ],
+    "specialized_scenarios": [
+      "Early retirement at ages 55-65",
+      "Roth conversion ladder strategies",
+      "Medicare gap coverage planning",
+      "Spousal benefit optimization",
+      "Pension vs lump sum decisions",
+      "Multi-account withdrawal sequencing"
+    ]
+  }
+}

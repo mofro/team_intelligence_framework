@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "metadata": {
+    "name": "intelligence_framework_team",
+    "description": "Specialized team for AI intelligence frameworks, LLM implementation, and prompt engineering with focus on commercial platform optimization",
+    "author": "user_generated",
+    "version": "1.0",
+    "created_date": "2025-07-01",
+    "example": false
+  },
+  "team": {
+    "team_name": "intelligence_framework_team",
+    "display_name": "Intelligence Framework Team",
+    "description": "Expert team for AI system design, LLM integration, and intelligent framework development",
+    "members": [
+      "llm_prompt_specialist",
+      "system_architect",
+      "data_scientist",
+      "backend_developer",
+      "product_manager"
+    ],
+    "default_primary": "llm_prompt_specialist"
+  },
+  "activation": {
+    "auto_suggest_contexts": [
+      "artificial intelligence", "large language model", "llm", "prompt engineering",
+      "ai framework", "chatgpt", "claude", "gemini", "openai", "anthropic", "google ai",
+      "conversation design", "ai system", "prompt optimization", "ai platform",
+      "machine learning", "natural language processing", "ai integration",
+      "intelligent system", "ai architecture", "prompt budget", "ai cost optimization"
+    ],
+    "auto_suggest_keywords": [
+      "llm", "prompt", "ai", "chatgpt", "claude", "gemini", "openai", "anthropic",
+      "conversation", "intelligence", "optimization", "budget", "platform", "model",
+      "engineering", "framework", "integration", "api", "cost", "performance"
+    ],
+    "discovery_priority": "high"
+  },
+  "team_dynamics": {
+    "primary_workflow": "llm_prompt_specialist leads technical analysis and platform recommendations, system_architect handles integration architecture, data_scientist provides model performance insights",
+    "collaboration_patterns": [
+      "llm_prompt_specialist + system_architect: Platform integration strategy",
+      "llm_prompt_specialist + data_scientist: Model performance optimization",
+      "llm_prompt_specialist + backend_developer: API implementation patterns",
+      "llm_prompt_specialist + product_manager: Feature prioritization and cost analysis"
+    ],
+    "decision_hierarchy": [
+      "llm_prompt_specialist: Platform selection and prompt strategy",
+      "system_architect: Technical architecture decisions",
+      "data_scientist: Model evaluation and metrics",
+      "backend_developer: Implementation feasibility",
+      "product_manager: Business requirements and constraints"
+    ]
+  },
+  "use_cases": [
+    "AI system architecture design",
+    "LLM platform selection and comparison",
+    "Prompt engineering and optimization",
+    "Conversation flow design",
+    "AI cost optimization strategies",
+    "Platform-specific feature implementation",
+    "AI performance monitoring setup",
+    "Intelligent framework development",
+    "Multi-modal AI integration",
+    "AI system scalability planning"
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "metadata": {
+    "name": "news_aggregation_app_team",
+    "description": "Full-stack team for personal newsletter aggregation and digest system development",
+    "author": "Mo",
+    "version": "1.0",
+    "created_date": "2025-07-07",
+    "example": false
+  },
+  "team": {
+    "team_name": "news_aggregation_app_team",
+    "display_name": "News Aggregation App Team",
+    "description": "Cross-functional team for building Nemo - personal newsletter aggregation system with email forwarding, dashboard, and digest capabilities",
+    "members": [
+      "react_specialist",
+      "experienced_developer", 
+      "ux_ui_strategist",
+      "ux_designer",
+      "security_specialist",
+      "cloud_architect"
+    ],
+    "default_primary": "react_specialist"
+  },
+  "activation": {
+    "auto_suggest_contexts": [
+      "newsletter aggregation", "email parsing", "news digest", "content aggregation",
+      "email forwarding", "webhook processing", "dashboard development", "rss feeds",
+      "personal productivity", "information management", "news consumption",
+      "email newsletters", "content curation", "digest system"
+    ],
+    "auto_suggest_keywords": [
+      "newsletter", "email", "aggregation", "digest", "dashboard", "webhook",
+      "rss", "news", "forwarding", "parsing", "curation", "productivity"
+    ],
+    "discovery_priority": "high"
+  },
+  "team_dynamics": {
+    "primary_workflow": "react_specialist leads frontend architecture and framework decisions, experienced_developer provides system design oversight, cloud_architect handles infrastructure and deployment, ux_ui_strategist challenges assumptions and advocates for user needs",
+    "collaboration_patterns": [
+      "react_specialist + experienced_developer: Frontend architecture and code quality",
+      "cloud_architect + experienced_developer: Infrastructure and deployment strategy", 
+      "ux_ui_strategist + ux_designer: User experience and interface design",
+      "security_specialist + cloud_architect: Security architecture and secure deployment",
+      "react_specialist + cloud_architect: Frontend-backend integration patterns"
+    ],
+    "decision_hierarchy": [
+      "react_specialist: Frontend framework and component architecture",
+      "experienced_developer: Overall system architecture and code patterns", 
+      "cloud_architect: Infrastructure, hosting, and deployment decisions",
+      "ux_ui_strategist: User experience strategy and design direction",
+      "ux_designer: Interface design and usability patterns",
+      "security_specialist: Security architecture and secure coding practices"
+    ]
+  },
+  "use_cases": [
+    "Email newsletter aggregation system development",
+    "Personal productivity tool architecture", 
+    "Webhook and API development for email processing",
+    "Dashboard and content presentation interfaces",
+    "RSS feed integration and content parsing",
+    "Serverless deployment and hosting strategy",
+    "Content search and filtering systems",
+    "Mobile-responsive news consumption interfaces",
+    "Email forwarding and processing workflows",
+    "Static site generation with dynamic data"
+  ],
+  "project_context": {
+    "current_project": "Nemo (mnews) - Personal Newsletter Aggregation System",
+    "tech_stack": ["next.js", "typescript", "vercel", "serverless_functions"],
+    "deployment_target": "vercel_serverless",
+    "user_base": "personal_use_with_potential_sharing",
+    "complexity_level": "mvp_with_growth_potential"
+  }
+}
