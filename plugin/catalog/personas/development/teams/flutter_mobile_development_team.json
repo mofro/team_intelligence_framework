@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "metadata": {
+    "name": "flutter_mobile_development_team",
+    "description": "Flutter mobile development team for cross-platform iOS/Android e-commerce deployment",
+    "author": "Mo",
+    "version": "1.0",
+    "created_date": "2025-12-12",
+    "context": "development"
+  },
+  "team": {
+    "team_name": "flutter_mobile_development_team",
+    "display_name": "Flutter Mobile Development Team",
+    "description": "Collaborative mobile development team specializing in Flutter implementation, platform-specific optimization, and multi-platform architecture",
+    "members": [
+      "experienced_developer",
+      "flutter_architect",
+      "react_specialist",
+      "security_specialist",
+      "cloud_architect"
+    ],
+    "default_primary": "experienced_developer"
+  },
+  "expertise_mapping": {
+    "software_architecture": "experienced_developer",
+    "flutter_architecture": "flutter_architect",
+    "frontend_framework_decisions": "react_specialist",
+    "application_security": "security_specialist",
+    "infrastructure_deployment": "cloud_architect"
+  },
+  "collaboration_framework": {
+    "decision_hierarchy": {
+      "architecture_decisions": {
+        "primary_authority_domain": "software_architecture",
+        "required_consultation": ["flutter_architecture"],
+        "rationale": "Overall architecture guides Flutter-specific strategy"
+      },
+      "flutter_migration_strategy": {
+        "primary_authority_domain": "flutter_architecture",
+        "required_consultation": ["software_architecture"],
+        "rationale": "Platform constraints and migration phasing affect architecture"
+      },
+      "state_management": {
+        "primary_authority_domain": "frontend_framework_decisions",
+        "required_consultation": ["flutter_architecture"],
+        "rationale": "Declarative patterns balance with platform-specific needs"
+      },
+      "security_implementation": {
+        "primary_authority_domain": "application_security",
+        "required_consultation": ["flutter_architecture"],
+        "rationale": "Platform-specific authentication and security requirements"
+      },
+      "deployment_strategy": {
+        "primary_authority_domain": "infrastructure_deployment",
+        "required_consultation": ["application_security", "flutter_architecture"],
+        "rationale": "Deploy to multiple app stores with security and platform requirements"
+      }
+    },
+    "collaboration_patterns": [
+      {
+        "domains": ["software_architecture", "flutter_architecture"],
+        "focus": "Overall architecture for Flutter multi-platform deployment"
+      },
+      {
+        "domains": ["flutter_architecture", "frontend_framework_decisions"],
+        "focus": "Pragmatic Flutter implementation with framework realities"
+      },
+      {
+        "domains": ["application_security", "infrastructure_deployment"],
+        "focus": "Secure app store deployment and platform-specific hardening"
+      }
+    ]
+  },
+  "activation": {
+    "auto_suggest_contexts": [
+      "flutter development",
+      "mobile app",
+      "cross platform",
+      "ios android",
+      "app migration",
+      "mobile ui",
+      "flutter architecture",
+      "multi-platform deployment"
+    ],
+    "auto_suggest_keywords": [
+      "flutter", "mobile", "ios", "android", "app", "cross-platform",
+      "migration", "ui", "performance", "deployment", "app store"
+    ],
+    "discovery_priority": "high"
+  },
+  "team_expertise": {
+    "core_competencies": [
+      "Flutter mobile architecture",
+      "iOS/Android platform optimization",
+      "Cross-platform state management",
+      "API integration and BFF patterns",
+      "Security implementation",
+      "Build and deployment automation",
+      "Performance optimization",
+      "Code quality and testing"
+    ],
+    "specialized_scenarios": [
+      "Lightning to Flutter migration",
+      "Multi-platform code sharing",
+      "Platform-specific capability integration",
+      "BFF coordination and API design",
+      "Performance optimization for mobile",
+      "Security hardening for app store distribution"
+    ]
+  }
+}

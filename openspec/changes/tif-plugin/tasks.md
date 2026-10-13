@@ -4,9 +4,9 @@
 
 ## 1. Bundled catalog generation
 
-- [ ] 1.1 Extend `scripts/build_persona_index.py` to emit `plugin/catalog/` containing `index.json` and copies of every persona and team file listed in it, preserving relative paths. Verify by running it and diffing the copied files against their sources.
-- [ ] 1.2 Extend `--check` to fail when `plugin/catalog/` is missing, has extra files, or differs from the sources, and to print the regeneration command. Verify with a test that edits one bundled file and expects a nonzero exit.
-- [ ] 1.3 Add generator tests for the new behavior alongside the existing generator tests. Verify the whole test suite passes.
+- [x] 1.1 Extend `scripts/build_persona_index.py` to emit `plugin/catalog/` containing `index.json` and copies of every persona and team file listed in it, preserving relative paths. Verify by running it and diffing the copied files against their sources.
+- [x] 1.2 Extend `--check` to fail when `plugin/catalog/` is missing, has extra files, or differs from the sources, and to print the regeneration command. Verify with a test that edits one bundled file and expects a nonzero exit.
+- [x] 1.3 Add generator tests for the new behavior alongside the existing generator tests. Verify the whole test suite passes.
 
 ## 2. Command table and `tif.py`
 

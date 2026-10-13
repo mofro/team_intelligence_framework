@@ -2,11 +2,12 @@
 """Generate index.json: a catalog of the personas and teams in this repository.
 
 Usage:
-    python3 scripts/build_persona_index.py            # write index.json
-    python3 scripts/build_persona_index.py --check    # exit 1 if index.json is stale or errors exist
+    python3 scripts/build_persona_index.py            # write index.json and plugin/catalog/
+    python3 scripts/build_persona_index.py --check    # exit 1 if index.json or plugin/catalog/ is stale, or errors exist
 
-The index is derived only from files under personas/. Nothing else is read or
-modified. Specs: openspec/specs/; design: openspec/changes/archive/2026-10-10-persona-index/.
+The index is derived only from files under personas/. Persona, team and context
+configuration files are never modified; the only paths written are index.json and
+plugin/catalog/ (a byte-for-byte copy of index.json and every file it lists). Specs: openspec/specs/; design: openspec/changes/archive/2026-10-10-persona-index/.
 """
 
 import argparse
@@ -19,6 +20,8 @@ from pathlib import Path
 INDEX_VERSION = 1
 TEMPLATE_PATH = "personas/persona_schema_example.json"
 EXAMPLES_PREFIX = "personas/examples/"
+
+BUNDLE_DIR = "plugin/catalog"
 
 ERROR, WARNING, NOTE = "error", "warning", "note"
 
@@ -248,6 +251,48 @@ def render(index):
     return json.dumps(index, indent=2, ensure_ascii=False) + "\n"
 
 
+def bundle_contents(root, index, rendered):
+    """Map of path (relative to plugin/catalog/) -> bytes for the bundled catalog."""
+    files = {"index.json": rendered.encode("utf-8")}
+    for entry in index["personas"] + index["teams"]:
+        files[entry["path"]] = (root / entry["path"]).read_bytes()
+    return files
+
+
+def write_bundle(root, files):
+    bundle = root / BUNDLE_DIR
+    if bundle.exists():
+        for stale in sorted(bundle.rglob("*"), reverse=True):
+            rel = stale.relative_to(bundle).as_posix()
+            if stale.is_file() and rel not in files:
+                stale.unlink()
+            elif stale.is_dir() and not any(stale.iterdir()):
+                stale.rmdir()
+    for rel, data in files.items():
+        dest = bundle / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if not dest.exists() or dest.read_bytes() != data:
+            dest.write_bytes(data)
+
+
+def bundle_problems(root, files):
+    """Differences between the expected bundle and plugin/catalog/ on disk."""
+    bundle = root / BUNDLE_DIR
+    problems = []
+    for rel, data in sorted(files.items()):
+        dest = bundle / rel
+        if not dest.is_file():
+            problems.append(f"{BUNDLE_DIR}/{rel} is missing")
+        elif dest.read_bytes() != data:
+            problems.append(f"{BUNDLE_DIR}/{rel} differs from its source")
+    if bundle.is_dir():
+        for found in sorted(p for p in bundle.rglob("*") if p.is_file()):
+            rel = found.relative_to(bundle).as_posix()
+            if rel not in files:
+                problems.append(f"{BUNDLE_DIR}/{rel} is not in the index")
+    return problems
+
+
 def report(diagnostics, stream):
     order = {ERROR: 0, WARNING: 1, NOTE: 2}
     for level, msg in sorted(diagnostics, key=lambda d: (order[d[0]], d[1])):
@@ -270,15 +315,25 @@ def main(argv=None):
     rendered = render(index)
     target = root / "index.json"
     if args.check:
+        regenerate = "run python3 scripts/build_persona_index.py and commit the result"
+        status = 0
         current = target.read_text(encoding="utf-8") if target.exists() else None
         if current != rendered:
-            print("index.json is stale: run python3 scripts/build_persona_index.py and commit the result", file=sys.stderr)
-            return 1
-        print("index.json is up to date", file=sys.stderr)
-        return 0
+            print(f"index.json is stale: {regenerate}", file=sys.stderr)
+            status = 1
+        problems = bundle_problems(root, bundle_contents(root, index, rendered))
+        for problem in problems:
+            print(f"ERROR: {problem}", file=sys.stderr)
+        if problems:
+            print(f"{BUNDLE_DIR}/ is stale: {regenerate}", file=sys.stderr)
+            status = 1
+        if status == 0:
+            print(f"index.json and {BUNDLE_DIR}/ are up to date", file=sys.stderr)
+        return status
 
     target.write_text(rendered, encoding="utf-8")
-    print(f"wrote index.json ({len(index['personas'])} personas, {len(index['teams'])} teams)", file=sys.stderr)
+    write_bundle(root, bundle_contents(root, index, rendered))
+    print(f"wrote index.json and {BUNDLE_DIR}/ ({len(index['personas'])} personas, {len(index['teams'])} teams)", file=sys.stderr)
     return 0
 
 
