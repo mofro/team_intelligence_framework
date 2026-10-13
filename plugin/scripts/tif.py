@@ -5,7 +5,9 @@ Run `tif.py help` for the subcommands. Standard library only.
 """
 
 import argparse
+import json
 import sys
+from pathlib import Path
 from dataclasses import dataclass, field
 
 
@@ -85,7 +87,55 @@ def parse(argv):
     return build_parser().parse_args(argv)
 
 
-def main(argv=None):
+DEFAULT_CATALOG = Path(__file__).resolve().parent.parent / "catalog"
+
+
+class CatalogError(Exception):
+    pass
+
+
+def load_index(catalog):
+    path = Path(catalog) / "index.json"
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except OSError as exc:
+        raise CatalogError(f"cannot read the bundled catalog index {path}: {exc.strerror or exc}")
+    except ValueError as exc:
+        raise CatalogError(f"the bundled catalog index {path} is not valid JSON: {exc}")
+
+
+def table(rows):
+    """Left-aligned columns separated by two spaces; the last column is not padded."""
+    if not rows:
+        return []
+    widths = [max(len(str(r[i])) for r in rows) for i in range(len(rows[0]) - 1)]
+    return ["  ".join([str(c).ljust(w) for c, w in zip(r, widths)] + [str(r[-1])]) for r in rows]
+
+
+def cmd_list(index, ns):
+    personas = index["personas"]
+    if ns.domain is not None:
+        domains = sorted({p["domain"] for p in personas})
+        personas = [p for p in personas if p["domain"] == ns.domain]
+        if not personas:
+            print(f"tif.py: no personas matched domain '{ns.domain}'. Available domains: {', '.join(domains)}",
+                  file=sys.stderr)
+            return 1
+    for line in table([(p["id"], p["domain"], p["status"], p["role"]) for p in personas]):
+        print(line)
+    return 0
+
+
+def cmd_teams(index, ns):
+    for line in table([(t["id"], len(t["members"]), t["status"]) for t in index["teams"]]):
+        print(line)
+    return 0
+
+
+HANDLERS = {"list": cmd_list, "teams": cmd_teams}
+
+
+def main(argv=None, catalog=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     if not argv or argv in (["help"], ["--help"]):
         sys.stdout.write(help_text())
@@ -95,8 +145,16 @@ def main(argv=None):
     except ParseError as exc:
         print(f"tif.py: {exc}. Run 'tif.py help' for usage.", file=sys.stderr)
         return 2
-    print(f"tif.py: '{ns.command}' is not implemented yet.", file=sys.stderr)
-    return 1
+    handler = HANDLERS.get(ns.command)
+    if handler is None:
+        print(f"tif.py: '{ns.command}' is not implemented yet.", file=sys.stderr)
+        return 1
+    try:
+        index = load_index(DEFAULT_CATALOG if catalog is None else catalog)
+    except CatalogError as exc:
+        print(f"tif.py: {exc}", file=sys.stderr)
+        return 1
+    return handler(index, ns)
 
 
 if __name__ == "__main__":
