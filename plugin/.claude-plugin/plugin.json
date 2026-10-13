@@ -1,0 +1,11 @@
+{
+  "name": "tif",
+  "version": "0.1.0",
+  "description": "Browse the Team Intelligence Framework catalog and install personas and teams into a project's .persona/ directory.",
+  "author": {
+    "name": "Maurice Gaston"
+  },
+  "homepage": "https://github.com/mofro/team_intelligence_framework",
+  "repository": "https://github.com/mofro/team_intelligence_framework",
+  "license": "MIT"
+}

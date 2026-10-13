@@ -19,18 +19,18 @@
 
 ## 3. Skill and documentation
 
-- [ ] 3.1 Write `plugin/skills/catalog/SKILL.md`: a thin wrapper that runs `tif.py` with the user's arguments and relays the output without reading the catalog. Verify the file contains the generated help block and no instruction to read catalog files.
-- [ ] 3.2 Generate the README Quick Start block from the command table and note that Conductor ignores installed team files for now. Verify `tif.py --check` passes.
+- [x] 3.1 Write `plugin/skills/catalog/SKILL.md`: a thin wrapper that runs `tif.py` with the user's arguments and relays the output without reading the catalog. Verify the file contains the generated help block and no instruction to read catalog files.
+- [x] 3.2 Generate the README Quick Start block from the command table and note that Conductor ignores installed team files for now. Verify `tif.py --check` passes.
 
 ## 4. Manifest, marketplace and validation
 
-- [ ] 4.1 Add `plugin/.claude-plugin/plugin.json` (name, version, description, author, license) and `.claude-plugin/marketplace.json` pointing to `./plugin`. Verify with `claude plugin validate`.
+- [x] 4.1 Add `plugin/.claude-plugin/plugin.json` (name, version, description, author, license) and `.claude-plugin/marketplace.json` pointing to `./plugin`. Verify with `claude plugin validate`.
 
 ## 5. End-to-end check
 
-- [ ] 5.1 In a clean project, add the marketplace, install the plugin with the CLI, and run `/tif:catalog help`, `list`, `info`, and `install` for one persona and one team. Verify files land in `.persona/personas/` and `.persona/teams/` and that Conductor still starts without error when both are installed.
-- [ ] 5.2 Record that the desktop app was not tested. Verify the note appears in the README.
+- [x] 5.1 In a clean project, add the marketplace, install the plugin with the CLI, and run `/tif:catalog help`, `list`, `info`, and `install` for one persona and one team. Verify files land in `.persona/personas/` and `.persona/teams/` and that Conductor still starts without error when both are installed.
+- [x] 5.2 Record that the desktop app was not tested. Verify the note appears in the README.
 
 ## 6. Spec hygiene
 
-- [ ] 6.1 Run `openspec validate tif-plugin --strict`. Verify it passes.
+- [x] 6.1 Run `openspec validate tif-plugin --strict`. Verify it passes.
