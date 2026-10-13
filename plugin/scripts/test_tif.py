@@ -27,12 +27,18 @@ def fake_catalog(personas, teams):
     return tmp, root
 
 
-def P(pid, domain="dev", status="complete", role="a role"):
-    return {"id": pid, "role": role, "domain": domain, "status": status, "aliases": []}
+def P(pid, domain="dev", status="complete", role="a role", aliases=(), **extra):
+    d = {"id": pid, "name": f"{pid} name", "summary": f"{pid} summary", "role": role, "domain": domain,
+         "subdomain": None, "version": "1.2", "status": status, "aliases": list(aliases)}
+    d.update(extra)
+    return d
 
 
-def T(tid, members, status="complete"):
-    return {"id": tid, "members": members, "status": status, "aliases": [], "domain": "dev", "default_primary": members[0]}
+def T(tid, members, status="complete", aliases=(), **extra):
+    d = {"id": tid, "name": f"{tid} name", "summary": f"{tid} summary", "members": members, "status": status,
+         "aliases": list(aliases), "domain": "dev", "default_primary": members[0], "unresolved_members": []}
+    d.update(extra)
+    return d
 
 
 class HelpTests(unittest.TestCase):
@@ -151,6 +157,73 @@ class ListTests(unittest.TestCase):
         self.assertIn("index.json", err)
 
 
+class InfoTests(unittest.TestCase):
+    def setUp(self):
+        tmp, self.cat = fake_catalog(
+            [P("alpha", aliases=["alpha_file", "shared"], role="Alpha role", subdomain="sub"),
+             P("beta", aliases=["shared"]),
+             P("stubby", status="stub", aliases=["stubby_file"]),
+             P("both")],
+            [T("team_one", ["alpha", "ghost"], "incomplete", aliases=["team_file"], unresolved_members=["ghost"]),
+             T("both", ["alpha"], aliases=[])])
+        self.addCleanup(tmp.cleanup)
+
+    def info(self, name):
+        return run("info", name, catalog=self.cat)
+
+    def test_persona_by_id_shows_the_required_fields(self):
+        code, out, _ = self.info("alpha")
+        self.assertEqual(code, 0)
+        for text in ("alpha", "alpha summary", "Alpha role", "dev", "1.2", "complete"):
+            self.assertIn(text, out)
+
+    def test_persona_by_alias(self):
+        code, out, _ = self.info("alpha_file")
+        self.assertEqual(code, 0)
+        self.assertIn("alpha summary", out)
+        self.assertNotIn("beta summary", out)
+
+    def test_stub_status_shown(self):
+        self.assertIn("stub", self.info("stubby")[1])
+
+    def test_team_shows_members_primary_status_and_unresolved(self):
+        code, out, _ = self.info("team_one")
+        self.assertEqual(code, 0)
+        for text in ("team_one summary", "alpha", "ghost", "incomplete", "unresolved"):
+            self.assertIn(text, out)
+        self.assertIn("default primary", out.lower())
+
+    def test_team_by_alias(self):
+        self.assertIn("team_one summary", self.info("team_file")[1])
+
+    def test_ambiguous_alias_lists_candidates_and_fails(self):
+        code, out, err = self.info("shared")
+        self.assertNotEqual(code, 0)
+        self.assertEqual(out, "")
+        self.assertIn("alpha", err)
+        self.assertIn("beta", err)
+
+    def test_id_shared_by_persona_and_team_is_ambiguous(self):
+        code, out, err = self.info("both")
+        self.assertNotEqual(code, 0)
+        self.assertIn("persona", err)
+        self.assertIn("team", err)
+
+    def test_unknown_name_fails_and_points_to_listing(self):
+        code, out, err = self.info("nonesuch")
+        self.assertNotEqual(code, 0)
+        self.assertEqual(out, "")
+        self.assertIn("nonesuch", err)
+        self.assertIn("list", err)
+
+    def test_exact_id_wins_over_an_alias_of_another_item(self):
+        tmp, cat = fake_catalog([P("x"), P("y", aliases=["x"])], [])
+        self.addCleanup(tmp.cleanup)
+        code, out, _ = run("info", "x", catalog=cat)
+        self.assertEqual(code, 0)
+        self.assertIn("x summary", out)
+
+
 class RealCatalogTests(unittest.TestCase):
     """Facts about the bundled catalog on 2026-10-10 (28 personas, 6 teams)."""
 
@@ -165,6 +238,17 @@ class RealCatalogTests(unittest.TestCase):
         code, out, _ = run("teams")
         self.assertEqual((code, len(out.splitlines())), (0, 6))
         self.assertEqual(sum("contains_stubs" in l for l in out.splitlines()), 1)
+
+    def test_info_by_alias_on_real_catalog(self):
+        code, out, _ = run("info", "ott_ux_persona")
+        self.assertEqual(code, 0)
+        self.assertIn("ux_designer", out)
+
+    def test_info_on_team_with_stubs(self):
+        code, out, _ = run("info", "intelligence_framework_team")
+        self.assertEqual(code, 0)
+        self.assertIn("contains_stubs", out)
+        self.assertIn("system_architect", out)
 
     def test_domain_filter_on_real_catalog(self):
         _, out, _ = run("list", "--domain", "writing")

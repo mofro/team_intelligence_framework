@@ -132,7 +132,47 @@ def cmd_teams(index, ns):
     return 0
 
 
-HANDLERS = {"list": cmd_list, "teams": cmd_teams}
+def resolve(index, name):
+    """Items matching `name`: exact id first, otherwise aliases. Each item is (kind, entry)."""
+    items = [("persona", p) for p in index["personas"]] + [("team", t) for t in index["teams"]]
+    by_id = [(k, e) for k, e in items if e["id"] == name]
+    return by_id or [(k, e) for k, e in items if name in e["aliases"]]
+
+
+def field_lines(pairs):
+    width = max(len(k) for k, _ in pairs)
+    return [f"{k + ':':<{width + 1}} {v}" for k, v in pairs]
+
+
+def cmd_info(index, ns):
+    matches = resolve(index, ns.name)
+    if not matches:
+        print(f"tif.py: no persona or team matches '{ns.name}'. Run 'tif.py list' or 'tif.py teams' to see what exists.",
+              file=sys.stderr)
+        return 1
+    if len(matches) > 1:
+        candidates = ", ".join(f"{e['id']} ({k})" for k, e in matches)
+        print(f"tif.py: '{ns.name}' matches more than one item: {candidates}. Ask again with one of these ids.",
+              file=sys.stderr)
+        return 1
+    kind, e = matches[0]
+    if kind == "persona":
+        domain = e["domain"] + (f"/{e['subdomain']}" if e.get("subdomain") else "")
+        pairs = [("id", f"{e['id']} (persona)"), ("name", e["name"]), ("summary", e["summary"]),
+                 ("role", e["role"]), ("domain", domain), ("version", e["version"]), ("status", e["status"])]
+    else:
+        pairs = [("id", f"{e['id']} (team)"), ("name", e["name"]), ("summary", e["summary"]),
+                 ("domain", e["domain"]), ("members", ", ".join(e["members"])),
+                 ("default primary", e["default_primary"]), ("status", e["status"])]
+        if e["unresolved_members"]:
+            pairs.append(("unresolved", ", ".join(e["unresolved_members"])))
+    if e["aliases"]:
+        pairs.append(("aliases", ", ".join(e["aliases"])))
+    print("\n".join(field_lines(pairs)))
+    return 0
+
+
+HANDLERS = {"list": cmd_list, "teams": cmd_teams, "info": cmd_info}
 
 
 def main(argv=None, catalog=None):
