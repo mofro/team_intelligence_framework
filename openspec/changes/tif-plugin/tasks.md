@@ -10,7 +10,7 @@
 
 ## 2. Command table and `tif.py`
 
-- [ ] 2.1 Create `plugin/scripts/tif.py` with the single command table (name, arguments, one-line description) and argument parsing. Verify `tif.py --help` and `tif.py help` print the same text, generated from the table.
+- [x] 2.1 Create `plugin/scripts/tif.py` with the single command table (name, arguments, one-line description) and argument parsing. Verify `tif.py --help` and `tif.py help` print the same text, generated from the table.
 - [ ] 2.2 Implement `list [--domain D]` and `teams` from the bundled index, with status markers. Verify against the current index (28 personas, 6 teams) and with an unknown domain.
 - [ ] 2.3 Implement `info <id|alias>` for personas and teams, including ambiguous and unknown names. Verify with an alias, an id, an ambiguous alias and an unknown name.
 - [ ] 2.4 Implement `install <persona|team>` with sha256 verification, no-overwrite-without-`--force`, `.persona/personas/` and `.persona/teams/` targets, member installation, and warn-only disclosure. Verify in a temporary directory: fresh install, repeat install, locally edited file, `--force`, corrupted bundled file, team with stubs, team with unresolved members, team with a missing primary voice, virtual team.
