@@ -26,8 +26,26 @@ jobs:
       - name: Create flat deployable directory
         run: |
           mkdir -p deploy
-          find config -type f -exec cp {} deploy/ \;
-          find personas -type f -exec cp {} deploy/ \;
+          # Flat layout: every file lands directly in deploy/. The five domain
+          # context_configuration.json files share a name, so they are prefixed
+          # with their domain. Any other name collision fails the build instead
+          # of silently overwriting a file.
+          copy_flat() {
+            dest="deploy/$2"
+            if [ -e "$dest" ]; then
+              echo "::error::flat name collision: $1 -> $dest"
+              exit 1
+            fi
+            cp "$1" "$dest"
+          }
+          find config -type f | while read -r f; do copy_flat "$f" "$(basename "$f")"; done
+          find personas -type f | while read -r f; do
+            name="$(basename "$f")"
+            if [ "$name" = "context_configuration.json" ]; then
+              name="$(echo "$f" | cut -d/ -f2)_$name"
+            fi
+            copy_flat "$f" "$name"
+          done
           cp README.md deploy/ || true
           cp USER_GUIDE.md deploy/ || true
           cp Persona_Framework_Implementation_Guide.md deploy/ || true
