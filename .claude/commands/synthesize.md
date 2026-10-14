@@ -11,26 +11,20 @@ Runs Phase 2 of the two-phase challenge/synthesis protocol. Consumes the Challen
 
 **Usage**: `/synthesize [your original request]`
 
-The Challenge Artifact from the preceding `/challenge` invocation should be present in context. If it is not, ask the user to run `/challenge [request]` first.
+The Challenge Artifact from the preceding `/challenge` run should be present in this conversation. If it is not, ask the user to run `/challenge [request]` first.
 
 ---
 
 ## Instructions
 
-You are in Synthesis Phase. Apply the full behavioral contract from `config/challenge_synthesis_protocol.md`:
+Phase 2 runs in an isolated `synthesizer` subagent (`.claude/agents/synthesizer.md`), not in this conversation. Because the subagent starts fresh, it sees only what you pass it, which is what satisfies R-1.
 
-1. Locate the Challenge Artifact in context (from the preceding `/challenge` run)
-2. Read the original request
-3. Load the active domain `context_configuration.json` and `persona_collaboration_framework_v2.md`
-4. Produce a unified synthesis response that:
-   - Traces every `RC-n` in `required_clarifications` — resolve it explicitly or state an explicit deferral with reason; silent omission is a conformance failure (see `challenge_synthesis_protocol.md` criterion B-4)
-   - Acknowledges every `AF-n` in `alternative_framings` that changed the synthesis direction (criterion B-5)
-   - Leads with the reframing before any solution if `verdict` is `REFRAME` (criterion B-6)
-   - States what's missing and does not present a full solution if `verdict` is `DEFER` (criterion B-7)
-   - Uses the primary voice system: one persona leads, others woven in seamlessly
-   - Applies domain-appropriate expertise routing per the active team/context
+1. Locate the Challenge Artifact in context and read the original request
+2. Identify the active domain's `context_configuration.json` path
+3. Launch the `synthesizer` subagent with a prompt containing exactly three things: the original request verbatim, the full Challenge Artifact verbatim, and the path from step 2. Pass nothing else: no summary of this conversation, no notes on how the challenge went
+4. Output the subagent's synthesis verbatim
 
-**The synthesis response is the team's full, integrated answer. It speaks with the authority of having been challenged.** Conformance criteria for this phase are defined in `config/challenge_synthesis_protocol.md`.
+The subagent enforces the traceability rules (every `RC-n` resolved or explicitly deferred, every `AF-n` acknowledged, reframing first on `REFRAME`, missing information stated on `DEFER`). They are defined in `config/challenge_synthesis_protocol.md` (criteria B-4 to B-7).
 
 ---
 

@@ -15,16 +15,14 @@ Runs Phase 1 of the two-phase challenge/synthesis protocol against the provided 
 
 ## Instructions
 
-You are in Challenge Phase. Apply the full behavioral contract from `config/challenge_phase_prompt.md`:
+Phase 1 runs in an isolated `challenger` subagent (`.claude/agents/challenger.md`), not in this conversation. The subagent is read-only and cannot see this conversation, which is what satisfies R-1.
 
 1. Read the request provided after `/challenge`
-2. Identify the active domain context and its `challenge_focus` field from the loaded `context_configuration.json`
-3. Apply the adversarial lens scoped to that `challenge_focus`
-4. Produce a Challenge Artifact in the standard format
+2. Identify the active domain context and its `challenge_focus` from the loaded `context_configuration.json`. If no domain context is active, use "first principles: correctness, completeness, and coherence"
+3. Launch the `challenger` subagent with a prompt containing only `challenge_focus: <value>` and the request verbatim. Add nothing else: no background, no history, no summary of this conversation
+4. Output the subagent's Challenge Artifact verbatim. Do not edit it, add commentary, or offer solutions
 
-**Do not offer solutions. Do not move toward synthesis.**
-
-Output the Challenge Artifact. The user will then run `/synthesize` with the same request, and the artifact will be available as context.
+The user will then run `/synthesize` with the same request.
 
 ---
 
@@ -51,6 +49,9 @@ alternative_framings:
 
 required_clarifications:
 - [RC-1] ...
+
+context_consulted:       # optional; omit if nothing was read
+- [path or source]
 ```
 
 Full schema, cardinality rules, and conformance criteria: `config/challenge_synthesis_protocol.md`.
