@@ -14,7 +14,7 @@ The plugin SHALL be named `tif`. It SHALL expose the skill `catalog` (invoked as
 ## ADDED Requirements
 
 ### Requirement: Bundled framework files stay in sync
-The generator SHALL emit `plugin/framework/` (a copy of the three framework files the challenge agents read) and the plugin's agent files from their repository sources, and its `--check` mode SHALL fail when any of them is missing, has extra files, or differs from what the sources produce.
+The generator SHALL emit `plugin/framework/` (a copy of the three framework files the challenge agents read, and the domain table `domains.json`) and the plugin's agent files from their repository sources, and its `--check` mode SHALL fail when any of them is missing, has extra files, or differs from what the sources produce.
 
 #### Scenario: Phase prompt edited without regenerating
 - **WHEN** `config/challenge_phase_prompt.md` changes and the plugin copies are not regenerated

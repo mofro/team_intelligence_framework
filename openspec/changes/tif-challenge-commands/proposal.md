@@ -8,7 +8,9 @@
 - Add `plugin/agents/challenger.md` and `plugin/agents/synthesizer.md`, generated from the repo-local agents.
 - Bundle the three framework files the agents need (`challenge_phase_prompt.md`, `persona_collaboration_framework_v2.md`, `challenge_synthesis_protocol.md`) as a generated `plugin/framework/`.
 - Extend the generator so it writes these copies, and `--check` (run in CI) fails when any is missing, extra or stale. Extend the challenger drift test to cover the plugin copy.
-- The synthesizer falls back to first-principles synthesis when no domain `context_configuration.json` path is given, because an installed plugin may have no domain config.
+- Domain context becomes an explicit input: `--focus "<text>"` (verbatim; also the manual path) or `--domain <name>` (looked up in a generated `plugin/framework/domains.json` of name → `challenge_focus`), else first-principles. A project-level config with no `challenge_focus` of its own inherits the one from the domain-level config it extends. Inference of an "active domain" from the conversation is dropped from the plugin commands.
+- The synthesizer receives the resolved focus value, not a config path.
+- The protocol's `domain_context` input changes from required to optional, matching the phase prompt's first-principles fallback and the manual-orchestration requirement (R-2).
 - The repo-local `.claude/commands/` and `.claude/agents/` stay exactly as they are and remain the source for the generated plugin copies.
 - **BREAKING (spec only)**: the plugin no longer exposes "exactly one skill"; its identity requirement changes.
 
@@ -22,7 +24,7 @@
 
 ## Impact
 
-- New: `plugin/commands/`, `plugin/agents/`, `plugin/framework/` (all generated except the commands, which are derived from the repo-local ones).
-- Changed: `scripts/build_persona_index.py` (generate and check the new files), `scripts/test_challenge_agents.py`, `.github/workflows/persona-index.yml` only if a new step is needed, the plugin version in `plugin.json`, and the README plugin section.
-- Unchanged: `.claude/commands/`, `.claude/agents/`, `config/*`, the catalog.
+- New: `plugin/commands/`, `plugin/agents/`, `plugin/framework/` (generated, except the two commands, which are hand-written).
+- Changed: `scripts/build_persona_index.py` (generate and check the new files, including `domains.json`), `config/challenge_synthesis_protocol.md` (`domain_context` optional), `scripts/test_challenge_agents.py`, `.github/workflows/persona-index.yml` only if a new step is needed, the plugin version in `plugin.json`, and the README plugin section.
+- Unchanged: `.claude/commands/`, `.claude/agents/`, the catalog, and every `config/` file except the protocol's input definition.
 - No new dependencies (standard library only).
