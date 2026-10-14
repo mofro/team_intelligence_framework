@@ -28,7 +28,6 @@ jobs:
           mkdir -p deploy
           find config -type f -exec cp {} deploy/ \;
           find personas -type f -exec cp {} deploy/ \;
-          find teams -type f -exec cp {} deploy/ \;
           cp README.md deploy/ || true
           cp USER_GUIDE.md deploy/ || true
           cp Persona_Framework_Implementation_Guide.md deploy/ || true
