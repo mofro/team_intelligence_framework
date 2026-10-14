@@ -50,7 +50,7 @@ The protocol exists because genuine challenge and integrated synthesis are struc
 - `domain_context` (required): The active `challenge_focus` from the domain's `context_configuration.json`
 - `active_personas` (optional): Which specialist lenses should challenge; defaults to all relevant
 
-> **Scope note**: This input surface assumes `original_request` is self-contained. No conversation history, session state, or project context is defined as an input. See Known Open Questions — Context Scope.
+> **Scope note**: This input surface assumes `original_request` is self-contained. No conversation history or session state is defined as an input. A runtime MAY give Phase 1 read access so it can ground the challenge in material relevant to the request (project files, retrieved documents); anything it reads MUST be declared in `context_consulted`. Passing curated context in as an explicit input remains open — see Known Open Questions — Context Scope.
 
 **Output — Challenge Artifact Schema**:
 
@@ -63,6 +63,7 @@ The protocol exists because genuine challenge and integrated synthesis are struc
 | `risks_and_edge_cases` (RE-n) | 0+ | MAY be empty for low-stakes requests |
 | `alternative_framings` (AF-n) | 0+ | MUST be non-empty if `verdict = REFRAME` |
 | `required_clarifications` (RC-n) | 0+ | MUST be non-empty if `verdict = DEFER` |
+| `context_consulted` | 0+ | Optional. Every file or source Phase 1 read, one per line. Absent when nothing was read |
 
 Every entry in `premise_flags`, `risks_and_edge_cases`, `alternative_framings`, and `required_clarifications` MUST carry a stable ID (`PF-1`, `RE-1`, `AF-1`, `RC-1`, ...). IDs exist so Phase 2 can be checked for traceability — see Conformance Criteria below.
 
@@ -91,6 +92,9 @@ alternative_framings:
 required_clarifications:
 - [RC-1] [question that must be answered for good synthesis]
 - [RC-2] [decision that hasn't been made but needs to be]
+
+context_consulted:          # optional; omit if nothing was read
+- [path or source actually read]
 ```
 
 The artifact format is intentionally human-readable prose, not JSON — structure and ID traceability matter; verbosity does not. A good challenge artifact is concise and pointed.
@@ -128,7 +132,7 @@ All of the following satisfy the protocol. None are required infrastructure.
 | **Manual two-conversation** | New chat with `challenge_phase_prompt.md` as system prompt | New chat (or same) with challenge artifact pasted as context |
 | **Shell script + any LLM CLI** | `llm -s "$(cat challenge_phase_prompt.md)" "$request"` | `llm -s "$(cat synthesis_prompt.md)" "$request + $artifact"` |
 | **`llm` CLI (Simon Willison)** | Same as above; swap backend with `-m model_name` | Same |
-| **Claude Code** (reference impl) | `/challenge [request]` — see `.claude/commands/challenge.md` | `/synthesize [request]` — see `.claude/commands/synthesize.md` |
+| **Claude Code** (reference impl) | `/challenge [request]` — see `.claude/commands/challenge.md` | `/synthesize [request]` — see `.claude/commands/synthesize.md`. Level 1: each phase runs in its own subagent (`.claude/agents/challenger.md`, `synthesizer.md`), so Phase 2 never sees Phase 1's conversation |
 | **Jupyter notebook** | Cell 1: challenge API call | Cell 2: synthesis API call with Cell 1 output |
 | **Python script** | `anthropic.messages.create(system=challenge_prompt, ...)` | `anthropic.messages.create(system=synthesis_prompt, messages=[..., artifact])` |
 
@@ -158,6 +162,20 @@ Each domain's `context_configuration.json` contains a `challenge_focus` field th
 - **Domain-specific expertise routing**: Governed by `context_configuration.json`
 
 This protocol defines only the seam between challenge and synthesis. Everything else is downstream.
+
+---
+
+## Isolation Levels
+
+R-1 is about what Phase 2 can see, not about how many commands were typed. Three levels:
+
+| Level | What it is | R-1 | Examples |
+|---|---|---|---|
+| **0 — Same conversation** | Both phases run in one conversation; Phase 2 can see Phase 1's reasoning and prompt | Fails | `/challenge` then `/synthesize` in one session |
+| **1 — Fresh context** | Phase 2 starts in a new context and receives only the request and the artifact | Passes | New chat or `/clear` with the artifact pasted in; isolated subagents (the Claude Code `/challenge` and `/synthesize` commands) |
+| **2 — Separate process and system prompt** | Each phase is its own call with its own system prompt, and optionally its own tool set and model | Passes; also supports R-3 | Shell script around `claude -p --system-prompt`; the `llm` CLI; two API calls |
+
+Levels 1 and 2 withhold prior history by design, so they inherit the Context Scope limit below: requests that depend on earlier conversation are out of scope. A Level 2 runtime should also keep ambient context out of the call (for example, user-level memory or project instruction files), because anything it loads is context Phase 1 was not meant to see. Verify this on each runtime; do not assume it.
 
 ---
 
@@ -200,6 +218,7 @@ Each criterion has an ID, a MUST/SHOULD level, and a check procedure — somethi
 | B-1 | MUST | Phase 1 output contains no solution, recommendation, or implementation proposal | Read output; flag any sentence proposing a course of action rather than a question or risk |
 | B-2 | MUST | Phase 1 output contains no helpfulness-oriented opener | Check first 1-2 sentences for service-oriented framing |
 | B-3 | SHOULD | `premise_flags` is non-empty for any request with an implicit assumption | Judge whether the request contains an unstated assumption a domain expert would flag; if so, confirm ≥1 `PF-n` entry exists |
+| B-8 | SHOULD | If Phase 1 read any file or source, `context_consulted` lists every one | Compare the runtime's tool-call or retrieval log with the artifact's `context_consulted`; flag any source read but not listed |
 
 ### Behavioral (Phase 2 — traceability)
 
@@ -214,7 +233,7 @@ Each criterion has an ID, a MUST/SHOULD level, and a check procedure — somethi
 
 | ID | Level | Criterion | Check procedure |
 |---|---|---|---|
-| R-1 | MUST | Phase 1 and Phase 2 run as genuinely separate invocations (separate system prompts / separate calls), not one invocation split by instruction | Inspect the runtime's call structure |
+| R-1 | MUST | Phase 1 and Phase 2 run as genuinely separate invocations: Phase 2 starts from a fresh context holding only its own system prompt, the original request and the Challenge Artifact, and never Phase 1's conversation, reasoning or prompt (see Isolation Levels) | Inspect the runtime's call structure; confirm Phase 2's context contains no Phase 1 turns. Instructions that merely tell one conversation to "switch phases" fail this check |
 | R-2 | SHOULD | The full protocol can be exercised via manual two-conversation orchestration with no tooling | Attempt it by hand once per new runtime type |
 | R-3 | SHOULD | Swapping the LLM backend requires changing a model identifier, not the protocol structure | Attempt a backend swap; confirm no prompt restructuring is needed |
 
@@ -274,6 +293,8 @@ This is a synthesis response wearing a challenge-phase hat. No premise interroga
 ---
 
 ## Changelog
+
+**v1.1 (amended, context grounding)** — Phase 1 may read files that bear on the request, and must declare each in the new optional `context_consulted` field (criterion B-8). Additive and backward compatible: artifacts without the field remain valid, so `schema_version` stays `1.1`. Chosen over forbidding reads because grounded challenges are more useful and the declared list keeps them auditable, at the cost of run-to-run reproducibility. Passing curated context in as an explicit input is still open.
 
 **v1.1 (amended)** — Added "Known Open Questions" section and scope notes on both phases' Inputs, marking that the input surface assumes self-contained requests with no defined path for conversation/session history. Surfaced while evaluating a Workflow-based runtime, which made the isolation-vs-context tradeoff concrete. No schema or conformance-criteria change; purely additive documentation of an unresolved gap.
 
