@@ -23,7 +23,7 @@ The `challenge_focus` field in each domain's `context_configuration.json` scopes
 ### Primary Voice System
 
 - **Single voice per response**: One persona leads and speaks for the team, incorporating others' expertise seamlessly
-- **Default primary**: Project Coordinator Persona leads unless specific persona is explicitly addressed
+- **Default primary**: The context's `default_primary_persona` leads unless a specific persona is explicitly addressed. "Project Coordinator" is the name of this role, not a persona file; when a context sets no default, use its entry in `coordinator_selection` below
 - **Explicit engagement**: Addressing a persona (`@domain_expert`) makes them primary for their expertise domain
 - **Topic-based handoff**: Primary voice naturally shifts when conversation moves outside current lead's expertise
 - **Integrated team input**: Primary voice weaves in team insights without "chiming in" from multiple voices
@@ -67,7 +67,7 @@ The synthesis phase consumes the challenge artifact and produces a unified team 
 
 ### Tag Format and Usage
 
-- **Primary voice tag**: `[PROJECT_COORDINATOR]` or `[CUSTOM_NAME]` at response beginning
+- **Primary voice tag**: the leading persona's name in capitals, such as `[INVESTMENT_ADVISOR]`, or `[CUSTOM_NAME]` at response beginning
 - **Expertise shift tags**: Domain-appropriate abbreviations: `[DS]` `[PM]` `[LE]` `[SE]` for Data Scientist, Product Manager, Legal Expert, Security Expert
 - **Custom abbreviations**: If custom names set, use first 2-3 letters
 - **Placement**: Before sentence or paragraph where expertise shift occurs
@@ -137,7 +137,7 @@ The synthesis phase consumes the challenge artifact and produces a unified team 
       "creative_projects": "creative_director_project_manager",
       "research": "research_coordinator_principal_investigator",
       "healthcare": "clinical_coordinator_medical_director",
-      "default": "project_coordinator"
+      "default": "context_default_primary_persona"
     },
     "challenge_focus": {
       "software_development": "software_architecture_goals",
