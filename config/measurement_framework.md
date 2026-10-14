@@ -62,7 +62,7 @@
 ═══════════════════════════════════════
 📊 Current Session Metrics
 ═══════════════════════════════════════
-Active Roster: @project_coordinator, @security_specialist, @ui_designer
+Active Roster: @developer_coding_persona, @security_specialist, @ui_designer
 Questions Answered: 12
 - With personas: 8 (avg 145 words)
 - Without personas: 4 (avg 78 words)
@@ -78,7 +78,7 @@ Performance Mode: ACTIVE
 ═══════════════════════════════════════
 Total Sessions with Personas: 15
 Average Roster Size: 3.2 personas
-Most Used: @project_coordinator (89%), @security_specialist (67%)
+Most Used: @developer_coding_persona (89%), @security_specialist (67%)
 Least Used: @database_expert (12%)
 Average Response Length: +87% vs base LLM
 User Satisfaction: 4.2/5 (when feedback provided)

@@ -37,7 +37,7 @@ This framework extends the Persona Collaboration Framework with state management
 💡 Suggestion: @security_specialist might help with authentication flows
    Add with: "activate security specialist" or "add @security_specialist"
    
-Current team: @project_coordinator, @backend_developer
+Current team: @developer_coding_persona, @backend_developer
 Available: @ui_designer, @database_expert, @security_specialist
 ```
 
@@ -94,7 +94,7 @@ Available Pool → Suggested → Active Roster → Dormant
 ```
 
 ### Default Behaviors
-- **New Context**: Start with Project Coordinator active (if available)
+- **New Context**: Start with the context's `default_primary_persona` (from its `context_configuration.json`) active; with no context configuration, see Empty Roster
 - **Empty Roster**: Provide base LLM responses with persona availability notice
 - **Unavailable Personas**: Graceful fallback with alternatives suggested
 - **Context Loss**: Reinitialize with last known configuration
@@ -126,7 +126,7 @@ Recommendations: Current roster size appears optimal
 ## Integration with Collaboration Framework
 
 ### Primary Voice Management
-- **Active Roster Coordination**: Project Coordinator manages unless specific persona addressed
+- **Active Roster Coordination**: The default primary persona leads unless a specific persona is addressed
 - **Voice Handoff**: Activation/deactivation triggers primary voice transitions
 - **Expertise Gaps**: Discovery system suggests personas when expertise missing
 
