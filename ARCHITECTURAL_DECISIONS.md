@@ -34,7 +34,7 @@ Establish a **two-layer configuration model**:
 
 **Layer 1: Universal Framework Rules** (Single source, never changes)
 - Documented in `/config/` Markdown files
-- Examples: persona_activation_framework.md, persona_collaboration_framework_v1.md, persona_interaction_architecture_v1.md
+- Examples: persona_activation_framework.md, persona_collaboration_framework_v2.md, persona_interaction_architecture_v1.md
 
 **Layer 2: Context Configuration** (Domain-specific, lives with each context)
 - `personas/[domain]/context_configuration.json` — Reference libraries, behavioral protocols, activation triggers, available personas for THIS context
@@ -95,7 +95,7 @@ Separate by layer:
 These are data structures that LLMs parse, personas reference, and contexts load. They must be unambiguous.
 
 **Markdown (Guidance Layer)** — Documentation and principles
-- `/config/*.md` — Universal framework principles (persona_activation_framework.md, persona_collaboration_framework_v1.md, etc.)
+- `/config/*.md` — Universal framework principles (persona_activation_framework.md, persona_collaboration_framework_v2.md, etc.)
 - `README.md` — Framework overview
 - `ARCHITECTURAL_DECISIONS.md` — Why decisions were made
 - `CONFIG_REFERENCE.md` — Schema reference guide (what data structures exist and why)
@@ -202,6 +202,103 @@ Markdown is for humans to understand principles and for LLMs to learn how the fr
 
 ---
 
+## Decision 3: Challenge/Synthesis Phase Separation
+
+**Status**: Decided (2026-06-12)
+**Affects**: Persona collaboration protocol, `context_configuration.json` schema, `/config/` files, `.claude/commands/`
+
+### Problem
+
+The Optimistic Skepticism Protocol — "challenge before solve" — was implemented as a behavioral rule inside a single LLM invocation. A model asked to simultaneously challenge and synthesize coherence-drifts toward synthesis. The challenge became performative: the LLM's pull toward helpfulness and integration swamped genuine adversarial interrogation. The behavioral rule was a workaround, not a design.
+
+The root cause: genuine challenge and integrated synthesis require opposite properties. They are structurally incompatible within one context.
+
+### Decision
+
+Separate challenge and synthesis into **genuinely distinct execution contexts** — two separate LLM invocations with different system prompts. Challenge runs first and produces an artifact; synthesis consumes that artifact.
+
+**Phase 1 (Challenge)**: Adversarial interrogation with no synthesis framing. Produces a structured Challenge Artifact (premise flags, risks, alternative framings, required clarifications, verdict).
+
+**Phase 2 (Synthesis)**: Unified team response that has genuinely absorbed the challenge artifact. Primary voice system applies normally.
+
+**Protocol-first design**: The interface contract is defined in `config/challenge_synthesis_protocol.md` as a runtime-agnostic spec. Claude Code slash commands (`.claude/commands/challenge.md`, `.claude/commands/synthesize.md`) are the reference implementation only — not the protocol itself. Any runtime satisfying the contract is valid (manual two-conversation, shell script, `llm` CLI, Jupyter notebook).
+
+### Schema Change
+
+Each domain's `context_configuration.json` gains one new field:
+
+```json
+"challenge_focus": "architecture_goals_and_software_correctness"
+```
+
+This scopes the Phase 1 adversarial lens to domain-appropriate objectives. The universal protocol structure lives in `challenge_synthesis_protocol.md`; domain files only override what differs.
+
+### Files Added
+
+- `config/challenge_synthesis_protocol.md` — Runtime-agnostic interface contract (the portable artifact)
+- `config/challenge_phase_prompt.md` — Standalone Phase 1 system prompt
+- `.claude/commands/challenge.md` — `/challenge` reference implementation
+- `.claude/commands/synthesize.md` — `/synthesize` reference implementation
+
+### Files Modified
+
+- `config/persona_collaboration_framework_v1.md` → **renamed `v2.md`**: Optimistic Skepticism section now points to the protocol spec rather than describing challenge execution (which moved out). Synthesis governance unchanged.
+- `config/domain_agnostic_framework.md`: Two-Phase Execution Architecture section added; Optimistic Skepticism demoted from behavioral rule to phase gate reference.
+- All 5 `context_configuration.json` files: `challenge_focus` added; `optimistic_skepticism` field updated to a pointer to the protocol spec.
+
+### Rationale
+
+1. **Structural fix, not behavioral patch**: Moving challenge to a separate invocation removes the coherence-drift problem at the source rather than fighting it with behavioral rules.
+2. **Runtime-agnostic**: Defining the protocol as a portable spec (not as Claude Code commands) means the architecture survives tooling changes. The protocol is the stable artifact.
+3. **Minimal domain config**: One `challenge_focus` field per domain rather than a full repeated block keeps the config DRY — the 80% that's universal lives in the spec, domains only express the 20% that differs.
+
+### Consequences
+
+#### Positive
+✅ Challenge phase cannot be contaminated by synthesis framing  
+✅ Protocol spec is portable — works with any LLM runtime  
+✅ Domain configs stay lean (one field override, not a full block)  
+✅ Two-conversation manual orchestration proves the protocol is genuinely runtime-agnostic  
+
+#### Negative/Trade-offs
+⚠️ Requires two invocations for full challenge/synthesis cycle (user orchestration step added)  
+⚠️ Claude Code slash commands are reference implementations only — the protocol must be re-implemented per runtime  
+⚠️ Challenge artifact quality depends on the Phase 1 prompt quality; behavioral rules were implicit, protocol spec is explicit  
+
+### Related Decisions
+
+- Decision 1: Two-Layer Configuration Structure (the `challenge_focus` field fits cleanly into this model)
+- Decision 2: JSON vs. Markdown (protocol spec is Markdown/guidance; `challenge_focus` is JSON/behavior)
+
+### Addendum: Spec-Hardening Pass (2026-09-22)
+
+The original protocol spec (v1.0) was prose-shaped but not testable — "Phase 2 addresses every item in the challenge artifact" had no mechanical way to check pass/fail. `config/challenge_synthesis_protocol.md` was revised to v1.1:
+
+- RFC-2119 normative language (MUST/SHOULD/MAY) replacing descriptive prose
+- ID-tagged artifact fields (`PF-n`, `RE-n`, `AF-n`, `RC-n`) so Phase 2's absorption of Phase 1 can be traced entry-by-entry instead of judged holistically
+- The "Verification" section replaced with itemized Conformance Criteria (structural/behavioral/runtime), each with an explicit check procedure
+- A worked example and anti-pattern examples added as reference fixtures
+
+`challenge_phase_prompt.md`, `.claude/commands/challenge.md`, and `.claude/commands/synthesize.md` were updated in lockstep so the artifact format stays consistent everywhere it's referenced. Full changelog in the protocol spec itself.
+
+This was explicitly scoped as a **spec pass, not an architectural change** — the two-phase design from the original Decision 3 is unchanged. It set up a follow-on evaluation of whether the reference implementation should move from manually-invoked slash commands to actual orchestrated enforcement — see the addendum below for the outcome of that evaluation.
+
+### Addendum: Workflow-Based Enforcement — Evaluated, Not Pursued (2026-09-23)
+
+The follow-on above was carried out: traced a concrete example (the caching-layer worked example from the protocol spec) through both the current reference implementation and a proposed Workflow-based alternative, step by step, to understand the actual impact rather than reason about it abstractly.
+
+**Finding 1 — the current reference implementation has a real gap.** `/challenge` and `/synthesize` are separate turns, but same-conversation, so they share a context window. This weakly satisfies R-1's literal wording ("not one invocation split by instruction") but not its intent. The risk this creates was initially misnamed coherence-drift; on inspection it's mechanistically different and was renamed **context contamination**, with a specific sub-mechanism, **self-consistency pressure** — the synthesis turn can see its own just-produced Challenge Artifact in history and lean toward validating it rather than engaging each `RC-n` fresh. Coherence-drift (opposed instructions live in one generation) is already closed by any two-phase approach, including the current slash commands; context contamination is not.
+
+**Finding 2 — a real input gap, already marked in the spec.** Tracing what context would flow into an isolated Workflow subagent exposed that neither phase's input surface has ever included conversation/session history — see `config/challenge_synthesis_protocol.md` → Known Open Questions → Context Scope for the full finding; not duplicated here.
+
+**The Workflow trade-off, traced concretely:** a Workflow-based runtime would close Finding 1 by construction (genuinely isolated `agent()` calls, no shared history) and would make S-1–S-4 mechanically checkable (schema-validated structural output) and B-4–B-7 checkable via an added verify step (LLM-as-judge, not formal proof). Against that: it would run asynchronously rather than as a synchronous reply, cost more tokens/latency than two slash commands, require explicit per-use opt-in (so it wouldn't cover the common case even if built), and leaves the prose-vs-schema artifact representation unresolved.
+
+**Decision: not pursued, for now.** Every layer of this effort — the original coherence-drift diagnosis, the spec-hardening pass, and this Workflow evaluation itself — was motivated by architectural reasoning, not a documented incident. No transcript anywhere shows a synthesis response that actually dropped a required clarification with real consequence. (A specifically-recalled prior session that might have contained such an example was searched for across this account's full session history and not found.) Weighing a certain cost (UX shift, latency, opt-in friction, new code surface) against a theoretical benefit is a bad trade by default.
+
+**What would change this decision**: a real transcript where challenge-then-synthesis skipped genuine interrogation and it mattered, or a shift toward this framework's output being consumed by other agents unattended, where mechanical enforcement stops being optional because no human is left to catch the failure.
+
+---
+
 ## Decision Log Template (for future decisions)
 
 For each new architectural decision, use this structure:
@@ -247,7 +344,7 @@ This summary ties Decision 1 & 2 to actual implementation. See REFACTORING_REFER
 | Context loading | persona_activation_framework.md | `reference_context` | Domain name (JSON) |
 | Addressing system | persona_interaction_architecture_v1.md | `persona_name`, `display_name`, `custom_name` | All three required (JSON) |
 | Expertise scope | persona_interaction_architecture_v1.md | `collaboration.expertise_scope` | Persona-specific (JSON) |
-| Behavioral protocols | persona_collaboration_framework_v1.md | `behavioral_rules` | Persona-specific (JSON) |
+| Behavioral protocols | persona_collaboration_framework_v2.md | `behavioral_rules` | Persona-specific (JSON) |
 | Knowledge/references | persona_interaction_architecture_v1.md | `reference_libraries` | Persona-specific, not embedded (JSON) |
-| Collaboration patterns | persona_collaboration_framework_v1.md | Team definitions (not persona) | Formalized in teams, not personas (JSON) |
+| Collaboration patterns | persona_collaboration_framework_v2.md | Team definitions (not persona) | Formalized in teams, not personas (JSON) |
 | Operational protocols | All `/config/` files | `reference_guide` | Points to external documentation (Markdown) |
