@@ -3,7 +3,7 @@
   "context_name": "writing",
   "description": "Creative writing and screenwriting - narrative development, dialogue, character development, technical consulting, story structure - domain-level configuration",
   "created_date": "2025-12-12",
-  "note": "This is DOMAIN-LEVEL configuration. For project-specific writing contexts (e.g., screenplays), see context_configuration_project.json in the project subdirectory.",
+  "note": "This is DOMAIN-LEVEL configuration. For project-specific writing contexts (e.g., screenplays), see context_configuration_<project>.json in the project subdirectory.",
 
   "reference_libraries": [
     "PERSONA_ENGAGEMENT_GUIDE.md",
@@ -35,7 +35,7 @@
   "default_primary_persona": "screenwriter",
 
   "notes": {
-    "project_specific_config": "When working with a specific writing project (e.g., screenplays), check for context_configuration_project.json in that project's folder",
+    "project_specific_config": "When working with a specific writing project (e.g., screenplays), check for context_configuration_<project>.json in that project's folder",
     "layering": "Domain config provides defaults. Project config overrides/extends for specific project needs.",
     "specialists_available": "dialogue_coach, science_advisor, director_of_photography are available project specialists"
   }
