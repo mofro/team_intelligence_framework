@@ -4,7 +4,7 @@
   "description": "Comprehensive financial planning and personal finance strategy - retirement, healthcare, insurance, taxes, investments, estate planning",
   "created_date": "2025-12-11",
   "notes": {
-    "layering": "Domain-level configuration. A project in this domain may add personas/<project>/context_configuration_<project>.json; see config/framework_configuration_overview.md (Layer 2) for the merge rule."
+    "layering": "Domain-level configuration. A project in this domain may add personas/<domain>/<project>/context_configuration_<project>.json; see config/framework_configuration_overview.md (Layer 2) for the merge rule."
   },
 
   "reference_libraries": [
