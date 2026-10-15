@@ -51,6 +51,9 @@ COMMANDS = (
     Command("install", "Copy a persona or team into .persona/ in the current project",
             (Arg("name", "persona or team id, or an alias"),
              Arg("force", "overwrite files that differ from the catalog", "flag"))),
+    Command("uninstall", "Remove an installed persona, or a team and its unshared members, from .persona/",
+            (Arg("name", "persona or team id, or an alias"),
+             Arg("force", "remove files that differ from the catalog", "flag"))),
 )
 
 
@@ -315,6 +318,81 @@ def cmd_install(index, ns, catalog, project):
     return 1 if failed else 0
 
 
+def _installed(project, kind, entry):
+    return (Path(project) / (PERSONAS_DIR if kind == "persona" else TEAMS_DIR) / Path(entry["path"]).name)
+
+
+def _installed_teams_listing(index, project, persona_id, skip=None):
+    return [t["id"] for t in index["teams"]
+            if t["id"] != skip and persona_id in t["members"] and _installed(project, "team", t).exists()]
+
+
+def _remove_one(project, kind, entry, force):
+    """Delete one installed file unless it is absent or edited. Returns (outcome, path shown)."""
+    dest = _installed(project, kind, entry)
+    shown = f"{TEAMS_DIR if kind == 'team' else PERSONAS_DIR}/{dest.name}"
+    if not dest.exists():
+        return "absent", shown
+    if hashlib.sha256(dest.read_bytes()).hexdigest() != entry["sha256"] and not force:
+        return "edited", shown
+    dest.unlink()
+    return "removed", shown
+
+
+def cmd_uninstall(index, ns, project):
+    matches = resolve(index, ns.name)
+    if not matches:
+        print(f"tif.py: no persona or team matches '{ns.name}'. Nothing was removed. "
+              "Run 'tif.py list' or 'tif.py teams' to see what exists.", file=sys.stderr)
+        return 1
+    if len(matches) > 1:
+        candidates = ", ".join(f"{e['id']} ({k})" for k, e in matches)
+        print(f"tif.py: '{ns.name}' matches more than one item: {candidates}. Nothing was removed. "
+              "Ask again with one of these ids.", file=sys.stderr)
+        return 1
+
+    kind, item = matches[0]
+    by_id = {p["id"]: p for p in index["personas"]}
+    # Team: the team file first; members follow only when it was actually removed,
+    # and only those that no other installed team lists.
+    work, kept = [(kind, item)], []
+    if kind == "team":
+        outcome, shown = _remove_one(project, "team", item, ns.force)
+        work = []
+        if outcome == "removed":
+            print(f"removed           {shown}")
+            for m in item["members"]:
+                if m not in by_id:
+                    continue
+                others = _installed_teams_listing(index, project, m, skip=item["id"])
+                if not others:
+                    work.append(("persona", by_id[m]))
+                elif _installed(project, "persona", by_id[m]).exists():
+                    kept.append((by_id[m], others))
+        elif outcome == "edited":
+            print(f"skipped           {shown} (differs from the catalog, probably edited; use --force to remove)")
+        else:
+            print(f"not installed     {shown}")
+
+    for k, entry in work:
+        outcome, shown = _remove_one(project, k, entry, ns.force)
+        if outcome == "removed":
+            print(f"removed           {shown}")
+        elif outcome == "edited":
+            print(f"skipped           {shown} (differs from the catalog, probably edited; use --force to remove)")
+        elif k == kind:
+            print(f"not installed     {shown}")
+    for p, others in kept:
+        print(f"kept              {PERSONAS_DIR}/{_installed(project, 'persona', p).name} "
+              f"(also in installed teams: {', '.join(others)})")
+
+    if kind == "persona":
+        teams = _installed_teams_listing(index, project, item["id"])
+        if teams:
+            print(f"note: installed teams that list {item['id']}: {', '.join(teams)}")
+    return 0
+
+
 HANDLERS = {"list": cmd_list, "teams": cmd_teams, "info": cmd_info}
 
 
@@ -341,6 +419,8 @@ def main(argv=None, catalog=None, project=None, plugin_dir=None, readme=None):
         return 1
     if ns.command == "install":
         return cmd_install(index, ns, catalog, project)
+    if ns.command == "uninstall":
+        return cmd_uninstall(index, ns, project)
     return HANDLERS[ns.command](index, ns)
 
 

@@ -76,3 +76,62 @@ Install SHALL fail with a nonzero status and write nothing when the name matches
 #### Scenario: Virtual team name
 - **WHEN** a user runs `install` with the name of a virtual team such as `security_review_team`
 - **THEN** it is reported as unknown, no files are written and the exit status is nonzero
+
+### Requirement: Uninstall targets
+The `uninstall` subcommand SHALL delete the installed file for a persona from `.persona/personas/`, or for a team the team file from `.persona/teams/` together with each member persona that no other installed team lists, and SHALL record and read no state beyond those files and the bundled index.
+
+#### Scenario: Uninstall a persona
+- **WHEN** a user runs `uninstall` with the id of an installed persona
+- **THEN** that persona's file no longer exists under `.persona/personas/` and the output names the path
+
+#### Scenario: Uninstall a team
+- **WHEN** a user runs `uninstall` with the id of an installed team
+- **THEN** the team file no longer exists under `.persona/teams/` and each member persona that no other installed team lists is removed
+
+#### Scenario: Shared member
+- **WHEN** a team is uninstalled and a member is also listed by another installed team
+- **THEN** that member's file is kept and the output names the other team
+
+#### Scenario: Team not installed
+- **WHEN** a team is uninstalled but its team file is absent
+- **THEN** no persona file is removed
+
+#### Scenario: Last team removed
+- **WHEN** the last installed team that lists a persona is uninstalled
+- **THEN** that persona is removed with it
+
+### Requirement: Protect local edits on uninstall
+Uninstall SHALL NOT delete an installed file whose sha256 differs from the catalog's unless `--force` is given.
+
+#### Scenario: Edited persona
+- **WHEN** the installed file differs from the catalog and `--force` is absent
+- **THEN** the file is kept and the output says it was skipped and how to override
+
+#### Scenario: Forced removal
+- **WHEN** the installed file differs from the catalog and `--force` is given
+- **THEN** the file is deleted
+
+### Requirement: Uninstall is idempotent
+Uninstalling something that is not installed SHALL report that it is not installed, change nothing and exit with status 0.
+
+#### Scenario: Repeat uninstall
+- **WHEN** uninstall is run twice for the same name
+- **THEN** the second run reports not installed, changes nothing and exits 0
+
+### Requirement: Report what remains
+After removing a persona, uninstall SHALL name each installed team that lists it. After removing a team, uninstall SHALL name each member kept because another installed team lists it, together with that team. Neither report SHALL block or undo the removal.
+
+#### Scenario: Persona used by a team
+- **WHEN** a persona that an installed team lists is uninstalled
+- **THEN** the persona is removed and the output names that team
+
+#### Scenario: Shared members named
+- **WHEN** a team is uninstalled while another installed team lists one of its members
+- **THEN** that member is reported as kept, with the other team named
+
+### Requirement: Unknown names on uninstall
+Uninstall SHALL fail with a nonzero status and delete nothing when the name matches no catalog item, SHALL treat an ambiguous alias as an error listing candidates, and SHALL treat a virtual team name as unknown.
+
+#### Scenario: Unknown name
+- **WHEN** a user runs `uninstall` with a name that matches nothing
+- **THEN** no files are deleted and the exit status is nonzero
