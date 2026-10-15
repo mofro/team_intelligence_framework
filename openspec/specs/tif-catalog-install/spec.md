@@ -23,16 +23,12 @@ Install SHALL compare each source file's sha256 with the value in the bundled in
 - **WHEN** a bundled file's hash differs from the index
 - **THEN** that file is not copied, the output names it, and the exit status is nonzero
 
-### Requirement: Protect local edits
-Install SHALL NOT overwrite an existing destination file whose content differs from the catalog unless `--force` is given. An identical existing file SHALL be reported as already installed.
+### Requirement: Update differing files
+Install SHALL replace an existing destination file whose content differs from the catalog and SHALL report it as updated, because a differing file is as likely to be an older catalog version as a local change. An identical existing file SHALL be reported as already installed. Install SHALL take no `--force` option.
 
-#### Scenario: Locally edited persona
-- **WHEN** the destination file exists with different content and `--force` is absent
-- **THEN** the file is left unchanged and the output says it was skipped and how to override
-
-#### Scenario: Forced overwrite
-- **WHEN** the destination file exists with different content and `--force` is given
-- **THEN** the file is replaced with the catalog version
+#### Scenario: Older or changed persona
+- **WHEN** the destination file exists with different content
+- **THEN** the file is replaced with the catalog version and the output says it was updated
 
 #### Scenario: Repeat install
 - **WHEN** install is run twice with no local changes
@@ -100,16 +96,12 @@ The `uninstall` subcommand SHALL delete the installed file for a persona from `.
 - **WHEN** the last installed team that lists a persona is uninstalled
 - **THEN** that persona is removed with it
 
-### Requirement: Protect local edits on uninstall
-Uninstall SHALL NOT delete an installed file whose sha256 differs from the catalog's unless `--force` is given.
+### Requirement: Uninstall does not compare against the catalog
+Uninstall SHALL delete an installed file whether or not its content matches the bundled catalog, because a differing file is as likely to be an older catalog version or a copy changed elsewhere as a local edit, and the user asked for its removal.
 
-#### Scenario: Edited persona
-- **WHEN** the installed file differs from the catalog and `--force` is absent
-- **THEN** the file is kept and the output says it was skipped and how to override
-
-#### Scenario: Forced removal
-- **WHEN** the installed file differs from the catalog and `--force` is given
-- **THEN** the file is deleted
+#### Scenario: File differs from the catalog
+- **WHEN** an installed persona's content differs from the bundled catalog
+- **THEN** uninstall deletes it
 
 ### Requirement: Uninstall is idempotent
 Uninstalling something that is not installed SHALL report that it is not installed, change nothing and exit with status 0.

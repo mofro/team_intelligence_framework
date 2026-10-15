@@ -49,11 +49,9 @@ COMMANDS = (
     Command("info", "Show details for one persona or team, by id or alias",
             (Arg("name", "persona or team id, or an alias"),)),
     Command("install", "Copy a persona or team into .persona/ in the current project",
-            (Arg("name", "persona or team id, or an alias"),
-             Arg("force", "overwrite files that differ from the catalog", "flag"))),
+            (Arg("name", "persona or team id, or an alias"),)),
     Command("uninstall", "Remove an installed persona, or a team and its unshared members, from .persona/",
-            (Arg("name", "persona or team id, or an alias"),
-             Arg("force", "remove files that differ from the catalog", "flag"))),
+            (Arg("name", "persona or team id, or an alias"),)),
 )
 
 
@@ -252,7 +250,7 @@ PERSONAS_DIR = ".persona/personas"
 TEAMS_DIR = ".persona/teams"
 
 
-def copy_one(catalog, project, kind, entry, force):
+def copy_one(catalog, project, kind, entry):
     """Verify one catalog file against the index and copy it. Returns (outcome, path shown to the user)."""
     dest_dir = PERSONAS_DIR if kind == "persona" else TEAMS_DIR
     rel_dest = f"{dest_dir}/{Path(entry['path']).name}"
@@ -263,14 +261,12 @@ def copy_one(catalog, project, kind, entry, force):
     if hashlib.sha256(data).hexdigest() != entry["sha256"]:
         return "corrupt", rel_dest, "bundled file does not match the sha256 in the index"
     dest = Path(project) / rel_dest
-    if dest.exists():
-        if dest.read_bytes() == data:
-            return "already", rel_dest, ""
-        if not force:
-            return "skipped", rel_dest, ""
+    updating = dest.exists()
+    if updating and dest.read_bytes() == data:
+        return "already", rel_dest, ""
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_bytes(data)
-    return "installed", rel_dest, ""
+    return ("updated" if updating else "installed"), rel_dest, ""
 
 
 def cmd_install(index, ns, catalog, project):
@@ -292,13 +288,13 @@ def cmd_install(index, ns, catalog, project):
 
     failed = False
     for k, entry in work:
-        outcome, shown, why = copy_one(catalog, project, k, entry, ns.force)
+        outcome, shown, why = copy_one(catalog, project, k, entry)
         if outcome == "installed":
             print(f"installed          {shown}")
         elif outcome == "already":
             print(f"already installed  {shown}")
-        elif outcome == "skipped":
-            print(f"skipped            {shown} (differs from the catalog, probably edited; use --force to overwrite)")
+        elif outcome == "updated":
+            print(f"updated            {shown} (replaced a file that differed from the catalog)")
         else:
             failed = True
             print(f"NOT COPIED         {shown}: {why}")
@@ -327,14 +323,12 @@ def _installed_teams_listing(index, project, persona_id, skip=None):
             if t["id"] != skip and persona_id in t["members"] and _installed(project, "team", t).exists()]
 
 
-def _remove_one(project, kind, entry, force):
-    """Delete one installed file unless it is absent or edited. Returns (outcome, path shown)."""
+def _remove_one(project, kind, entry):
+    """Delete one installed file. Returns (outcome, path shown)."""
     dest = _installed(project, kind, entry)
     shown = f"{TEAMS_DIR if kind == 'team' else PERSONAS_DIR}/{dest.name}"
     if not dest.exists():
         return "absent", shown
-    if hashlib.sha256(dest.read_bytes()).hexdigest() != entry["sha256"] and not force:
-        return "edited", shown
     dest.unlink()
     return "removed", shown
 
@@ -357,7 +351,7 @@ def cmd_uninstall(index, ns, project):
     # and only those that no other installed team lists.
     work, kept = [(kind, item)], []
     if kind == "team":
-        outcome, shown = _remove_one(project, "team", item, ns.force)
+        outcome, shown = _remove_one(project, "team", item)
         work = []
         if outcome == "removed":
             print(f"removed           {shown}")
@@ -369,17 +363,13 @@ def cmd_uninstall(index, ns, project):
                     work.append(("persona", by_id[m]))
                 elif _installed(project, "persona", by_id[m]).exists():
                     kept.append((by_id[m], others))
-        elif outcome == "edited":
-            print(f"skipped           {shown} (differs from the catalog, probably edited; use --force to remove)")
         else:
             print(f"not installed     {shown}")
 
     for k, entry in work:
-        outcome, shown = _remove_one(project, k, entry, ns.force)
+        outcome, shown = _remove_one(project, k, entry)
         if outcome == "removed":
             print(f"removed           {shown}")
-        elif outcome == "edited":
-            print(f"skipped           {shown} (differs from the catalog, probably edited; use --force to remove)")
         elif k == kind:
             print(f"not installed     {shown}")
     for p, others in kept:

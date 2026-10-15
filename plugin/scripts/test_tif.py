@@ -85,10 +85,9 @@ class ParseTests(unittest.TestCase):
         ns = self.parse("info", "ux_designer")
         self.assertEqual((ns.command, ns.name), ("info", "ux_designer"))
 
-    def test_install_force(self):
-        ns = self.parse("install", "lore_keeper", "--force")
-        self.assertEqual((ns.command, ns.name, ns.force), ("install", "lore_keeper", True))
-        self.assertFalse(self.parse("install", "lore_keeper").force)
+    def test_install_takes_no_force_flag(self):
+        with self.assertRaises(tif.ParseError):
+            self.parse("install", "lore_keeper", "--force")
 
     def test_unknown_subcommand_exits_nonzero_with_hint(self):
         code, out, err = run("frobnicate")
@@ -332,25 +331,16 @@ class InstallTests(CatalogFixture):
         self.assertIn("already installed", out)
         self.assertEqual(dest.stat().st_mtime_ns, before)
 
-    def test_locally_edited_file_is_skipped_with_how_to_override(self):
+    def test_file_that_differs_is_replaced_and_reported_as_updated(self):
         self.add_persona("alpha")
         self.install("alpha")
         dest = self.proj / ".persona/personas/alpha_persona.json"
-        dest.write_text("my edit")
+        dest.write_text("older copy")
         code, out, _ = self.install("alpha")
         self.assertEqual(code, 0)
-        self.assertEqual(dest.read_text(), "my edit")
-        self.assertIn("skipped", out)
-        self.assertIn("--force", out)
-
-    def test_force_replaces_edited_file(self):
-        self.add_persona("alpha")
-        self.install("alpha")
-        dest = self.proj / ".persona/personas/alpha_persona.json"
-        dest.write_text("my edit")
-        code, out, _ = self.install("alpha", "--force")
-        self.assertEqual(code, 0)
         self.assertEqual(dest.read_bytes(), (self.cat / "personas/dev/alpha_persona.json").read_bytes())
+        self.assertIn("updated", out)
+        self.assertNotIn("already installed", out)
 
     # -- disclosure, never refusing
     def test_team_with_stubs_installs_and_names_them(self):
@@ -455,23 +445,11 @@ class UninstallTests(CatalogFixture):
         self.uninstall("u")
         self.assertEqual(self.files(), [])
 
-    def test_edited_member_kept_on_team_uninstall_unless_forced(self):
-        self.add_persona("alpha"); self.add_team("t", ["alpha"])
-        self.install("t")
-        f = self.proj / ".persona/personas/alpha_persona.json"
-        f.write_text("{}")
-        out = self.uninstall("t")[1]
-        self.assertTrue(f.exists())
-        self.assertIn("--force", out)
-        self.assertEqual(self.files(), ["personas/alpha_persona.json"])
-        self.uninstall("alpha", "--force")
-        self.assertEqual(self.files(), [])
-
-    def test_force_on_a_team_removes_edited_members_too(self):
+    def test_members_that_differ_from_the_catalog_are_removed_with_the_team(self):
         self.add_persona("alpha"); self.add_team("t", ["alpha"])
         self.install("t")
         (self.proj / ".persona/personas/alpha_persona.json").write_text("{}")
-        self.uninstall("t", "--force")
+        self.uninstall("t")
         self.assertEqual(self.files(), [])
 
     def test_team_not_installed_removes_nothing_else(self):
@@ -489,16 +467,12 @@ class UninstallTests(CatalogFixture):
         self.assertIn("installed teams that list alpha: t", out)
         self.assertEqual(self.files(), ["teams/t.json"])
 
-    def test_edited_file_kept_then_removed_with_force(self):
+    def test_file_that_differs_from_the_catalog_is_still_removed(self):
         self.add_persona("alpha")
         self.install("alpha")
         f = self.proj / ".persona/personas/alpha_persona.json"
-        f.write_text('{"edited": true}')
-        code, out, _ = self.uninstall("alpha")
-        self.assertEqual(code, 0)
-        self.assertTrue(f.exists())
-        self.assertIn("--force", out)
-        self.assertEqual(self.uninstall("alpha", "--force")[0], 0)
+        f.write_text('{"older or edited": true}')
+        self.assertEqual(self.uninstall("alpha")[0], 0)
         self.assertFalse(f.exists())
 
     def test_repeat_uninstall_is_a_no_op(self):

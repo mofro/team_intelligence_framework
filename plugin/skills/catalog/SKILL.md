@@ -1,7 +1,7 @@
 ---
 name: catalog
 description: Browse the Team Intelligence Framework catalog and install or remove personas or teams in the current project's .persona/ directory.
-argument-hint: "help | list [--domain D] | teams | info <name> | install <name> [--force] | uninstall <name> [--force]"
+argument-hint: "help | list [--domain D] | teams | info <name> | install <name> | uninstall <name>"
 allowed-tools: Bash(python3 *tif.py*)
 ---
 
@@ -26,11 +26,11 @@ Do not read, search or summarize the catalog files yourself; the script is the o
 Usage: tif.py <command> [arguments]
 
 Commands:
-  help                        Show this help
-  list [--domain D]           List personas with role, domain and status
-  teams                       List teams with member count and status
-  info <name>                 Show details for one persona or team, by id or alias
-  install <name> [--force]    Copy a persona or team into .persona/ in the current project
-  uninstall <name> [--force]  Remove an installed persona, or a team and its unshared members, from .persona/
+  help               Show this help
+  list [--domain D]  List personas with role, domain and status
+  teams              List teams with member count and status
+  info <name>        Show details for one persona or team, by id or alias
+  install <name>     Copy a persona or team into .persona/ in the current project
+  uninstall <name>   Remove an installed persona, or a team and its unshared members, from .persona/
 ```
 <!-- tif:help:end -->
