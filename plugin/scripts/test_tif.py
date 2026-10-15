@@ -85,10 +85,9 @@ class ParseTests(unittest.TestCase):
         ns = self.parse("info", "ux_designer")
         self.assertEqual((ns.command, ns.name), ("info", "ux_designer"))
 
-    def test_install_force(self):
-        ns = self.parse("install", "lore_keeper", "--force")
-        self.assertEqual((ns.command, ns.name, ns.force), ("install", "lore_keeper", True))
-        self.assertFalse(self.parse("install", "lore_keeper").force)
+    def test_install_takes_no_force_flag(self):
+        with self.assertRaises(tif.ParseError):
+            self.parse("install", "lore_keeper", "--force")
 
     def test_unknown_subcommand_exits_nonzero_with_hint(self):
         code, out, err = run("frobnicate")
@@ -225,8 +224,8 @@ class InfoTests(unittest.TestCase):
         self.assertIn("x summary", out)
 
 
-class InstallTests(unittest.TestCase):
-    """install copies files from a catalog directory into <project>/.persona/."""
+class CatalogFixture(unittest.TestCase):
+    """A fake catalog directory and an empty project, shared by the install and uninstall tests."""
 
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
@@ -264,6 +263,11 @@ class InstallTests(unittest.TestCase):
     def files(self):
         base = self.proj / ".persona"
         return sorted(p.relative_to(base).as_posix() for p in base.rglob("*") if p.is_file()) if base.exists() else []
+
+
+
+class InstallTests(CatalogFixture):
+    """install copies files from a catalog directory into <project>/.persona/."""
 
     # -- targets
     def test_persona_installs_under_personas_and_names_the_path(self):
@@ -327,25 +331,16 @@ class InstallTests(unittest.TestCase):
         self.assertIn("already installed", out)
         self.assertEqual(dest.stat().st_mtime_ns, before)
 
-    def test_locally_edited_file_is_skipped_with_how_to_override(self):
+    def test_file_that_differs_is_replaced_and_reported_as_updated(self):
         self.add_persona("alpha")
         self.install("alpha")
         dest = self.proj / ".persona/personas/alpha_persona.json"
-        dest.write_text("my edit")
+        dest.write_text("older copy")
         code, out, _ = self.install("alpha")
         self.assertEqual(code, 0)
-        self.assertEqual(dest.read_text(), "my edit")
-        self.assertIn("skipped", out)
-        self.assertIn("--force", out)
-
-    def test_force_replaces_edited_file(self):
-        self.add_persona("alpha")
-        self.install("alpha")
-        dest = self.proj / ".persona/personas/alpha_persona.json"
-        dest.write_text("my edit")
-        code, out, _ = self.install("alpha", "--force")
-        self.assertEqual(code, 0)
         self.assertEqual(dest.read_bytes(), (self.cat / "personas/dev/alpha_persona.json").read_bytes())
+        self.assertIn("updated", out)
+        self.assertNotIn("already installed", out)
 
     # -- disclosure, never refusing
     def test_team_with_stubs_installs_and_names_them(self):
@@ -405,6 +400,113 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(self.files(), [])
         self.assertIn("alpha", err)
         self.assertIn("beta", err)
+
+
+class UninstallTests(CatalogFixture):
+    """uninstall removes installed files; it keeps no state beyond the files and the catalog."""
+
+    def install(self, *argv):
+        self.write_index()
+        return run("install", *argv, catalog=self.cat, project=self.proj)
+
+    def uninstall(self, *argv):
+        self.write_index()
+        return run("uninstall", *argv, catalog=self.cat, project=self.proj)
+
+    def test_persona_removed_and_path_named(self):
+        self.add_persona("alpha"); self.add_persona("beta")
+        self.install("alpha"); self.install("beta")
+        code, out, _ = self.uninstall("alpha")
+        self.assertEqual(code, 0)
+        self.assertEqual(self.files(), ["personas/beta_persona.json"])
+        self.assertIn(".persona/personas/alpha_persona.json", out)
+
+    def test_team_uninstall_removes_team_and_members_no_other_team_lists(self):
+        self.add_persona("alpha"); self.add_persona("beta"); self.add_team("t", ["alpha", "beta"])
+        self.install("t")
+        code, out, _ = self.uninstall("t")
+        self.assertEqual(code, 0)
+        self.assertEqual(self.files(), [])
+        self.assertNotIn("kept", out)
+
+    def test_team_uninstall_keeps_members_shared_with_another_installed_team(self):
+        self.add_persona("alpha"); self.add_persona("beta")
+        self.add_team("t", ["alpha", "beta"]); self.add_team("u", ["alpha"])
+        self.install("t"); self.install("u")
+        code, out, _ = self.uninstall("t")
+        self.assertEqual(code, 0)
+        self.assertEqual(self.files(), ["personas/alpha_persona.json", "teams/u.json"])
+        self.assertRegex(out, r"kept .*alpha_persona\.json.*also in installed teams: u")
+
+    def test_shared_member_is_removed_once_the_last_team_goes(self):
+        self.add_persona("alpha"); self.add_team("t", ["alpha"]); self.add_team("u", ["alpha"])
+        self.install("t"); self.install("u")
+        self.uninstall("t")
+        self.uninstall("u")
+        self.assertEqual(self.files(), [])
+
+    def test_members_that_differ_from_the_catalog_are_removed_with_the_team(self):
+        self.add_persona("alpha"); self.add_team("t", ["alpha"])
+        self.install("t")
+        (self.proj / ".persona/personas/alpha_persona.json").write_text("{}")
+        self.uninstall("t")
+        self.assertEqual(self.files(), [])
+
+    def test_team_not_installed_removes_nothing_else(self):
+        self.add_persona("alpha"); self.add_team("t", ["alpha"])
+        self.install("alpha")
+        code, out, _ = self.uninstall("t")
+        self.assertEqual(code, 0)
+        self.assertEqual(self.files(), ["personas/alpha_persona.json"])
+
+    def test_persona_uninstall_names_installed_teams_that_list_it(self):
+        self.add_persona("alpha"); self.add_team("t", ["alpha"]); self.add_team("u", ["alpha"])
+        self.install("t")
+        code, out, _ = self.uninstall("alpha")
+        self.assertEqual(code, 0)
+        self.assertIn("installed teams that list alpha: t", out)
+        self.assertEqual(self.files(), ["teams/t.json"])
+
+    def test_file_that_differs_from_the_catalog_is_still_removed(self):
+        self.add_persona("alpha")
+        self.install("alpha")
+        f = self.proj / ".persona/personas/alpha_persona.json"
+        f.write_text('{"older or edited": true}')
+        self.assertEqual(self.uninstall("alpha")[0], 0)
+        self.assertFalse(f.exists())
+
+    def test_repeat_uninstall_is_a_no_op(self):
+        self.add_persona("alpha")
+        self.install("alpha")
+        self.uninstall("alpha")
+        code, out, _ = self.uninstall("alpha")
+        self.assertEqual(code, 0)
+        self.assertIn("not installed", out)
+        self.assertEqual(self.files(), [])
+
+    def test_unknown_ambiguous_and_virtual_names_delete_nothing(self):
+        self.add_persona("alpha", aliases=["x"]); self.add_persona("beta", aliases=["x"])
+        self.install("alpha")
+        for name in ("nonsense", "x", "security_review_team"):
+            code, _, err = self.uninstall(name)
+            self.assertEqual(code, 1, name)
+            self.assertTrue(err)
+        self.assertEqual(self.files(), ["personas/alpha_persona.json"])
+
+    def test_unrelated_files_untouched(self):
+        self.add_persona("alpha")
+        self.install("alpha")
+        other = self.proj / ".persona/personas/mine_persona.json"
+        other.write_text("{}")
+        self.uninstall("alpha")
+        self.assertTrue(other.exists())
+
+    def test_uninstall_does_not_need_catalog_files(self):
+        self.add_persona("alpha")
+        self.install("alpha")
+        (self.cat / "personas/dev/alpha_persona.json").unlink()
+        self.assertEqual(self.uninstall("alpha")[0], 0)
+        self.assertEqual(self.files(), [])
 
 
 class DocBlockTests(unittest.TestCase):
