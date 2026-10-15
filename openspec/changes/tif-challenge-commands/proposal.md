@@ -10,7 +10,7 @@
 - **Commands and agents**: `/tif:challenge` and `/tif:synthesize` (with `challenger` and `synthesizer` agents) run the two phases in isolation using the resolved context. The framework files they need ship as a generated `plugin/framework/`.
 - **Protocol**: the `domain_context` and `active_personas` inputs are both optional; project facts travel inside `domain_context`.
 - The repo-local `.claude/commands/` and `.claude/agents/` stay as they are and remain the source for the generated plugin agents.
-- Plugin version becomes 0.2.0.
+- Plugin version is bumped above the one on main (0.3.0 if the uninstall change has merged).
 - **BREAKING (spec only)**: the plugin no longer exposes "exactly one skill"; its identity requirement changes.
 
 ## Capabilities

@@ -16,7 +16,7 @@
 - [ ] 3.2 Write `plugin/commands/challenge.md` (runs `resolve`, passes only request + `domain_context` + `active_personas` to the `challenger`)
 - [ ] 3.3 Write `plugin/commands/synthesize.md` (same, plus the Challenge Artifact and `framework_dir`)
 - [ ] 3.4 Write the plugin synthesizer template: reads from `framework_dir`, states which lens and whether project context was used
-- [ ] 3.5 Bump `plugin/.claude-plugin/plugin.json` to 0.2.0
+- [ ] 3.5 Bump `plugin/.claude-plugin/plugin.json` one minor version above the version on main (0.3.0 if the uninstall change has merged)
 
 ## 4. Drift tests
 
