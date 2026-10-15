@@ -1,0 +1,24 @@
+{
+  "domains": {
+    "ai_development": {
+      "challenge_focus": "platform_capabilities_and_implementation_constraints",
+      "description": "AI and LLM development, prompt engineering, and intelligent system implementation - domain-level configuration"
+    },
+    "development": {
+      "challenge_focus": "architecture_goals_and_software_correctness",
+      "description": "Software development and architecture - multi-technology stack support (React, Lightning, Blits, Node.js, TypeScript)"
+    },
+    "financial": {
+      "challenge_focus": "long_term_financial_outcomes_and_competing_priorities",
+      "description": "Comprehensive financial planning and personal finance strategy - retirement, healthcare, insurance, taxes, investments, estate planning"
+    },
+    "gaming": {
+      "challenge_focus": "narrative_goals_and_player_experience",
+      "description": "TTRPG game design, system evaluation, and narrative analysis - domain-level configuration"
+    },
+    "writing": {
+      "challenge_focus": "story_goals_and_narrative_consistency",
+      "description": "Creative writing and screenwriting - narrative development, dialogue, character development, technical consulting, story structure - domain-level configuration"
+    }
+  }
+}
