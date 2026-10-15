@@ -373,8 +373,8 @@
       "schema_version": "1.2",
       "version": "1.0",
       "path": "personas/ai_development/llm_prompt_specialist_persona_schema.json",
-      "bytes": 5863,
-      "sha256": "773192107db58e8a23f7c829df00d1f785a37f1c09b8b4e38e10fbc7133b414d",
+      "bytes": 5904,
+      "sha256": "258fc20836f683e86a3de961e6cf31798f837a03ce23ee2af9bbdf2cabcfab14",
       "aliases": [
         "llm_prompt_specialist_persona_schema",
         "llm_prompt_specialist_persona"

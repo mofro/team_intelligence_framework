@@ -129,9 +129,31 @@ These Markdown files define how the framework works everywhere — across all do
 
 Each domain has a `context_configuration.json` that applies universal rules in domain-specific ways, plus persona schemas and team definitions.
 
-**Two-level layering within domains:**
-- **Domain level**: `personas/[domain]/context_configuration.json` — defaults for the whole domain
-- **Project level**: `personas/[domain]/[project]/context_configuration_[project].json` — overrides for a specific project (e.g., `hero_heaven`, `screenplays`)
+**What a domain is.** A domain is an affinity group of personas, related either by a shared subject or practice (software development, film development, financial or business planning) or by a shared purpose (the storytelling helpers in HeroHeaven). Directories under `personas/` are one convention for organizing and finding domains. They are for wayfinding and discovery; they do not define a domain and do not limit which personas can be used together. A team is any collection of personas chosen as a working group by a user or another signifying principle, and may mix domains (for example, financial and software-development personas). The directory a team file sits in only records where it is stored.
+
+**What a project is.** A project is a named body of work with its own goals, world and vocabulary, with its own `context_configuration_<project>.json`. Personas stay generic; what a persona means in a given project lives in that project's activation triggers and protocols, not in the persona file.
+
+**Two-level layering:**
+- **Domain level**: `personas/[domain]/context_configuration.json` — defaults for the domain
+- **Project level**: `personas/[domain]/[project]/context_configuration_[project].json` — configuration for a specific project (e.g., `hero_heaven`, `screenplays`). It extends its domain-level config.
+
+Only the model reads these files today; no code merges them. The rule below is how they are to be read.
+
+**Merge rule (project over domain-level), applied per top-level key:**
+
+| Kind of key | Result |
+|---|---|
+| Identity fields: `context_name`, `context_type`, `description`, `note`, `notes`, `created_date`, `updated_date` | The project's value. Never inherited. |
+| Keyed entries: `activation_triggers` (one entry per persona), `context_behavioral_protocols` (one entry per named protocol, including `challenge_focus`) | The **entry** is the unit. An entry the project defines replaces the domain-level entry completely; nothing inside an entry is combined. An entry the project does not define is inherited whole. |
+| Lists: `available_personas`, `reference_libraries`, `always_on_personas`, `available_teams` | The project's list replaces the domain-level list. It is the complete roster for that project, and may name personas from any domain. The domain-level list applies only when the project omits the key. |
+| Scalars: `default_primary_persona` and similar | The project's value. |
+| Keys the project does not mention | Inherited whole. |
+
+A project cannot remove an inherited entry; it can only replace it. A tool that flattens configs should report every inherited entry so a project author can see what was not overridden.
+
+**Placeholders and missing files.** `{PROJECT_ROOT}` in a reference path resolves to the directory that holds the project (for an installed plugin, the directory that holds `.persona/`). A reference that resolves to no file is skipped and noted, not treated as an error.
+
+**The challenge lens.** `challenge_focus` is the project's own, else inherited from the domain-level config it extends, else absent (first-principles challenge). It comes from the project context, never from which personas are on the team.
 
 ---
 

@@ -39,6 +39,8 @@ Establish a **two-layer configuration model**:
 **Layer 2: Context Configuration** (Domain-specific, lives with each context)
 - `personas/[domain]/context_configuration.json` — Reference libraries, behavioral protocols, activation triggers, available personas for THIS context
 
+**Amendment (2026-10-14): Layer 2 has two levels.** Layer 2 is a domain-level `personas/[domain]/context_configuration.json` and, optionally, a project-level `personas/[domain]/[project]/context_configuration_[project].json` that extends it. The merge rule, the definitions of domain and project, and the handling of `{PROJECT_ROOT}` are in `config/framework_configuration_overview.md` (Layer 2). A domain is an affinity group of personas, not a boundary on teams or on which personas can be used together.
+
 ### Rationale
 
 1. **Eliminates duplication** — Universal rules documented once, context rules documented once

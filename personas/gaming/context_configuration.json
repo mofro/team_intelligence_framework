@@ -3,7 +3,7 @@
   "context_name": "gaming",
   "description": "TTRPG game design, system evaluation, and narrative analysis - domain-level configuration",
   "created_date": "2025-12-12",
-  "note": "This is DOMAIN-LEVEL configuration. For project-specific gaming contexts (e.g., Hero Heaven), see context_configuration_project.json in the project subdirectory.",
+  "note": "This is DOMAIN-LEVEL configuration. For project-specific gaming contexts (e.g., Hero Heaven), see context_configuration_<project>.json in the project subdirectory.",
 
   "reference_libraries": [
     "PERSONA_ENGAGEMENT_GUIDE.md",
@@ -33,7 +33,7 @@
   "default_primary_persona": "ttrpg_game_architect",
 
   "notes": {
-    "project_specific_config": "When working with a specific gaming project, check for context_configuration_project.json in that project's folder",
+    "project_specific_config": "When working with a specific gaming project, check for context_configuration_<project>.json in that project's folder",
     "layering": "Domain config provides defaults. Project config overrides/extends for specific project needs."
   }
 }

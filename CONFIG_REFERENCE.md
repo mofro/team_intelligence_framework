@@ -47,6 +47,8 @@ The framework operates on two configuration layers (see **ARCHITECTURAL_DECISION
 
 This document defines **JSON schemas** for Layer 2 and references to Layer 1 documentation.
 
+Layer 2 has a domain level and an optional project level; see `config/framework_configuration_overview.md` (Layer 2) for the definitions and the merge rule.
+
 ---
 
 ## Layer 1: Universal Framework Rules (Reference)
