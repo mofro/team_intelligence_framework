@@ -14,10 +14,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import tif  # noqa: E402
 
 
-def run(*argv, catalog=None, project=None):
+def run(*argv, catalog=None, project=None, framework=None):
     out, err = io.StringIO(), io.StringIO()
     with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
-        code = tif.main(list(argv), catalog=catalog, project=project)
+        code = tif.main(list(argv), catalog=catalog, project=project, framework=framework)
     return code, out.getvalue(), err.getvalue()
 
 
@@ -60,7 +60,7 @@ class HelpTests(unittest.TestCase):
         for cmd in tif.COMMANDS:
             self.assertIn(cmd.usage(), out)
             self.assertIn(cmd.description, out)
-        for name in ("help", "list", "teams", "info", "install"):
+        for name in ("help", "list", "teams", "info", "install", "resolve"):
             self.assertIn(name, [c.name for c in tif.COMMANDS])
 
     def test_help_text_comes_from_table(self):
@@ -93,6 +93,17 @@ class ParseTests(unittest.TestCase):
         code, out, err = run("frobnicate")
         self.assertNotEqual(code, 0)
         self.assertIn("help", err)
+        self.assertEqual(out, "")
+
+    def test_bare_name_is_info(self):
+        code, out, _ = run("ux_designer")
+        code2, out2, _ = run("info", "ux_designer")
+        self.assertEqual((code, out), (code2, out2))
+        self.assertEqual(code, 0)
+
+    def test_bare_name_with_extra_argument_is_usage_error(self):
+        code, out, err = run("ux_designer", "extra")
+        self.assertEqual(code, 2)
         self.assertEqual(out, "")
 
     def test_missing_required_argument_exits_nonzero_with_hint(self):
@@ -509,6 +520,178 @@ class UninstallTests(CatalogFixture):
         self.assertEqual(self.files(), [])
 
 
+class ResolveTests(unittest.TestCase):
+    DOMAINS = {"domains": {
+        "gaming": {"challenge_focus": "narrative_goals", "description": "games"},
+        "writing": {"challenge_focus": "story_goals", "description": "words"},
+        "bare": {"description": "no focus declared"}}}
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.project = Path(tmp.name) / "proj"
+        self.project.mkdir()
+        self.framework = Path(tmp.name) / "framework"
+        self.framework.mkdir()
+        (self.framework / "domains.json").write_text(json.dumps(self.DOMAINS))
+
+    def context(self, text):
+        (self.project / ".persona").mkdir(exist_ok=True)
+        (self.project / ".persona" / "context.md").write_text(text)
+
+    def persona(self, name, role="a role", expertise=("x", "y"), raw=None):
+        d = self.project / ".persona" / "personas"
+        d.mkdir(parents=True, exist_ok=True)
+        (d / f"{name}.json").write_text(raw if raw is not None else json.dumps(
+            {"persona": {"persona_name": name, "role": role, "expertise": list(expertise)}}))
+
+    def resolve(self, *argv):
+        return run("resolve", *argv, project=self.project, framework=self.framework)
+
+    def lens(self, out):
+        lines = out.splitlines()
+        return lines[0].removeprefix("LENS: "), lines[1].removeprefix("LENS SOURCE: ")
+
+    def test_nothing_available_uses_first_principles_and_says_so(self):
+        code, out, _ = self.resolve()
+        self.assertEqual(code, 0)
+        lens, source = self.lens(out)
+        self.assertEqual(lens, "correctness, completeness, and coherence")
+        self.assertIn("first principles", source)
+        self.assertIn("NOTE: no project context found", out)
+        self.assertIn("NOTE: no personas installed", out)
+
+    def test_focus_flag_overrides_context_focus_and_domain(self):
+        self.context("---\nfocus: from file\ndomain: gaming\n---\nbody")
+        lens, source = self.lens(self.resolve("--focus", "mine", "--domain", "writing")[1])
+        self.assertEqual((lens, source), ("mine", "--focus"))
+
+    def test_context_focus_beats_domain_flag(self):
+        self.context("---\nfocus: from file\n---\nbody")
+        lens, source = self.lens(self.resolve("--domain", "writing")[1])
+        self.assertEqual(lens, "from file")
+        self.assertIn("focus in .persona/context.md", source)
+
+    def test_domain_flag_beats_context_domain(self):
+        self.context("---\ndomain: gaming\n---\nbody")
+        lens, source = self.lens(self.resolve("--domain", "writing")[1])
+        self.assertEqual((lens, source), ("story_goals", "--domain (writing)"))
+
+    def test_domain_from_context_file(self):
+        self.context("---\ndomain: gaming\n---\nbody")
+        lens, source = self.lens(self.resolve()[1])
+        self.assertEqual(lens, "narrative_goals")
+        self.assertIn("domain in .persona/context.md (gaming)", source)
+
+    def test_sources_are_never_combined(self):
+        self.context("---\nfocus: from file\ndomain: gaming\n---\nbody")
+        out = self.resolve()[1]
+        self.assertNotIn("narrative_goals", out)
+
+    def test_domain_without_focus_is_reported_and_falls_through(self):
+        self.context("---\ndomain: gaming\n---\nbody")
+        lens, source = self.lens(self.resolve("--domain", "bare")[1])
+        self.assertEqual(lens, "narrative_goals")
+        self.assertIn("domain 'bare' from --domain has no challenge_focus", self.resolve("--domain", "bare")[1])
+
+    def test_domain_without_focus_and_nothing_else_is_first_principles(self):
+        code, out, _ = self.resolve("--domain", "bare")
+        self.assertEqual(code, 0)
+        self.assertIn("first principles", self.lens(out)[1])
+        self.assertIn("has no challenge_focus", out)
+
+    def test_unknown_domain_flag_is_error_listing_names(self):
+        code, out, err = self.resolve("--domain", "nonsense")
+        self.assertEqual(code, 1)
+        self.assertEqual(out, "")
+        for name in ("bare", "gaming", "writing"):
+            self.assertIn(name, err)
+
+    def test_unknown_domain_in_context_file_is_error_even_if_focus_flag_wins(self):
+        self.context("---\ndomain: nonsense\n---\nbody")
+        code, _, err = self.resolve("--focus", "mine")
+        self.assertEqual(code, 1)
+        self.assertIn("nonsense", err)
+        self.assertIn("gaming", err)
+
+    def test_project_facts_printed_without_front_matter(self):
+        self.context("---\ndomain: gaming\n---\n# Goal\nShip the thing.\n")
+        out = self.resolve()[1]
+        self.assertIn("=== PROJECT CONTEXT ===\n# Goal\nShip the thing.", out)
+        self.assertNotIn("domain: gaming", out)
+
+    def test_context_without_front_matter_is_all_facts(self):
+        self.context("# Goal\nJust facts.\n")
+        out = self.resolve()[1]
+        self.assertIn("Just facts.", out)
+        self.assertIn("first principles", self.lens(out)[1])
+
+    def test_hand_edit_is_used_next_time(self):
+        self.context("# Goal\nfirst")
+        self.assertIn("first", self.resolve()[1])
+        self.context("# Goal\nsecond")
+        self.assertIn("second", self.resolve()[1])
+
+    def test_empty_context_file_is_reported_not_an_error(self):
+        self.context("")
+        code, out, _ = self.resolve()
+        self.assertEqual(code, 0)
+        self.assertIn("NOTE: .persona/context.md is empty", out)
+
+    def test_unclosed_front_matter_is_error(self):
+        self.context("---\ndomain: gaming\nbody")
+        code, _, err = self.resolve()
+        self.assertEqual(code, 1)
+        self.assertIn("never closed", err)
+
+    def test_front_matter_line_without_colon_is_error(self):
+        self.context("---\njust words\n---\nbody")
+        code, _, err = self.resolve()
+        self.assertEqual(code, 1)
+        self.assertIn("line 2", err)
+
+    def test_quoted_values_and_unknown_keys(self):
+        self.context("---\nfocus: \"quoted lens\"\nowner: me\n---\nbody")
+        self.assertEqual(self.lens(self.resolve()[1])[0], "quoted lens")
+
+    def test_persona_digest(self):
+        self.persona("zed", role="Last one", expertise=("a",))
+        self.persona("amy", role="First one", expertise=("b", "c"))
+        out = self.resolve()[1]
+        self.assertIn("=== ACTIVE PERSONAS ===\n- amy: First one (expertise: b, c)\n- zed: Last one (expertise: a)", out)
+        self.assertNotIn("no personas installed", out)
+
+    def test_unreadable_persona_file_is_skipped_and_reported(self):
+        self.persona("good")
+        self.persona("bad", raw="{nope")
+        code, out, _ = self.resolve()
+        self.assertEqual(code, 0)
+        self.assertIn("- good:", out)
+        self.assertIn("NOTE: skipped .persona/personas/bad.json", out)
+
+    def test_empty_personas_directory(self):
+        (self.project / ".persona" / "personas").mkdir(parents=True)
+        out = self.resolve()[1]
+        self.assertIn("NOTE: no personas installed", out)
+        self.assertIn("=== ACTIVE PERSONAS ===\n(none)", out)
+
+    def test_resolve_writes_nothing(self):
+        self.context("# Goal\nx")
+        self.persona("amy")
+        before = {p: p.read_bytes() for p in self.project.rglob("*") if p.is_file()}
+        self.resolve()
+        self.assertEqual({p: p.read_bytes() for p in self.project.rglob("*") if p.is_file()}, before)
+
+    def test_missing_domain_table_is_error(self):
+        (self.framework / "domains.json").unlink()
+        code, _, err = self.resolve()
+        self.assertEqual(code, 1)
+        self.assertIn("domain table", err)
+
+    def test_takes_no_positional_argument(self):
+        self.assertEqual(self.resolve("extra")[0], 2)
+
+
 class DocBlockTests(unittest.TestCase):
     """--check compares generated help blocks in SKILL.md and README.md with the command table."""
 
@@ -596,6 +779,18 @@ class DocBlockTests(unittest.TestCase):
         before = (self.skill.read_text(), self.readme.read_text())
         self.doc("--check")
         self.assertEqual((self.skill.read_text(), self.readme.read_text()), before)
+
+
+class RealFrameworkTests(unittest.TestCase):
+    def test_bundled_domain_table_resolves_every_domain(self):
+        domains = tif.load_domains(tif.DEFAULT_FRAMEWORK)
+        self.assertTrue(domains)
+        for name, entry in domains.items():
+            with tempfile.TemporaryDirectory() as proj:
+                code, out, err = run("resolve", "--domain", name, project=Path(proj))
+                self.assertEqual(code, 0, (name, err))
+                if entry.get("challenge_focus"):
+                    self.assertIn(f"LENS: {entry['challenge_focus']}", out)
 
 
 class RealCatalogTests(unittest.TestCase):

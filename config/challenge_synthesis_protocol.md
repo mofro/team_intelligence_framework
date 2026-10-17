@@ -47,7 +47,7 @@ The protocol exists because genuine challenge and integrated synthesis are struc
 
 **Inputs**:
 - `original_request` (required): The user's request verbatim
-- `domain_context` (required): The active `challenge_focus` from the domain's `context_configuration.json`
+- `domain_context` (optional): The active `challenge_focus` from the domain's `context_configuration.json`, and any project context the runtime holds. When absent, Phase 1 challenges from first principles: correctness, completeness, and coherence
 - `active_personas` (optional): Which specialist lenses should challenge; defaults to all relevant
 
 > **Scope note**: This input surface assumes `original_request` is self-contained. No conversation history or session state is defined as an input. A runtime MAY give Phase 1 read access so it can ground the challenge in material relevant to the request (project files, retrieved documents); anything it reads MUST be declared in `context_consulted`. Passing curated context in as an explicit input remains open — see Known Open Questions — Context Scope.
@@ -115,7 +115,7 @@ The artifact format is intentionally human-readable prose, not JSON — structur
 **Inputs**:
 - `original_request` (required): The user's request verbatim
 - `challenge_artifact` (required): Full ID-tagged output of Phase 1
-- `domain_context` (required): Full domain `context_configuration.json`
+- `domain_context` (optional): Full domain `context_configuration.json`, and any project context the runtime holds. When absent, Phase 2 synthesizes from first principles
 
 > **Scope note**: Same limitation as Phase 1 — no conversation history or session state is defined as an input. See Known Open Questions — Context Scope.
 
@@ -132,7 +132,7 @@ All of the following satisfy the protocol. None are required infrastructure.
 | **Manual two-conversation** | New chat with `challenge_phase_prompt.md` as system prompt | New chat (or same) with challenge artifact pasted as context |
 | **Shell script + any LLM CLI** | `llm -s "$(cat challenge_phase_prompt.md)" "$request"` | `llm -s "$(cat synthesis_prompt.md)" "$request + $artifact"` |
 | **`llm` CLI (Simon Willison)** | Same as above; swap backend with `-m model_name` | Same |
-| **Claude Code** (reference impl) | `/challenge [request]` — see `.claude/commands/challenge.md` | `/synthesize [request]` — see `.claude/commands/synthesize.md`. Level 1: each phase runs in its own subagent (`.claude/agents/challenger.md`, `synthesizer.md`), so Phase 2 never sees Phase 1's conversation |
+| **Claude Code** (reference impl; also shipped in the `tif` plugin as `/tif:challenge` and `/tif:synthesize`) | `/challenge [request]` — see `.claude/commands/challenge.md` | `/synthesize [request]` — see `.claude/commands/synthesize.md`. Level 1: each phase runs in its own subagent (`.claude/agents/challenger.md`, `synthesizer.md`), so Phase 2 never sees Phase 1's conversation |
 | **Jupyter notebook** | Cell 1: challenge API call | Cell 2: synthesis API call with Cell 1 output |
 | **Python script** | `anthropic.messages.create(system=challenge_prompt, ...)` | `anthropic.messages.create(system=synthesis_prompt, messages=[..., artifact])` |
 
@@ -293,6 +293,8 @@ This is a synthesis response wearing a challenge-phase hat. No premise interroga
 ---
 
 ## Changelog
+
+**v1.1 (amended, optional domain context)** — `domain_context` is optional on both phases. When absent, the phase works from first principles. Lets a runtime with no domain config (the installed `tif` plugin) run the protocol, with project context supplied in place of a domain file. Additive and backward compatible, so `schema_version` stays `1.1`.
 
 **v1.1 (amended, context grounding)** — Phase 1 may read files that bear on the request, and must declare each in the new optional `context_consulted` field (criterion B-8). Additive and backward compatible: artifacts without the field remain valid, so `schema_version` stays `1.1`. Chosen over forbidding reads because grounded challenges are more useful and the declared list keeps them auditable, at the cost of run-to-run reproducibility. Passing curated context in as an explicit input is still open.
 
