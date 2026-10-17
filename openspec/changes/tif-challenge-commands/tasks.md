@@ -26,7 +26,7 @@
 
 - [x] 5.1 Run `python3 -m unittest discover -s scripts`, `python3 -m unittest discover -s plugin/scripts`, `python3 plugin/scripts/tif.py --check`, `python3 scripts/build_persona_index.py --check`
 - [x] 5.2 In a temp project with the plugin loaded via `--plugin-dir`: run `/tif:context` headless against a scripted set of answers and confirm the file written matches them and nothing else
-- [ ] 5.3 (done: context run, synthesize with context; remaining: personas-only synthesize) Run `/tif:challenge` and `/tif:synthesize` headless with no context, with personas only, and with a context file; repeat the earlier comparison and confirm the context run's required clarifications are decision-level; confirm no `config/` read and every RC and AF is traced
+- [x] 5.3 Run `/tif:challenge` and `/tif:synthesize` headless with no context, with personas only, and with a context file; repeat the earlier comparison and confirm the context run's required clarifications are decision-level; confirm no `config/` read and every RC and AF is traced
 - [x] 5.4 Run `claude plugin validate` on the repository and check agent name behavior when the plugin is loaded inside this repository
 - [ ] 5.5 Desktop app (manual, by the user): run `/tif:context`, `/tif:challenge` and `/tif:synthesize` in a scratch project, including the synthesizer's read of the framework files in the plugin cache; record the result
 

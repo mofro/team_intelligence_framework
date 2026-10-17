@@ -199,7 +199,7 @@ To update, run `claude plugin marketplace update team-intelligence-framework`, t
 /tif:catalog help                              Show this help
 /tif:catalog list [--domain D]                 List personas with role, domain and status
 /tif:catalog teams                             List teams with member count and status
-/tif:catalog info <name>                       Show details for one persona or team, by id or alias
+/tif:catalog info <name>                       Show details for one persona or team, by id or alias (a bare name works too)
 /tif:catalog install <name>                    Copy a persona or team into .persona/ in the current project
 /tif:catalog uninstall <name>                  Remove an installed persona, or a team and its unshared members, from .persona/
 /tif:catalog resolve [--focus F] [--domain D]  Print the challenge lens, project context and installed persona digest

@@ -46,7 +46,7 @@ COMMANDS = (
     Command("list", "List personas with role, domain and status",
             (Arg("domain", "only personas in this domain", "option", "D"),)),
     Command("teams", "List teams with member count and status"),
-    Command("info", "Show details for one persona or team, by id or alias",
+    Command("info", "Show details for one persona or team, by id or alias (a bare name works too)",
             (Arg("name", "persona or team id, or an alias"),)),
     Command("install", "Copy a persona or team into .persona/ in the current project",
             (Arg("name", "persona or team id, or an alias"),)),
@@ -515,6 +515,9 @@ def main(argv=None, catalog=None, project=None, plugin_dir=None, readme=None, fr
         plugin_dir = PLUGIN_DIR if plugin_dir is None else plugin_dir
         readme = PLUGIN_DIR.parent / "README.md" if readme is None else readme
         return run_docs(argv[0], plugin_dir, readme)
+    bare = bool(argv) and not argv[0].startswith("-") and argv[0] not in {c.name for c in COMMANDS}
+    if bare:
+        argv = ["info"] + argv
     try:
         ns = parse(argv)
     except ParseError as exc:
@@ -537,6 +540,10 @@ def main(argv=None, catalog=None, project=None, plugin_dir=None, readme=None, fr
         return cmd_install(index, ns, catalog, project)
     if ns.command == "uninstall":
         return cmd_uninstall(index, ns, project)
+    if bare and not resolve(index, ns.name):
+        print(f"tif.py: '{ns.name}' is not a command and matches no persona or team. Run 'tif.py help' for usage.",
+              file=sys.stderr)
+        return 1
     return HANDLERS[ns.command](index, ns)
 
 

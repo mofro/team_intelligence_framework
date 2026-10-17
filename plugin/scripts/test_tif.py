@@ -95,6 +95,17 @@ class ParseTests(unittest.TestCase):
         self.assertIn("help", err)
         self.assertEqual(out, "")
 
+    def test_bare_name_is_info(self):
+        code, out, _ = run("ux_designer")
+        code2, out2, _ = run("info", "ux_designer")
+        self.assertEqual((code, out), (code2, out2))
+        self.assertEqual(code, 0)
+
+    def test_bare_name_with_extra_argument_is_usage_error(self):
+        code, out, err = run("ux_designer", "extra")
+        self.assertEqual(code, 2)
+        self.assertEqual(out, "")
+
     def test_missing_required_argument_exits_nonzero_with_hint(self):
         for argv in (("info",), ("install",)):
             code, _, err = run(*argv)

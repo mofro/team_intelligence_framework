@@ -29,7 +29,7 @@ Commands:
   help                              Show this help
   list [--domain D]                 List personas with role, domain and status
   teams                             List teams with member count and status
-  info <name>                       Show details for one persona or team, by id or alias
+  info <name>                       Show details for one persona or team, by id or alias (a bare name works too)
   install <name>                    Copy a persona or team into .persona/ in the current project
   uninstall <name>                  Remove an installed persona, or a team and its unshared members, from .persona/
   resolve [--focus F] [--domain D]  Print the challenge lens, project context and installed persona digest
