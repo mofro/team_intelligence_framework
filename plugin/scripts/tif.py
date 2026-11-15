@@ -46,12 +46,15 @@ COMMANDS = (
     Command("list", "List personas with role, domain and status",
             (Arg("domain", "only personas in this domain", "option", "D"),)),
     Command("teams", "List teams with member count and status"),
-    Command("info", "Show details for one persona or team, by id or alias",
+    Command("info", "Show details for one persona or team, by id or alias (a bare name works too)",
             (Arg("name", "persona or team id, or an alias"),)),
     Command("install", "Copy a persona or team into .persona/ in the current project",
             (Arg("name", "persona or team id, or an alias"),)),
     Command("uninstall", "Remove an installed persona, or a team and its unshared members, from .persona/",
             (Arg("name", "persona or team id, or an alias"),)),
+    Command("resolve", "Print the challenge lens, project context and installed persona digest",
+            (Arg("focus", "use this lens, overriding everything else", "option", "F"),
+             Arg("domain", "use the challenge focus of this domain", "option", "D"))),
 )
 
 
@@ -162,6 +165,7 @@ def parse(argv):
 
 
 DEFAULT_CATALOG = Path(__file__).resolve().parent.parent / "catalog"
+DEFAULT_FRAMEWORK = Path(__file__).resolve().parent.parent / "framework"
 
 
 class CatalogError(Exception):
@@ -383,10 +387,126 @@ def cmd_uninstall(index, ns, project):
     return 0
 
 
+CONTEXT_FILE = ".persona/context.md"
+FIRST_PRINCIPLES = "correctness, completeness, and coherence"
+
+
+class ContextError(Exception):
+    pass
+
+
+def parse_context(text):
+    """(front matter dict, body) of the project context file. Raises ContextError on broken front matter."""
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return {}, text.strip()
+    for end in range(1, len(lines)):
+        if lines[end].strip() == "---":
+            break
+    else:
+        raise ContextError(f"{CONTEXT_FILE}: the front matter opened with '---' on line 1 is never closed")
+    meta = {}
+    for n, line in enumerate(lines[1:end], start=2):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        key, sep, value = line.partition(":")
+        if not sep or not key.strip():
+            raise ContextError(f"{CONTEXT_FILE}: line {n} of the front matter is not 'key: value': {line.strip()!r}")
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+            value = value[1:-1]
+        meta[key.strip()] = value
+    return meta, "\n".join(lines[end + 1:]).strip()
+
+
+def load_domains(framework):
+    path = Path(framework) / "domains.json"
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))["domains"]
+    except (OSError, ValueError, KeyError) as exc:
+        raise CatalogError(f"cannot read the bundled domain table {path}: {getattr(exc, 'strerror', None) or exc}")
+
+
+def persona_digest(project):
+    """Lines describing each installed persona, plus notes for files that cannot be read."""
+    lines, notes = [], []
+    directory = Path(project) / PERSONAS_DIR
+    for path in sorted(directory.glob("*.json")) if directory.is_dir() else []:
+        try:
+            persona = json.loads(path.read_text(encoding="utf-8"))["persona"]
+            pid = persona.get("persona_name") or path.stem
+            role = persona.get("role") or ""
+            expertise = persona.get("expertise") or []
+        except (OSError, ValueError, KeyError, AttributeError):
+            notes.append(f"skipped {PERSONAS_DIR}/{path.name}: not a readable persona file")
+            continue
+        lines.append(f"- {pid}: {role}" + (f" (expertise: {', '.join(expertise)})" if expertise else ""))
+    return lines, notes
+
+
+def cmd_resolve(ns, project, framework):
+    domains = load_domains(framework)
+    names = ", ".join(sorted(domains))
+
+    def known(domain, source):
+        if domain not in domains:
+            raise CatalogError(f"unknown domain '{domain}' from {source}. Known domains: {names}")
+        return domains[domain]
+
+    notes = []
+    context_path = Path(project) / CONTEXT_FILE
+    meta, body = {}, ""
+    if context_path.is_file():
+        meta, body = parse_context(context_path.read_text(encoding="utf-8"))
+        if not meta and not body:
+            notes.append(f"{CONTEXT_FILE} is empty")
+    else:
+        notes.append(f"no project context found ({CONTEXT_FILE}); run /tif:context to create one")
+
+    # Validate every named domain up front, so a typo is reported even when a higher source wins.
+    if ns.domain is not None:
+        known(ns.domain, "--domain")
+    if meta.get("domain"):
+        known(meta["domain"], f"the domain field of {CONTEXT_FILE}")
+
+    lens = source = None
+    candidates = [
+        (ns.focus, "--focus", lambda v: v),
+        (meta.get("focus"), f"focus in {CONTEXT_FILE}", lambda v: v),
+        (ns.domain, "--domain", lambda v: domains[v].get("challenge_focus")),
+        (meta.get("domain"), f"domain in {CONTEXT_FILE}", lambda v: domains[v].get("challenge_focus")),
+    ]
+    for value, label, to_lens in candidates:
+        if not value:
+            continue
+        found = to_lens(value)
+        if found:
+            lens, source = found, f"{label}" + ("" if label.startswith(("--focus", "focus")) else f" ({value})")
+            break
+        notes.append(f"domain '{value}' from {label} has no challenge_focus; trying the next source")
+    if lens is None:
+        lens, source = FIRST_PRINCIPLES, "first principles (no focus or domain was given)"
+
+    digest, digest_notes = persona_digest(project)
+    notes += digest_notes
+    if not digest:
+        notes.append(f"no personas installed ({PERSONAS_DIR}/)")
+
+    print(f"LENS: {lens}")
+    print(f"LENS SOURCE: {source}")
+    for note in notes:
+        print(f"NOTE: {note}")
+    print("\n=== PROJECT CONTEXT ===")
+    print(body if body else "(none)")
+    print("\n=== ACTIVE PERSONAS ===")
+    print("\n".join(digest) if digest else "(none)")
+    return 0
+
+
 HANDLERS = {"list": cmd_list, "teams": cmd_teams, "info": cmd_info}
 
 
-def main(argv=None, catalog=None, project=None, plugin_dir=None, readme=None):
+def main(argv=None, catalog=None, project=None, plugin_dir=None, readme=None, framework=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     if not argv or argv in (["help"], ["--help"]):
         sys.stdout.write(help_text())
@@ -395,6 +515,9 @@ def main(argv=None, catalog=None, project=None, plugin_dir=None, readme=None):
         plugin_dir = PLUGIN_DIR if plugin_dir is None else plugin_dir
         readme = PLUGIN_DIR.parent / "README.md" if readme is None else readme
         return run_docs(argv[0], plugin_dir, readme)
+    bare = bool(argv) and not argv[0].startswith("-") and argv[0] not in {c.name for c in COMMANDS}
+    if bare:
+        argv = ["info"] + argv
     try:
         ns = parse(argv)
     except ParseError as exc:
@@ -402,6 +525,12 @@ def main(argv=None, catalog=None, project=None, plugin_dir=None, readme=None):
         return 2
     catalog = DEFAULT_CATALOG if catalog is None else catalog
     project = Path.cwd() if project is None else project
+    if ns.command == "resolve":
+        try:
+            return cmd_resolve(ns, project, DEFAULT_FRAMEWORK if framework is None else framework)
+        except (CatalogError, ContextError) as exc:
+            print(f"tif.py: {exc}", file=sys.stderr)
+            return 1
     try:
         index = load_index(catalog)
     except CatalogError as exc:
@@ -411,6 +540,10 @@ def main(argv=None, catalog=None, project=None, plugin_dir=None, readme=None):
         return cmd_install(index, ns, catalog, project)
     if ns.command == "uninstall":
         return cmd_uninstall(index, ns, project)
+    if bare and not resolve(index, ns.name):
+        print(f"tif.py: '{ns.name}' is not a command and matches no persona or team. Run 'tif.py help' for usage.",
+              file=sys.stderr)
+        return 1
     return HANDLERS[ns.command](index, ns)
 
 

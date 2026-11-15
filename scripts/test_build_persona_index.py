@@ -30,10 +30,17 @@ def team(tid, members, primary=None):
                      "members": members, "default_primary": primary or members[0]}}
 
 
+PROMPT_TEXT = ("# Prompt\n\nYou are operating in **Challenge Phase** of a protocol.\n\n"
+               "## Output Format\n\nformat\n\n---\n\n## Notes for Runtime Implementers\n\nnotes\n")
+FRAMEWORK_TEXT = {rel: (PROMPT_TEXT if rel == bpi.PHASE_PROMPT else f"# {rel}\n") for rel in bpi.FRAMEWORK_SOURCES}
+
+
 class Fixture:
     def __init__(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = Path(self._tmp.name)
+        for rel in bpi.FRAMEWORK_SOURCES:
+            self.write(rel, FRAMEWORK_TEXT[rel])
 
     def write(self, rel, obj):
         p = self.root / rel
@@ -237,9 +244,10 @@ class CheckModeTests(unittest.TestCase):
         return {p: p.read_bytes() for p in root.rglob("*") if p.is_file() and not is_output(p)}
 
     def test_generation_writes_only_its_outputs(self):
-        before = self._snapshot(generated=("plugin/catalog/",))
+        generated = ("plugin/catalog/", "plugin/framework/", "plugin/agents/")
+        before = self._snapshot(generated=generated)
         bpi.main(self.args)
-        self.assertEqual(self._snapshot(generated=("plugin/catalog/",)), before)
+        self.assertEqual(self._snapshot(generated=generated), before)
 
     def test_check_mode_writes_nothing(self):
         bpi.main(self.args)
@@ -349,6 +357,94 @@ class BundleCheckTests(unittest.TestCase):
         (self.bundle / "stray.txt").write_text("x")
         self.check()
         self.assertTrue((self.bundle / "stray.txt").exists())
+
+
+class PluginFrameworkTests(unittest.TestCase):
+    """plugin/framework/ and plugin/agents/challenger.md are generated and checked like the catalog."""
+
+    def setUp(self):
+        self.f = Fixture()
+        self.addCleanup(self.f.close)
+        self.f.write("personas/dev/a.json", persona("a"))
+        self.f.write("personas/dev/context_configuration.json", {
+            "context_name": "dev", "description": "Dev things",
+            "context_behavioral_protocols": {"challenge_focus": "correctness_of_dev"}})
+        self.f.write("personas/art/context_configuration.json", {"description": "Art things"})
+        self.f.write("personas/art/hero/context_configuration_hero.json", {"description": "project level"})
+        self.args = ["--root", str(self.f.root)]
+        self.framework = self.f.root / "plugin" / "framework"
+        self.agent = self.f.root / "plugin" / "agents" / "challenger.md"
+        bpi.main(self.args)
+
+    def check(self):
+        import contextlib, io
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            code = bpi.main(["--check"] + self.args)
+        return code, err.getvalue()
+
+    def test_framework_files_copied_byte_identical(self):
+        for rel in bpi.FRAMEWORK_SOURCES:
+            self.assertEqual((self.framework / Path(rel).name).read_bytes(), (self.f.root / rel).read_bytes())
+
+    def test_domains_table_lists_domain_level_configs_only(self):
+        table = json.loads((self.framework / "domains.json").read_text())
+        self.assertEqual(table, {"domains": {
+            "art": {"description": "Art things"},
+            "dev": {"challenge_focus": "correctness_of_dev", "description": "Dev things"}}})
+
+    def test_domain_name_differing_from_directory_is_error(self):
+        self.f.write("personas/art/context_configuration.json", {"context_name": "paint"})
+        self.assertEqual(bpi.main(self.args), 1)
+
+    def test_challenger_agent_is_front_matter_plus_prompt_body(self):
+        text = self.agent.read_text()
+        self.assertTrue(text.startswith("---\nname: challenger\n"))
+        self.assertIn("tools: Read\n---\n\nYou are operating in **Challenge Phase**", text)
+        self.assertNotIn("Notes for Runtime Implementers", text)
+
+    def test_clean_passes(self):
+        self.assertEqual(self.check()[0], 0)
+
+    def test_missing_framework_file_fails(self):
+        (self.framework / "domains.json").unlink()
+        code, err = self.check()
+        self.assertEqual(code, 1)
+        self.assertIn("plugin/framework/domains.json is missing", err)
+
+    def test_stale_framework_file_fails(self):
+        self.f.write("config/challenge_synthesis_protocol.md", "# changed\n")
+        code, err = self.check()
+        self.assertEqual(code, 1)
+        self.assertIn("plugin/framework/challenge_synthesis_protocol.md differs", err)
+
+    def test_extra_framework_file_fails(self):
+        (self.framework / "stray.md").write_text("x")
+        code, err = self.check()
+        self.assertEqual(code, 1)
+        self.assertIn("stray.md", err)
+
+    def test_edited_agent_fails_and_regeneration_repairs_it(self):
+        self.agent.write_text("edited")
+        self.assertEqual(self.check()[0], 1)
+        bpi.main(self.args)
+        self.assertEqual(self.check()[0], 0)
+
+    def test_hand_written_agents_are_not_pruned_or_flagged(self):
+        other = self.f.root / "plugin" / "agents" / "synthesizer.md"
+        other.write_text("mine")
+        self.assertEqual(self.check()[0], 0)
+        bpi.main(self.args)
+        self.assertEqual(other.read_text(), "mine")
+
+    def test_missing_source_is_error(self):
+        (self.f.root / "config/challenge_synthesis_protocol.md").unlink()
+        self.assertEqual(bpi.main(self.args), 1)
+
+    def test_check_changes_no_source_file(self):
+        before = {p: p.read_bytes() for p in (self.f.root / "personas").rglob("*") if p.is_file()}
+        bpi.main(self.args)
+        self.assertEqual({p: p.read_bytes() for p in before}, before)
 
 
 class RealRepoTests(unittest.TestCase):

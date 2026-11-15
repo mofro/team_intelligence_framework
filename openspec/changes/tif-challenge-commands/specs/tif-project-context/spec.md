@@ -31,7 +31,7 @@ A project's context SHALL live in `.persona/context.md` in the user's project. I
 - **THEN** it shows proposed edits and leaves the file unchanged until confirmed
 
 ### Requirement: Domain table
-The plugin SHALL bundle a generated `plugin/framework/domains.json` mapping each domain name to its description and, where declared, its `challenge_focus`, built from the domain-level `context_configuration.json` files. A domain without a `challenge_focus` SHALL be listed without one. Duplicate domain names SHALL be a generation error. A domain SHALL be selected only by name (the context file's `domain` or `--domain`) and SHALL NOT be inferred from installed personas.
+The plugin SHALL bundle a generated `plugin/framework/domains.json` mapping each domain name to its description and, where declared, its `challenge_focus`, built from the domain-level `context_configuration.json` files. A domain without a `challenge_focus` SHALL be listed without one. A domain's name SHALL be its directory name, and a `context_name` that disagrees with it SHALL be a generation error. A domain SHALL be selected only by name (the context file's `domain` or `--domain`) and SHALL NOT be inferred from installed personas.
 
 #### Scenario: Table matches sources
 - **WHEN** a domain-level configuration changes and the plugin is not regenerated

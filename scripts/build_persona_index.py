@@ -2,12 +2,16 @@
 """Generate index.json: a catalog of the personas and teams in this repository.
 
 Usage:
-    python3 scripts/build_persona_index.py            # write index.json and plugin/catalog/
-    python3 scripts/build_persona_index.py --check    # exit 1 if index.json or plugin/catalog/ is stale, or errors exist
+    python3 scripts/build_persona_index.py            # write index.json and the generated plugin files
+    python3 scripts/build_persona_index.py --check    # exit 1 if any generated file is stale, or errors exist
 
 The index is derived only from files under personas/. Persona, team and context
 configuration files are never modified; the only paths written are index.json and
-plugin/catalog/ (a byte-for-byte copy of index.json and every file it lists). Specs: openspec/specs/; design: openspec/changes/archive/2026-10-10-persona-index/.
+the generated plugin files: plugin/catalog/ (a byte-for-byte copy of index.json and every
+file it lists), plugin/framework/ (copies of the framework files the plugin's challenge
+commands read, plus domains.json derived from the domain-level context configurations) and
+plugin/agents/challenger.md (the challenge phase prompt wrapped in agent front matter).
+Specs: openspec/specs/; design: openspec/changes/archive/2026-10-10-persona-index/.
 """
 
 import argparse
@@ -22,6 +26,22 @@ TEMPLATE_PATH = "personas/persona_schema_example.json"
 EXAMPLES_PREFIX = "personas/examples/"
 
 BUNDLE_DIR = "plugin/catalog"
+FRAMEWORK_DIR = "plugin/framework"
+AGENTS_DIR = "plugin/agents"
+
+# Framework files copied byte for byte into plugin/framework/.
+FRAMEWORK_SOURCES = (
+    "config/challenge_phase_prompt.md",
+    "config/persona_collaboration_framework_v2.md",
+    "config/challenge_synthesis_protocol.md",
+)
+PHASE_PROMPT = "config/challenge_phase_prompt.md"
+CHALLENGER_FRONT_MATTER = """---
+name: challenger
+description: Phase 1 of the challenge/synthesis protocol. Adversarially challenges a request and returns a Challenge Artifact. Use only via /tif:challenge. Read-only (no shell, write, web or agent tools), and it never sees the calling conversation.
+tools: Read
+---
+"""
 
 ERROR, WARNING, NOTE = "error", "warning", "note"
 
@@ -259,37 +279,92 @@ def bundle_contents(root, index, rendered):
     return files
 
 
-def write_bundle(root, files):
-    bundle = root / BUNDLE_DIR
-    if bundle.exists():
-        for stale in sorted(bundle.rglob("*"), reverse=True):
-            rel = stale.relative_to(bundle).as_posix()
+def challenger_body(prompt_text):
+    """The system prompt and output format, without the runtime-implementer notes."""
+    start = prompt_text.index("You are operating in **Challenge Phase**")
+    end = prompt_text.index("---\n\n## Notes for Runtime Implementers")
+    return prompt_text[start:end].strip()
+
+
+def domains_table(root, diagnostics):
+    """Domain name (its directory, as in the index) -> challenge_focus and description, from personas/<domain>/context_configuration.json."""
+    domains = {}
+    for path in sorted((root / "personas").glob("*/context_configuration.json")):
+        rel = path.relative_to(root).as_posix()
+        try:
+            obj = json.loads(path.read_text(encoding="utf-8"))
+        except (ValueError, UnicodeDecodeError) as exc:
+            diagnostics.append((ERROR, f"{rel}: cannot parse as JSON ({exc})"))
+            continue
+        if not isinstance(obj, dict):
+            diagnostics.append((ERROR, f"{rel}: not a JSON object"))
+            continue
+        name = path.parent.name
+        declared = obj.get("context_name")
+        if declared and declared != name:
+            diagnostics.append((ERROR, f"{rel}: context_name '{declared}' differs from its directory '{name}'"))
+            continue
+        entry = {}
+        protocols = obj.get("context_behavioral_protocols")
+        focus = protocols.get("challenge_focus") if isinstance(protocols, dict) else None
+        if focus:
+            entry["challenge_focus"] = focus
+        entry["description"] = obj.get("description") or ""
+        domains[name] = entry
+    return {"domains": domains}
+
+
+def plugin_outputs(root, diagnostics):
+    """[(directory, {relative path: bytes}, prune)] for the generated plugin files other than the catalog.
+
+    `prune` is True when the directory holds only generated files, so extra files are errors.
+    """
+    framework, agents = {}, {}
+    for rel in FRAMEWORK_SOURCES:
+        src = root / rel
+        if not src.is_file():
+            diagnostics.append((ERROR, f"{rel}: missing; the plugin's framework files are copied from it"))
+            continue
+        framework[Path(rel).name] = src.read_bytes()
+    framework["domains.json"] = json.dumps(domains_table(root, diagnostics), indent=2, ensure_ascii=False).encode("utf-8") + b"\n"
+    prompt = root / PHASE_PROMPT
+    if prompt.is_file():
+        body = challenger_body(prompt.read_text(encoding="utf-8"))
+        agents["challenger.md"] = (CHALLENGER_FRONT_MATTER + "\n" + body + "\n").encode("utf-8")
+    return [(FRAMEWORK_DIR, framework, True), (AGENTS_DIR, agents, False)]
+
+
+def write_files(root, directory, files, prune=True):
+    base = root / directory
+    if prune and base.exists():
+        for stale in sorted(base.rglob("*"), reverse=True):
+            rel = stale.relative_to(base).as_posix()
             if stale.is_file() and rel not in files:
                 stale.unlink()
             elif stale.is_dir() and not any(stale.iterdir()):
                 stale.rmdir()
     for rel, data in files.items():
-        dest = bundle / rel
+        dest = base / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
         if not dest.exists() or dest.read_bytes() != data:
             dest.write_bytes(data)
 
 
-def bundle_problems(root, files):
-    """Differences between the expected bundle and plugin/catalog/ on disk."""
-    bundle = root / BUNDLE_DIR
+def file_problems(root, directory, files, prune=True):
+    """Differences between the expected files and `directory` on disk."""
+    base = root / directory
     problems = []
     for rel, data in sorted(files.items()):
-        dest = bundle / rel
+        dest = base / rel
         if not dest.is_file():
-            problems.append(f"{BUNDLE_DIR}/{rel} is missing")
+            problems.append(f"{directory}/{rel} is missing")
         elif dest.read_bytes() != data:
-            problems.append(f"{BUNDLE_DIR}/{rel} differs from its source")
-    if bundle.is_dir():
-        for found in sorted(p for p in bundle.rglob("*") if p.is_file()):
-            rel = found.relative_to(bundle).as_posix()
+            problems.append(f"{directory}/{rel} differs from its source")
+    if prune and base.is_dir():
+        for found in sorted(p for p in base.rglob("*") if p.is_file()):
+            rel = found.relative_to(base).as_posix()
             if rel not in files:
-                problems.append(f"{BUNDLE_DIR}/{rel} is not in the index")
+                problems.append(f"{directory}/{rel} is not generated from any source")
     return problems
 
 
@@ -301,18 +376,19 @@ def report(diagnostics, stream):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    parser.add_argument("--check", action="store_true", help="do not write; exit 1 if index.json is stale or errors exist")
+    parser.add_argument("--check", action="store_true", help="do not write; exit 1 if a generated file is stale or errors exist")
     parser.add_argument("--root", default=str(Path(__file__).resolve().parent.parent), help="repository root")
     args = parser.parse_args(argv)
 
     root = Path(args.root)
     index, diagnostics = build_index(root)
+    rendered = render(index)
+    outputs = [(BUNDLE_DIR, bundle_contents(root, index, rendered), True)] + plugin_outputs(root, diagnostics)
     report(diagnostics, sys.stderr)
     if any(level == ERROR for level, _ in diagnostics):
         print("index not written: fix the errors above", file=sys.stderr)
         return 1
 
-    rendered = render(index)
     target = root / "index.json"
     if args.check:
         regenerate = "run python3 scripts/build_persona_index.py and commit the result"
@@ -321,19 +397,22 @@ def main(argv=None):
         if current != rendered:
             print(f"index.json is stale: {regenerate}", file=sys.stderr)
             status = 1
-        problems = bundle_problems(root, bundle_contents(root, index, rendered))
-        for problem in problems:
-            print(f"ERROR: {problem}", file=sys.stderr)
-        if problems:
-            print(f"{BUNDLE_DIR}/ is stale: {regenerate}", file=sys.stderr)
-            status = 1
+        for directory, files, prune in outputs:
+            problems = file_problems(root, directory, files, prune)
+            for problem in problems:
+                print(f"ERROR: {problem}", file=sys.stderr)
+            if problems:
+                print(f"{directory}/ is stale: {regenerate}", file=sys.stderr)
+                status = 1
         if status == 0:
-            print(f"index.json and {BUNDLE_DIR}/ are up to date", file=sys.stderr)
+            print("index.json and " + ", ".join(f"{d}/" for d, _, _ in outputs) + " are up to date", file=sys.stderr)
         return status
 
     target.write_text(rendered, encoding="utf-8")
-    write_bundle(root, bundle_contents(root, index, rendered))
-    print(f"wrote index.json and {BUNDLE_DIR}/ ({len(index['personas'])} personas, {len(index['teams'])} teams)", file=sys.stderr)
+    for directory, files, prune in outputs:
+        write_files(root, directory, files, prune)
+    print(f"wrote index.json and " + ", ".join(f"{d}/" for d, _, _ in outputs)
+          + f" ({len(index['personas'])} personas, {len(index['teams'])} teams)", file=sys.stderr)
     return 0
 
 

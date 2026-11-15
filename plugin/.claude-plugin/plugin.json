@@ -1,7 +1,7 @@
 {
   "name": "tif",
-  "version": "0.2.0",
-  "description": "Browse the Team Intelligence Framework catalog and install personas and teams into a project's .persona/ directory.",
+  "version": "0.3.0",
+  "description": "Browse the Team Intelligence Framework catalog, install personas and teams into a project's .persona/ directory, and run the two-phase challenge/synthesis protocol against project context.",
   "author": {
     "name": "Maurice Gaston"
   },
